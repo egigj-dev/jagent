@@ -4,7 +4,11 @@ name = "jagent"
 version = "0.1.0"
 description = "Personal job-search pipeline"
 requires-python = ">=3.12"
-dependencies = ["psycopg[binary]>=3.2,<4"]
+dependencies = [
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.2,<4",
+    "pydantic>=2.13.5",
+]
 
 [project.scripts]
 jagent = "jagent.cli:main"
@@ -15,3 +19,8 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 module-root = ""
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
