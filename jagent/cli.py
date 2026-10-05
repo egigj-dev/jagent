@@ -3,6 +3,7 @@ import argparse
 from pathlib import Path
 
 from jagent.db import connect
+from jagent.health import check_health
 from jagent.runner import SOURCES, run
 
 
@@ -10,9 +11,15 @@ def main():
     parser = argparse.ArgumentParser(prog="jagent")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("init-db", help="Create the database tables if absent")
+    commands.add_parser("health", help="Check the latest source runs for problems")
     run_parser = commands.add_parser("run", help="Fetch and store job postings")
     run_parser.add_argument("--source", choices=sorted(SOURCES))
     args = parser.parse_args()
+    if args.command == "health":
+        problems = check_health()
+        for problem in problems:
+            print(problem)
+        return int(bool(problems))
     if args.command == "run":
         results = run(args.source)
         for result in results:
