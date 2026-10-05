@@ -29,10 +29,19 @@ def parse_response(data: dict) -> list[Posting]:
         lines = [line.strip() for line in text.splitlines() if line.strip()]
         if not lines:
             continue
+        company = None
+        title = lines[0]
+        locations = None
+        if "|" in lines[0]:
+            parts = [part.strip() for part in lines[0].split("|")]
+            company, title = parts[:2]
+            if len(parts) > 2:
+                locations = [parts[2]] if parts[2] else []
         postings.append(Posting(
             source="hn_hiring", source_id=str(item["id"]),
             url=f"https://news.ycombinator.com/item?id={item['id']}",
-            title=lines[0], description=description, posted_at=item["created_at"],
+            company=company, title=title, locations=locations,
+            description=description, posted_at=item["created_at"],
         ))
     return postings
 

@@ -120,7 +120,26 @@ def test_hn_skips_deleted_comments_and_preserves_inline_title_text():
     ]}
     postings = hn_hiring.parse_response(story)
     assert len(postings) == 1
-    assert postings[0].title == "Acme Inc | Engineer"
+    assert postings[0].company == "Acme Inc"
+    assert postings[0].title == "Engineer"
+
+
+@pytest.mark.parametrize("first_line,company,title,locations", [
+    (" Acme | Software Engineer | Berlin | Full-time ",
+     "Acme", "Software Engineer", ["Berlin"]),
+    ("Example Co | Designer", "Example Co", "Designer", None),
+    ("PrairieLearn — Full-Stack Engineer — Remote US",
+     None, "PrairieLearn — Full-Stack Engineer — Remote US", None),
+])
+def test_hn_first_line_fields(first_line, company, title, locations):
+    story = {"children": [{
+        "id": 1, "text": first_line + "<p>Job details",
+        "created_at": "2026-10-01T15:00:00Z",
+    }]}
+    posting = hn_hiring.parse_response(story)[0]
+    assert posting.company == company
+    assert posting.title == title
+    assert posting.locations == locations
 
 
 @pytest.mark.parametrize("adapter", [case[0] for case in CASES] + [hn_hiring])
