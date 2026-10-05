@@ -3,7 +3,8 @@ from datetime import UTC, datetime
 
 from jagent.db import connect
 from jagent.sources import (
-    arbeitnow, himalayas, hn_hiring, jobicy, remoteok, remotive, weworkremotely,
+    arbeitnow, djinni, himalayas, hn_hiring, jobicy, kosovajob, remoteok,
+    remotive, staffal, weworkremotely,
 )
 
 SOURCES = {
@@ -14,6 +15,9 @@ SOURCES = {
     "jobicy": jobicy.fetch,
     "weworkremotely": weworkremotely.fetch,
     "hn_hiring": hn_hiring.fetch,
+    "staffal": staffal.fetch,
+    "kosovajob": kosovajob.fetch,
+    "djinni": djinni.fetch,
 }
 
 
@@ -26,10 +30,10 @@ def save_postings(connection, postings, seen_at):
             """
             INSERT INTO postings
                 (source, source_id, url, company, title, locations, remote,
-                 posted_at, description, first_seen, last_seen)
+                 posted_at, expires_at, description, first_seen, last_seen)
             VALUES (%(source)s, %(source_id)s, %(url)s, %(company)s, %(title)s,
-                    %(locations)s, %(remote)s, %(posted_at)s, %(description)s,
-                    %(seen_at)s, %(seen_at)s)
+                    %(locations)s, %(remote)s, %(posted_at)s, %(expires_at)s,
+                    %(description)s, %(seen_at)s, %(seen_at)s)
             ON CONFLICT (source, source_id) DO NOTHING
             RETURNING id
             """,
@@ -43,7 +47,8 @@ def save_postings(connection, postings, seen_at):
                 UPDATE postings SET url = %(url)s, company = %(company)s,
                     title = %(title)s, locations = %(locations)s,
                     remote = %(remote)s, posted_at = %(posted_at)s,
-                    description = %(description)s, last_seen = %(seen_at)s
+                    expires_at = %(expires_at)s, description = %(description)s,
+                    last_seen = %(seen_at)s
                 WHERE source = %(source)s AND source_id = %(source_id)s
                 """,
                 values,

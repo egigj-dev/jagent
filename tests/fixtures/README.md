@@ -13,6 +13,9 @@ without modification (JSON and XML fixtures retain their native formats):
 - weworkremotely.xml: https://weworkremotely.com/remote-jobs.rss
 - hn_hiring_search.json: https://hn.algolia.com/api/v1/search?tags=story,author_whoishiring&query=Ask%20HN%3A%20Who%20is%20hiring%3F&hitsPerPage=1000
 - hn_hiring.json: https://hn.algolia.com/api/v1/items/49922569
+- staffal.html: https://staff.al/sq/job-list
+- kosovajob.html: https://kosovajob.com/
+- djinni.html: https://djinni.co/jobs/
 
 Remotive and Jobicy dates without an explicit offset are interpreted as UTC.
 
@@ -33,3 +36,9 @@ Ordering evidence: `himalayas_order.json` is an unmodified response from
 https://himalayas.app/jobs/api?limit=20 saved on 2026-10-05. All 20 `pubDate`
 values are non-increasing, from 1791218495 to 1791217761, confirming newest-first
 ordering in that response.
+
+The Staff.al listing request currently returns a Next.js 404 shell with no job
+cards. Its adapter uses the public sitemap as a fallback index, then reads new
+job details for title, company, and description. The KosovoJob listing cards
+also omit descriptions, so their detail pages are read only for unseen jobs.
+Djinni cards contain job descriptions and need no detail-page requests.

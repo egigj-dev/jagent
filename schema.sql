@@ -9,11 +9,14 @@ CREATE TABLE IF NOT EXISTS postings (
     locations text[],
     remote bool,
     posted_at timestamptz,
+    expires_at timestamptz,
     description text,
     first_seen timestamptz DEFAULT now(),
     last_seen timestamptz,
     UNIQUE (source, source_id)
 );
+
+ALTER TABLE postings ADD COLUMN IF NOT EXISTS expires_at timestamptz;
 
 CREATE TABLE IF NOT EXISTS source_runs (
     id serial PRIMARY KEY,
