@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS postings (
     remote bool,
     posted_at timestamptz,
     expires_at timestamptz,
+    dedupe_key text,
+    other_urls text[],
     description text,
     first_seen timestamptz DEFAULT now(),
     last_seen timestamptz,
@@ -17,6 +19,8 @@ CREATE TABLE IF NOT EXISTS postings (
 );
 
 ALTER TABLE postings ADD COLUMN IF NOT EXISTS expires_at timestamptz;
+ALTER TABLE postings ADD COLUMN IF NOT EXISTS dedupe_key text;
+ALTER TABLE postings ADD COLUMN IF NOT EXISTS other_urls text[];
 
 CREATE TABLE IF NOT EXISTS source_runs (
     id serial PRIMARY KEY,

@@ -15,6 +15,8 @@ class Posting(BaseModel):
     remote: bool | None = None
     posted_at: datetime | None = None
     expires_at: datetime | None = None
+    dedupe_key: str | None = None
+    other_urls: list[str] | None = None
     description: str | None = None
     first_seen: datetime | None = None
     last_seen: datetime | None = None

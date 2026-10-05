@@ -4,7 +4,7 @@ from pathlib import Path
 
 from jagent.db import connect
 from jagent.health import check_health
-from jagent.runner import SOURCES, run
+from jagent.runner import SOURCES, backfill_dedupe, run
 
 
 def main():
@@ -31,4 +31,5 @@ def main():
     schema_path = Path(__file__).resolve().parent.parent / "schema.sql"
     with connect() as connection:
         connection.execute(schema_path.read_text())
+        backfill_dedupe(connection)
     print("Database initialized.")
