@@ -2,9 +2,19 @@
 from datetime import UTC, datetime
 
 from jagent.db import connect
-from jagent.sources import remoteok
+from jagent.sources import (
+    arbeitnow, himalayas, hn_hiring, jobicy, remoteok, remotive, weworkremotely,
+)
 
-SOURCES = {"remoteok": remoteok.fetch}
+SOURCES = {
+    "remoteok": remoteok.fetch,
+    "remotive": remotive.fetch,
+    "arbeitnow": arbeitnow.fetch,
+    "himalayas": himalayas.fetch,
+    "jobicy": jobicy.fetch,
+    "weworkremotely": weworkremotely.fetch,
+    "hn_hiring": hn_hiring.fetch,
+}
 
 
 def save_postings(connection, postings, seen_at):
