@@ -6,6 +6,7 @@ from jagent.db import connect
 from jagent.health import check_health
 from jagent.filters import filter_report
 from jagent.profile import set_profile
+from jagent.matching import match
 from jagent.runner import SOURCES, backfill_dedupe, run
 
 
@@ -15,6 +16,7 @@ def main():
     commands.add_parser("init-db", help="Create the database tables if absent")
     commands.add_parser("health", help="Check the latest source runs for problems")
     commands.add_parser("filter-report", help="Report active postings passing profile filters")
+    commands.add_parser("match", help="Embed and rank postings against the active profile")
     profile_parser = commands.add_parser("profile", help="Store profile versions")
     profile_commands = profile_parser.add_subparsers(dest="profile_command", required=True)
     profile_set = profile_commands.add_parser("set", help="Store a new active profile version")
@@ -23,6 +25,13 @@ def main():
     run_parser = commands.add_parser("run", help="Fetch and store job postings")
     run_parser.add_argument("--source", choices=sorted(SOURCES))
     args = parser.parse_args()
+    if args.command == "match":
+        try:
+            match()
+        except ValueError as error:
+            print(str(error))
+            return 1
+        return 0
     if args.command == "profile":
         profile_id = set_profile(args.text_path, args.filters_path)
         print(f"Profile version {profile_id} is active.")

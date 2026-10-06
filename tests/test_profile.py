@@ -35,6 +35,21 @@ def test_profile_set_stores_new_versions_and_reads_latest(monkeypatch, tmp_path)
     assert versions[0][1] == "Python developer looking for work in Europe."
 
 
+def test_profile_set_splits_sections_and_keeps_full_text(monkeypatch, tmp_path):
+    text_path = tmp_path / "sample.md"
+    text_path.write_text("# Sample profile\n\n## Engineering\nPython and NLP.\n\n## Security\nDetection models.\n")
+    filters_path = tmp_path / "filters.json"
+    filters_path.write_text("{}")
+    connection = Mock()
+    connection.execute.return_value.fetchone.return_value = (7,)
+    monkeypatch.setattr(profile, "connect", lambda: nullcontext(connection))
+    assert profile.set_profile(text_path, filters_path) == 7
+    calls = connection.execute.call_args_list
+    assert calls[0].args[1][0] == text_path.read_text()
+    assert calls[1].args[1] == (7, "Engineering", "Python and NLP.")
+    assert calls[2].args[1] == (7, "Security", "Detection models.")
+
+
 def test_profile_set_cli(monkeypatch, capsys):
     store = Mock(return_value=3)
     monkeypatch.setattr(cli, "set_profile", store)
