@@ -17,6 +17,7 @@ def test_failing_source_does_not_stop_others(monkeypatch):
 
     monkeypatch.setattr(runner, "SOURCES", {"broken": fail, "working": lambda: []})
     monkeypatch.setattr(runner, "connect", lambda: nullcontext(None))
+    monkeypatch.setattr(runner, "ats_companies", lambda: [])
     monkeypatch.setattr(runner, "record_run", lambda connection, result:
                         recorded.append(result.copy()))
     results = runner.run()
@@ -43,7 +44,8 @@ def test_duplicate_jobs_save_as_one_row(sources):
             result.fetchone.return_value = (rows[-1]["id"],)
         elif "SET other_urls" in query:
             row = next(row for row in rows if row["id"] == params["id"])
-            row.update(other_urls=params["other_urls"], locations=params["locations"])
+            row.update(other_urls=params["other_urls"], locations=params["locations"],
+                       remote=params["remote"])
         else:
             raise AssertionError(query)
         return result
@@ -58,6 +60,7 @@ def test_duplicate_jobs_save_as_one_row(sources):
         Posting(
             source=sources[1], source_id="second", url="https://two.example/job",
             company="example inc", title="Senior Engineer!", locations=["Remote"],
+            remote=True,
         ),
     ]
     assert runner.save_postings(
@@ -66,3 +69,4 @@ def test_duplicate_jobs_save_as_one_row(sources):
     assert len(rows) == 1
     assert rows[0]["other_urls"] == ["https://two.example/job"]
     assert rows[0]["locations"] == ["Berlin", "Remote"]
+    assert rows[0]["remote"] is True

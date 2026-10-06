@@ -10,6 +10,7 @@ import httpx
 
 from jagent.db import connect
 from jagent.models import Posting
+from jagent.sources.jobposting import job_locations, job_remote
 
 LIST_URL = "https://djinni.co/jobs/"
 MAX_BOOTSTRAP_PAGES = 10
@@ -53,6 +54,7 @@ def parse_response(html: str) -> list[Posting]:
             title=title.get_text(" ", strip=True),
             description=description.get_text("\n", strip=True) if description else None,
             posted_at=posted_at,
+            locations=job_locations(job), remote=job_remote(job),
         ))
     return postings
 

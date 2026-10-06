@@ -8,6 +8,7 @@ import pytest
 
 from jagent.models import Posting
 from jagent.sources import djinni, kosovajob, staffal
+from jagent.sources.jobposting import job_locations, job_remote
 
 FIXTURES = Path(__file__).parent / "fixtures"
 CASES = [
@@ -70,3 +71,36 @@ def test_djinni_existing_database_stops_on_first_page(monkeypatch):
     )])
     assert len(djinni.fetch()) == 1
     assert get.call_count == 1
+
+
+def test_json_ld_locations_and_remote_requirements():
+    job = {
+        "jobLocation": [
+            {"address": {"addressLocality": ["Tirane"], "addressCountry": "AL"}},
+            {"address": {"addressLocality": "Berlin", "addressCountry": {"name": "Germany"}}},
+        ],
+        "jobLocationType": "TELECOMMUTE",
+        "applicantLocationRequirements": [
+            {"name": "Europe"}, {"address": {"addressCountry": "POL"}},
+        ],
+    }
+    assert job_locations(job) == ["Tirane", "Albania", "Berlin", "Germany", "Europe", "Poland"]
+    assert job_remote(job) is True
+    assert job_locations({}) == []
+    assert job_locations({}, default=["Albania"]) == ["Albania"]
+    assert job_remote({}) is False
+
+
+def test_staffal_missing_location_defaults_to_albania():
+    posting = Posting(source="staffal", source_id="one", title="One")
+    html = '<script type="application/ld+json">{"@type":"JobPosting","title":"One"}</script>'
+    parsed = staffal.parse_detail(html, posting)
+    assert parsed.locations == ["Albania"]
+    assert parsed.remote is False
+
+
+def test_djinni_fixture_reads_real_json_ld_locations():
+    postings = djinni.parse_response((FIXTURES / "djinni.html").read_text())
+    assert all(isinstance(posting.locations, list) for posting in postings)
+    assert any(posting.locations for posting in postings)
+    assert all(isinstance(posting.remote, bool) for posting in postings)

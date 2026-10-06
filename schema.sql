@@ -22,6 +22,20 @@ ALTER TABLE postings ADD COLUMN IF NOT EXISTS expires_at timestamptz;
 ALTER TABLE postings ADD COLUMN IF NOT EXISTS dedupe_key text;
 ALTER TABLE postings ADD COLUMN IF NOT EXISTS other_urls text[];
 
+CREATE TABLE IF NOT EXISTS ats_companies (
+    platform text,
+    slug text,
+    added_at timestamptz DEFAULT now(),
+    UNIQUE (platform, slug)
+);
+
+CREATE TABLE IF NOT EXISTS profile (
+    id serial PRIMARY KEY,
+    created_at timestamptz DEFAULT now(),
+    text text,
+    filters jsonb
+);
+
 CREATE TABLE IF NOT EXISTS source_runs (
     id serial PRIMARY KEY,
     source text,

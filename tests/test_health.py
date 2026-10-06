@@ -30,3 +30,16 @@ def test_health_cli(monkeypatch, capsys, problems, exit_code):
     monkeypatch.setattr(cli, "check_health", lambda: problems)
     assert cli.main() == exit_code
     assert capsys.readouterr().out == "".join(problem + "\n" for problem in problems)
+
+
+def test_ats_zero_yield_is_healthy_and_errors_are_summarized(monkeypatch):
+    connection = Mock()
+    connection.execute.return_value.fetchall.return_value = [
+        ("ats:ashby:acme", "error", 0, "HTTP 404", 0),
+        ("ats:greenhouse:stripe", "ok", 0, None, 0),
+        ("ats:lever:notion", "error", 0, "HTTP 500", 0),
+    ]
+    monkeypatch.setattr(health, "connect", lambda: nullcontext(connection))
+    assert health.check_health() == [
+        "ats: 2 of 3 boards failed (ashby/acme, lever/notion)"
+    ]

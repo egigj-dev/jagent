@@ -4,7 +4,7 @@ import unicodedata
 
 from jagent.db import connect
 from jagent.sources import (
-    arbeitnow, djinni, himalayas, hn_hiring, jobicy, kosovajob, remoteok,
+    arbeitnow, ats, djinni, himalayas, hn_hiring, jobicy, kosovajob, remoteok,
     remotive, staffal, weworkremotely,
 )
 
@@ -41,7 +41,7 @@ def combined_values(existing, additions, excluded=None):
     return values
 
 
-def save_postings(connection, postings, seen_at):
+def save_postings(connection, postings, seen_at, inserted_postings=None):
     new = 0
     for posting in postings:
         values = posting.model_dump()
@@ -66,6 +66,8 @@ def save_postings(connection, postings, seen_at):
                     UPDATE postings
                     SET other_urls = %(other_urls)s,
                         locations = %(locations)s,
+                        remote = CASE WHEN %(remote)s IS NULL THEN remote
+                                      ELSE COALESCE(remote, false) OR %(remote)s END,
                         last_seen = %(seen_at)s
                     WHERE id = %(id)s
                     """,
@@ -76,6 +78,7 @@ def save_postings(connection, postings, seen_at):
                             canonical_url,
                         ),
                         "locations": combined_values(locations, posting.locations),
+                        "remote": posting.remote,
                         "seen_at": seen_at,
                     },
                 )
@@ -97,6 +100,8 @@ def save_postings(connection, postings, seen_at):
         ).fetchone()
         if inserted:
             new += 1
+            if inserted_postings is not None:
+                inserted_postings.append(posting)
         else:
             connection.execute(
                 """
@@ -174,23 +179,85 @@ def record_run(connection, result):
     )
 
 
+def discover_ats_companies(connection, postings):
+    found = set()
+    for posting in postings:
+        found.update(ats.extract_company_slugs(posting.url or ""))
+        found.update(ats.extract_company_slugs(posting.description or ""))
+    for platform, slug in found:
+        connection.execute(
+            """
+            INSERT INTO ats_companies (platform, slug)
+            VALUES (%s, %s)
+            ON CONFLICT (platform, slug) DO NOTHING
+            """,
+            (platform, slug),
+        )
+
+
+def discover_existing_ats_companies(connection):
+    found = set()
+    for url, description in connection.execute(
+        "SELECT url, description FROM postings"
+    ).fetchall():
+        found.update(ats.extract_company_slugs(url or ""))
+        found.update(ats.extract_company_slugs(description or ""))
+    added = {}
+    for platform, slug in found:
+        inserted = connection.execute(
+            """
+            INSERT INTO ats_companies (platform, slug)
+            VALUES (%s, %s)
+            ON CONFLICT (platform, slug) DO NOTHING
+            RETURNING platform
+            """,
+            (platform, slug),
+        ).fetchone()
+        if inserted:
+            added[platform] = added.get(platform, 0) + 1
+    totals = dict(connection.execute(
+        "SELECT platform, count(*) FROM ats_companies GROUP BY platform"
+    ).fetchall())
+    return added, totals
+
+
+def ats_companies():
+    with connect() as connection:
+        return connection.execute(
+            "SELECT platform, slug FROM ats_companies ORDER BY platform, slug"
+        ).fetchall()
+
+
+def run_fetch(name, fetch):
+    result = dict(source=name, started_at=datetime.now(UTC), status="ok",
+                  fetched=0, new=0, error=None)
+    try:
+        postings = fetch()
+        result["fetched"] = len(postings)
+        with connect() as connection:
+            inserted_postings = []
+            result["new"] = save_postings(
+                connection, postings, datetime.now(UTC), inserted_postings,
+            )
+            if inserted_postings:
+                discover_ats_companies(connection, inserted_postings)
+            result["finished_at"] = datetime.now(UTC)
+            record_run(connection, result)
+    except Exception as error:
+        result.update(status="error", new=0, error=str(error),
+                      finished_at=datetime.now(UTC))
+        with connect() as connection:
+            record_run(connection, result)
+    return result
+
+
 def run(source=None):
     sources = SOURCES if source is None else {source: SOURCES[source]}
-    results = []
-    for name, fetch in sources.items():
-        result = dict(source=name, started_at=datetime.now(UTC), status="ok",
-                      fetched=0, new=0, error=None)
-        try:
-            postings = fetch()
-            result["fetched"] = len(postings)
-            with connect() as connection:
-                result["new"] = save_postings(connection, postings, datetime.now(UTC))
-                result["finished_at"] = datetime.now(UTC)
-                record_run(connection, result)
-        except Exception as error:
-            result.update(status="error", new=0, error=str(error),
-                          finished_at=datetime.now(UTC))
-            with connect() as connection:
-                record_run(connection, result)
-        results.append(result)
+    results = [run_fetch(name, fetch) for name, fetch in sources.items()]
+    if source is None:
+        for platform, slug in ats_companies():
+            results.append(run_fetch(
+                f"ats:{platform}:{slug}",
+                lambda platform=platform, slug=slug: ats.fetch(platform, slug),
+            ))
     return results

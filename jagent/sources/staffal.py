@@ -11,6 +11,7 @@ import httpx
 
 from jagent.db import connect
 from jagent.models import Posting
+from jagent.sources.jobposting import job_locations, job_remote
 
 LIST_URL = "https://staff.al/sq/job-list"
 SITEMAP_URL = "https://staff.al/sitemap.xml"
@@ -35,6 +36,7 @@ def parse_response(html: str) -> list[Posting]:
             title=title.get_text(" ", strip=True),
             company=company.get_text(" ", strip=True) if company else None,
             description=description.get_text("\n", strip=True) if description else None,
+            locations=["Albania"], remote=False,
         ))
     return postings
 
@@ -53,6 +55,7 @@ def parse_sitemap(xml: str) -> list[Posting]:
         postings.append(Posting(
             source="staffal", source_id=match.group(1), url=url, title=title,
             company=None,
+            locations=["Albania"], remote=False,
         ))
     return postings
 
@@ -90,9 +93,13 @@ def parse_detail(html: str, posting: Posting) -> Posting:
             "description": job.get("description"),
             "posted_at": posted_at,
             "expires_at": expires_at,
+            "locations": job_locations(job, default=["Albania"]),
+            "remote": job_remote(job),
         })
     return posting.model_copy(update={
         "title": soup.title.get_text(" ", strip=True) if soup.title else posting.title,
+        "locations": posting.locations or ["Albania"],
+        "remote": False,
     })
 
 
@@ -101,7 +108,8 @@ def complete_source_ids() -> set[str]:
         return {row[0] for row in connection.execute(
             "SELECT source_id FROM postings "
             "WHERE source = 'staffal' AND posted_at IS NOT NULL "
-            "AND expires_at IS NOT NULL"
+            "AND expires_at IS NOT NULL AND remote IS NOT NULL "
+            "AND cardinality(locations) > 0"
         )}
 
 

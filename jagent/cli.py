@@ -4,6 +4,8 @@ from pathlib import Path
 
 from jagent.db import connect
 from jagent.health import check_health
+from jagent.filters import filter_report
+from jagent.profile import set_profile
 from jagent.runner import SOURCES, backfill_dedupe, run
 
 
@@ -12,9 +14,22 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("init-db", help="Create the database tables if absent")
     commands.add_parser("health", help="Check the latest source runs for problems")
+    commands.add_parser("filter-report", help="Report active postings passing profile filters")
+    profile_parser = commands.add_parser("profile", help="Store profile versions")
+    profile_commands = profile_parser.add_subparsers(dest="profile_command", required=True)
+    profile_set = profile_commands.add_parser("set", help="Store a new active profile version")
+    profile_set.add_argument("text_path")
+    profile_set.add_argument("filters_path")
     run_parser = commands.add_parser("run", help="Fetch and store job postings")
     run_parser.add_argument("--source", choices=sorted(SOURCES))
     args = parser.parse_args()
+    if args.command == "profile":
+        profile_id = set_profile(args.text_path, args.filters_path)
+        print(f"Profile version {profile_id} is active.")
+        return 0
+    if args.command == "filter-report":
+        filter_report()
+        return 0
     if args.command == "health":
         problems = check_health()
         for problem in problems:
