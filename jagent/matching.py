@@ -11,6 +11,9 @@ from jagent.embeddings import embed, embedding_settings, vector_text
 from jagent.filters import passing_postings
 from jagent.profile import active_profile
 
+QUEUE_MIN_PERCENTILE = 97
+QUEUE_MIN_SIMILARITY = 0.55
+
 
 def posting_text(posting):
     description = BeautifulSoup(posting["description"] or "", "html.parser").get_text(" ", strip=True)
@@ -95,14 +98,15 @@ def score_postings(connection, passing_ids, profile_id, model, now):
         INSERT INTO matches
             (posting_id, profile_id, similarity, matched_section, percentile, queued)
         SELECT posting_id, %(profile_id)s, similarity, matched_section, percentile,
-               percentile >= 90
+               percentile >= %(min_percentile)s AND similarity >= %(min_similarity)s
         FROM ranked
         ON CONFLICT (posting_id, profile_id) DO UPDATE
         SET similarity = EXCLUDED.similarity, matched_section = EXCLUDED.matched_section,
             percentile = EXCLUDED.percentile, queued = EXCLUDED.queued
         RETURNING posting_id, queued
         """,
-        {"ids": passing_ids, "profile_id": profile_id, "model": model, "now": now},
+        {"ids": passing_ids, "profile_id": profile_id, "model": model, "now": now,
+         "min_percentile": QUEUE_MIN_PERCENTILE, "min_similarity": QUEUE_MIN_SIMILARITY},
     ).fetchall()
     return len(rows), sum(queued for _, queued in rows)
 

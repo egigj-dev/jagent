@@ -1,12 +1,14 @@
 # Runner isolation test; recorded holds audit rows from failed and successful sources.
 from contextlib import nullcontext
 from datetime import UTC, datetime
+import os
 from unittest.mock import Mock
 
 import pytest
 
 from jagent import runner
 from jagent.models import Posting
+from jagent.db import connect
 
 
 def test_failing_source_does_not_stop_others(monkeypatch):
@@ -70,3 +72,39 @@ def test_duplicate_jobs_save_as_one_row(sources):
     assert rows[0]["other_urls"] == ["https://two.example/job"]
     assert rows[0]["locations"] == ["Berlin", "Remote"]
     assert rows[0]["remote"] is True
+
+
+@pytest.mark.parametrize("existing_remote", [None, False, True])
+def test_duplicate_with_null_remote_in_postgres(existing_remote):
+    if os.environ.get("JAGENT_TEST_POSTGRES") != "1":
+        pytest.skip("Set JAGENT_TEST_POSTGRES=1 to test persistence in a temporary table")
+    with connect() as connection:
+        connection.execute("""
+            CREATE TEMP TABLE postings (
+                id serial PRIMARY KEY, source text, source_id text, url text,
+                company text, title text, locations text[], remote bool,
+                posted_at timestamptz, expires_at timestamptz, dedupe_key text,
+                other_urls text[], description text, first_seen timestamptz,
+                last_seen timestamptz, UNIQUE(source, source_id)
+            )
+        """)
+        first = Posting(
+            source="hn_hiring", source_id="49922593",
+            company="Shepherd (Series B)", title="ONSITE",
+            url="https://news.ycombinator.com/item?id=49922593",
+            locations=["London"], remote=existing_remote,
+        )
+        duplicate = first.model_copy(update={
+            "source_id": "duplicate", "url": "https://example.com/job",
+            "locations": ["Berlin"], "remote": None,
+        })
+        first_seen = datetime(2026, 10, 11, tzinfo=UTC)
+        last_seen = datetime(2026, 10, 12, tzinfo=UTC)
+        assert runner.save_postings(connection, [first], first_seen) == 1
+        assert runner.save_postings(connection, [duplicate], last_seen) == 0
+        assert connection.execute(
+            "SELECT remote, other_urls, locations, first_seen, last_seen FROM postings"
+        ).fetchall() == [(
+            existing_remote, [duplicate.url], ["London", "Berlin"],
+            first_seen, last_seen,
+        )]

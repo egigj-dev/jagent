@@ -28,6 +28,8 @@ ALTER TABLE postings ADD COLUMN IF NOT EXISTS other_urls text[];
 ALTER TABLE postings ADD COLUMN IF NOT EXISTS embedding vector;
 ALTER TABLE postings ADD COLUMN IF NOT EXISTS embedding_model text;
 
+CREATE INDEX IF NOT EXISTS postings_dedupe_key_idx ON postings (dedupe_key);
+
 CREATE TABLE IF NOT EXISTS ats_companies (
     platform text,
     slug text,

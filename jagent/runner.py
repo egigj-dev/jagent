@@ -66,7 +66,7 @@ def save_postings(connection, postings, seen_at, inserted_postings=None):
                     UPDATE postings
                     SET other_urls = %(other_urls)s,
                         locations = %(locations)s,
-                        remote = CASE WHEN %(remote)s IS NULL THEN remote
+                        remote = CASE WHEN %(remote)s::boolean IS NULL THEN remote
                                       ELSE COALESCE(remote, false) OR %(remote)s END,
                         last_seen = %(seen_at)s
                     WHERE id = %(id)s

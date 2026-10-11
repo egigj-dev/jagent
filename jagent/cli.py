@@ -27,9 +27,13 @@ def main():
     args = parser.parse_args()
     if args.command == "match":
         try:
-            match()
+            result = match()
         except ValueError as error:
             print(str(error))
+            return 1
+        if result["skipped"]:
+            print(f"Match incomplete: {result['skipped']} embeddings were skipped after batch failures. "
+                  "Exiting with code 1; rerun match to retry them.")
             return 1
         return 0
     if args.command == "profile":

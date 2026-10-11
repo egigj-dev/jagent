@@ -2,6 +2,7 @@
 from contextlib import nullcontext
 from datetime import UTC, datetime, timedelta
 import os
+from pathlib import Path
 from unittest.mock import MagicMock, Mock
 
 import pytest
@@ -79,7 +80,7 @@ def ranking_db(monkeypatch):
         CREATE TEMP TABLE postings (
           id int, title text, company text, locations text[], remote bool, description text,
           expires_at timestamptz, posted_at timestamptz, first_seen timestamptz,
-          embedding vector, embedding_model text);
+          embedding vector, embedding_model text, dedupe_key text);
         CREATE TEMP TABLE matches (
           posting_id int, profile_id int, similarity double precision, matched_section text,
           percentile double precision, queued bool, created_at timestamptz DEFAULT now(),
@@ -144,8 +145,42 @@ def test_failed_posting_batch_is_picked_up_next_run(ranking_db):
 
 
 def test_match_cli(monkeypatch):
-    run_match = Mock()
+    run_match = Mock(return_value={"skipped": 0})
     monkeypatch.setattr(cli, "match", run_match)
     monkeypatch.setattr("sys.argv", ["jagent", "match"])
     assert cli.main() == 0
     run_match.assert_called_once_with()
+
+
+def test_match_cli_exits_nonzero_when_a_batch_is_skipped(monkeypatch, capsys):
+    monkeypatch.setattr(cli, "match", lambda: {"skipped": 100})
+    monkeypatch.setattr("sys.argv", ["jagent", "match"])
+    assert cli.main() == 1
+    assert "Match incomplete: 100 embeddings were skipped" in capsys.readouterr().out
+
+
+def test_queue_thresholds_require_both_percentile_and_similarity(ranking_db):
+    assert matching.QUEUE_MIN_PERCENTILE == 97
+    assert matching.QUEUE_MIN_SIMILARITY == 0.55
+    ranking_db.execute("UPDATE profile_sections SET embedding='[1,0]', embedding_model='fake' WHERE id=1")
+    ranking_db.execute("UPDATE postings SET embedding='[0,1]',embedding_model='fake'")
+    # The strongest score has percentile 100 but similarity .5, so must not queue.
+    ranking_db.execute("UPDATE postings SET embedding='[0.5,0.8660254]' WHERE id=1")
+    assert matching.score_postings(ranking_db, [1,2,3], 1, "fake", datetime.now(UTC)) == (3,0)
+    # A strong score can still miss the percentile threshold; only the highest queues.
+    ranking_db.execute("UPDATE postings SET embedding='[1,0]' WHERE id=1")
+    ranking_db.execute("UPDATE postings SET embedding='[0.8,0.6]' WHERE id=2")
+    assert matching.score_postings(ranking_db, [1,2,3], 1, "fake", datetime.now(UTC)) == (3,1)
+    assert ranking_db.execute("SELECT queued FROM matches WHERE posting_id=2").fetchone() == (False,)
+
+
+def test_dedupe_index_is_non_unique_and_idempotent(ranking_db):
+    schema = (Path(__file__).resolve().parent.parent / "schema.sql").read_text()
+    statement = next(line for line in schema.splitlines() if line.startswith("CREATE INDEX IF NOT EXISTS postings_dedupe_key_idx"))
+    ranking_db.execute(statement)
+    ranking_db.execute(statement)
+    assert ranking_db.execute(
+        "SELECT i.indisunique, pg_get_indexdef(i.indexrelid, 1, true) "
+        "FROM pg_index i JOIN pg_class c ON c.oid=i.indexrelid "
+        "WHERE i.indrelid='pg_temp.postings'::regclass AND c.relname='postings_dedupe_key_idx'"
+    ).fetchone() == (False, "dedupe_key")
