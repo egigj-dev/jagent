@@ -74,3 +74,16 @@ CREATE TABLE IF NOT EXISTS source_runs (
     new int,
     error text
 );
+
+CREATE TABLE IF NOT EXISTS posting_analysis (
+    posting_id int PRIMARY KEY REFERENCES postings(id),
+    seniority text,
+    required_languages text[],
+    employment_types text[],
+    salary jsonb,
+    evidence jsonb,
+    model text,
+    analyzed_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE matches ADD COLUMN IF NOT EXISTS explanation text;
