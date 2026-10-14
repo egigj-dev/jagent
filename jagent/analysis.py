@@ -16,6 +16,12 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_valida
 from jagent.db import connect
 from jagent.profile import active_profile
 
+REQUEST_PAUSE_SECONDS = 1.5
+
+
+class EvidenceError(ValueError):
+    pass
+
 
 class Salary(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
@@ -114,7 +120,7 @@ def error_type(error):
         return f"http_{error.response.status_code}"
     if isinstance(error, ValidationError):
         return "validation:" + ",".join(sorted({item["type"] for item in error.errors()}))
-    if isinstance(error, ValueError) and str(error).startswith("Evidence is not a verbatim"):
+    if isinstance(error, EvidenceError):
         return "non_verbatim_evidence"
     return type(error).__name__
 
@@ -124,6 +130,7 @@ def analyze(llm_fn=None, settings=None):
     model = settings["LLM_MODEL"]
     analyzed = failures = tokens = 0
     failure_types = Counter()
+    requested = False
     with connect() as connection:
         profile = active_profile(connection)
         if profile is None:
@@ -143,6 +150,9 @@ def analyze(llm_fn=None, settings=None):
             feedback = None
             for attempt in range(2):
                 try:
+                    if requested:
+                        time.sleep(REQUEST_PAUSE_SECONDS)
+                    requested = True
                     content, used_tokens = (llm_fn(job, profile_text) if llm_fn else
                                             chat(job, profile_text, settings, feedback))
                     tokens += used_tokens
@@ -151,10 +161,10 @@ def analyze(llm_fn=None, settings=None):
                                              *job["locations"], job["description"]])
                     if any(quote and " ".join(quote.split()) not in " ".join(posting_text.split())
                            for quote in candidate.evidence.values()):
-                        raise ValueError("Evidence is not a verbatim posting quote")
+                        raise EvidenceError("Evidence is not a verbatim posting quote")
                     result = candidate
                     break
-                except Exception as error:
+                except (httpx.HTTPError, ValidationError, json.JSONDecodeError, EvidenceError) as error:
                     # Provider errors can contain credentials; never print their content.
                     kind = error_type(error)
                     feedback = (f"Previous response failed ({kind}). Return valid JSON with the exact "

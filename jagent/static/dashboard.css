@@ -1,0 +1,29 @@
+/* Dashboard presentation; cards hold jobs, actions hold decisions, and the media query adapts to phones. */
+:root { font-family: system-ui, sans-serif; color: #18263a; background: #f2f5f8; line-height: 1.5; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+header { background: #fff; border-bottom: 1px solid #dce3eb; padding: 1rem max(1rem, calc((100% - 920px)/2)); display: flex; align-items: center; gap: 2rem; }
+a { color: #1654a3; overflow-wrap: anywhere; }
+.brand { font-weight: 750; font-size: 1.4rem; text-decoration: none; color: #18263a; }
+nav { display: flex; gap: 1.2rem; }
+nav a { text-decoration: none; padding: .3rem 0; }
+nav a[aria-current] { font-weight: 700; border-bottom: 2px solid #1654a3; }
+main { max-width: 920px; margin: auto; padding: 1rem; }
+h1 { margin: .7rem 0 1rem; } h2 { font-size: 1.25rem; margin: 0 0 .4rem; }
+.card { background: #fff; border: 1px solid #dce3eb; border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
+.company { font-weight: 650; } .muted { color: #526477; }
+.badge { display: inline-block; padding: .15rem .55rem; background: #e9eff7; border-radius: 6px; font-size: .8rem; font-weight: 500; }
+.deadline-urgent { background: #fff0cf; color: #853c00; font-weight: 700; }
+dl { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem 1rem; }
+dt { font-size: .8rem; color: #526477; } dd { margin: 0; overflow-wrap: anywhere; }
+.links { display: flex; flex-wrap: wrap; gap: 1rem; margin: 1rem 0; }
+label { display: block; font-size: .9rem; margin: .7rem 0 .3rem; }
+textarea, select { width: 100%; border: 1px solid #b7c4d3; border-radius: 6px; padding: .65rem; font: inherit; background: #fff; }
+textarea { resize: vertical; }
+button { background: #1654a3; color: #fff; border: 1px solid #1654a3; border-radius: 6px; font: inherit; padding: .65rem 1rem; cursor: pointer; min-height: 44px; }
+button.secondary { background: #fff; color: #1654a3; }
+button:hover { filter: brightness(.93); }
+.actions { display: flex; gap: .6rem; margin-top: .8rem; }
+#view-controls { display: flex; flex-wrap: wrap; gap: .5rem 1rem; align-items: center; }
+#view-controls label { margin: 0; } input[type=checkbox] { accent-color: #1654a3; width: 18px; height: 18px; vertical-align: middle; }
+@media (max-width: 560px) { header { gap: 1rem; padding: .8rem; } nav { gap: .8rem; } main { padding: .8rem; } .card { padding: 1rem; } dl { grid-template-columns: 1fr; } .actions button { flex: 1; padding: .6rem; } #view-controls { display: block; } #view-controls label { padding: .4rem 0; } }

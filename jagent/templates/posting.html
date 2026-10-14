@@ -1,0 +1,26 @@
+<!-- Posting details; p contains the job, matching score, analysis and external links. -->
+<h2>{{ p.title or 'Untitled posting' }}</h2>
+<p class="company">{{ p.company or 'Company not stated' }} <span class="badge">{{ p.source }}</span></p>
+<p>{{ (p.locations or [])|join(' · ') or 'Location not stated' }}</p>
+{% set remaining = p.expires_at|days_left %}
+{% if remaining is not none %}<p class="badge{% if remaining <= 3 %} deadline-urgent{% endif %}">{{ remaining }} days left</p>{% endif %}
+<dl>
+  <div><dt>Posted</dt><dd>{{ p.posted_at.strftime('%Y-%m-%d') if p.posted_at else 'Not stated' }}</dd></div>
+  <div><dt>Expires</dt><dd>{{ p.expires_at.strftime('%Y-%m-%d') if p.expires_at else 'Not stated' }}</dd></div>
+  <div><dt>Similarity</dt><dd>{{ '%.3f'|format(p.similarity) if p.similarity is not none else '—' }}</dd></div>
+  <div><dt>Matched section</dt><dd>{{ p.matched_section or '—' }}</dd></div>
+</dl>
+{% if p.analyzed %}
+<p>{{ p.explanation or 'Explanation not available for this profile.' }}</p>
+<dl>
+  <div><dt>Seniority</dt><dd>{{ p.seniority }}</dd></div>
+  <div><dt>Required languages</dt><dd>{{ 'Unclear' if p.required_languages is none else (p.required_languages|join(', ') or 'None stated') }}</dd></div>
+  <div><dt>Employment</dt><dd>{{ (p.employment_types or [])|join(', ')|replace('_',' ') or 'Not stated' }}</dd></div>
+  <div><dt>Salary</dt><dd>{% if p.salary %}{{ p.salary.min if p.salary.min is not none else '?' }}–{{ p.salary.max if p.salary.max is not none else '?' }} {{ p.salary.currency or '' }} {{ (' / ' ~ p.salary.period) if p.salary.period else '' }}{% else %}Not stated{% endif %}</dd></div>
+</dl>
+{% endif %}
+<div class="links">
+  {% for url in [p.url] + (p.other_urls or []) %}{% if url and (url.startswith('https://') or url.startswith('http://')) %}
+  <a href="{{ url }}" target="_blank" rel="noopener noreferrer">{{ 'Job posting' if loop.first else 'Other listing ' ~ loop.index }}</a>
+  {% endif %}{% endfor %}
+</div>

@@ -87,3 +87,12 @@ CREATE TABLE IF NOT EXISTS posting_analysis (
 );
 
 ALTER TABLE matches ADD COLUMN IF NOT EXISTS explanation text;
+
+CREATE TABLE IF NOT EXISTS reviews (
+    posting_id int PRIMARY KEY REFERENCES postings(id),
+    action text NOT NULL CHECK (action IN ('apply', 'skip', 'later')),
+    reason text CHECK (reason IN ('too_senior', 'language', 'location', 'contract', 'salary', 'irrelevant', 'other')),
+    note text,
+    decided_at timestamptz NOT NULL DEFAULT now(),
+    CHECK (action <> 'skip' OR reason IS NOT NULL)
+);

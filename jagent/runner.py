@@ -4,7 +4,7 @@ import unicodedata
 
 from jagent.db import connect
 from jagent.sources import (
-    arbeitnow, ats, djinni, himalayas, hn_hiring, jobicy, kosovajob, remoteok,
+    arbeitnow, ats, djinni, duapune, himalayas, hn_hiring, jobicy, kosovajob, remoteok,
     remotive, staffal, weworkremotely,
 )
 
@@ -19,6 +19,7 @@ SOURCES = {
     "staffal": staffal.fetch,
     "kosovajob": kosovajob.fetch,
     "djinni": djinni.fetch,
+    "duapune": duapune.fetch,
 }
 
 

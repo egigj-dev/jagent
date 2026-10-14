@@ -69,6 +69,7 @@ def test_description_html_removal_and_limit():
 def analysis_db(monkeypatch):
     if os.environ.get("JAGENT_TEST_POSTGRES") != "1":
         pytest.skip("Set JAGENT_TEST_POSTGRES=1 to test analysis in temporary tables")
+    monkeypatch.setattr(analysis.time, "sleep", Mock())
     with connect() as connection:
         connection.execute("""
             CREATE TEMP TABLE profile (id int, text text, filters jsonb);
@@ -136,7 +137,7 @@ def test_fabricated_evidence_retries_then_validates(analysis_db):
 
 
 def test_provider_errors_do_not_print_key(analysis_db, capsys):
-    fake = Mock(side_effect=RuntimeError("fake-api-key"))
+    fake = Mock(side_effect=analysis.httpx.ReadTimeout("fake-api-key"))
     assert analysis.analyze(fake, {"LLM_MODEL": "fake"})["failures"] == 1
     assert "fake-api-key" not in capsys.readouterr().out
 
@@ -161,7 +162,7 @@ def test_rate_limit_waits_before_retry(analysis_db, monkeypatch):
     sleep = Mock()
     monkeypatch.setattr(analysis.time, "sleep", sleep)
     assert analysis.analyze(fake, {"LLM_MODEL": "fake"})["failures"] == 0
-    sleep.assert_called_once_with(12)
+    assert [call.args for call in sleep.call_args_list] == [(12,), (1.5,)]
 
 
 def test_verbatim_quote_whitespace(analysis_db):
@@ -189,3 +190,34 @@ def test_remaining_errors_grouped_by_type(analysis_db, capsys):
     output = capsys.readouterr().out
     assert 'remaining errors by type: {"http_403": 1, "validation:json_invalid": 1}' in output
     assert "Failure rate: 100.0%" in output and "fake-api-key" not in output
+
+
+@pytest.mark.parametrize("stage", ["request", "backoff", "pacing"])
+def test_keyboard_interrupt_propagates_from_retry_loop(analysis_db, monkeypatch, stage):
+    if stage == "backoff":
+        response = analysis.httpx.Response(429, request=analysis.httpx.Request(
+            "POST", "https://example.invalid/v1/chat/completions"))
+        first = analysis.httpx.HTTPStatusError("rate limited", request=response.request, response=response)
+    elif stage == "pacing":
+        first = ("invalid JSON", 2)
+    else:
+        first = KeyboardInterrupt()
+    fake = Mock(side_effect=[first, AssertionError("Must not retry after interruption")])
+    monkeypatch.setattr(analysis.time, "sleep", Mock(side_effect=KeyboardInterrupt))
+    with pytest.raises(KeyboardInterrupt):
+        analysis.analyze(fake, {"LLM_MODEL": "fake"})
+    assert fake.call_count == 1
+
+
+def test_unexpected_errors_propagate(analysis_db):
+    with pytest.raises(RuntimeError, match="unexpected bug"):
+        analysis.analyze(Mock(side_effect=RuntimeError("unexpected bug")), {"LLM_MODEL": "fake"})
+
+
+def test_pause_between_postings(analysis_db):
+    analysis_db.execute("UPDATE matches SET queued=true WHERE posting_id=2")
+    unstated = facts(seniority="unknown", required_languages=[], employment_types=None,
+                    salary=None, evidence={})
+    fake = Mock(return_value=(json.dumps(unstated), 7))
+    assert analysis.analyze(fake, {"LLM_MODEL": "fake"})["analyzed"] == 2
+    analysis.time.sleep.assert_called_once_with(1.5)

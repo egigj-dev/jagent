@@ -19,6 +19,7 @@ def main():
     commands.add_parser("filter-report", help="Report active postings passing profile filters")
     commands.add_parser("match", help="Embed and rank postings against the active profile")
     commands.add_parser("analyze", help="Extract job facts and explain queued matches")
+    commands.add_parser("serve", help="Serve the review dashboard on 127.0.0.1:8000")
     profile_parser = commands.add_parser("profile", help="Store profile versions")
     profile_commands = profile_parser.add_subparsers(dest="profile_command", required=True)
     profile_set = profile_commands.add_parser("set", help="Store a new active profile version")
@@ -27,6 +28,10 @@ def main():
     run_parser = commands.add_parser("run", help="Fetch and store job postings")
     run_parser.add_argument("--source", choices=sorted(SOURCES))
     args = parser.parse_args()
+    if args.command == "serve":
+        import uvicorn
+        uvicorn.run("jagent.dashboard:app", host="127.0.0.1", port=8000)
+        return 0
     if args.command == "analyze":
         try:
             result = analyze()

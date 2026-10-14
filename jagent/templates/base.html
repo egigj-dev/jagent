@@ -1,0 +1,19 @@
+<!-- Dashboard shell; page selects the heading and active navigation link. -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page }} · jagent</title>
+  <link rel="stylesheet" href="/static/dashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous" defer></script>
+</head>
+<body>
+  <header><a class="brand" href="/">jagent</a><nav aria-label="Main navigation">
+    {% for label, url in [('Queue','/'),('Filters','/filters'),('Applied','/applied')] %}
+    <a href="{{ url }}" {% if page == label %}aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav></header>
+  <main><h1>{{ page }}</h1>{% block content %}{% endblock %}</main>
+</body>
+</html>

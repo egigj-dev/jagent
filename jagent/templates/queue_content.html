@@ -1,0 +1,27 @@
+<!-- Queue fragment; postings are visible cards and total counts cards before view toggles. -->
+<section id="queue-content" aria-live="polite">
+  <p class="muted">{{ postings|length }} shown · {{ total }} in queue</p>
+  {% for p in postings %}
+  <article class="card" id="posting-{{ p.id }}">
+    {% include "posting.html" %}
+    {% if p.action == 'later' %}<p class="badge">Later</p>{% endif %}
+    <form method="post" action="/reviews/{{ p.id }}" hx-post="/reviews/{{ p.id }}" hx-target="#queue-content" hx-swap="outerHTML" hx-include="#view-controls">
+      <input type="hidden" name="sort" value="{{ sort }}">
+      <input type="hidden" name="views" value="1">
+      {% for key, enabled in views.items() %}{% if enabled %}<input type="hidden" name="{{ key }}" value="1">{% endif %}{% endfor %}
+      <label for="reason-{{ p.id }}">Reason for Skip</label>
+      <select name="reason" id="reason-{{ p.id }}" onchange="this.setCustomValidity('')">
+        <option value="">Choose a reason</option>
+        {% for reason in reasons %}<option value="{{ reason }}">{{ reason|replace('_',' ') }}</option>{% endfor %}
+      </select>
+      <label for="note-{{ p.id }}">Optional note</label>
+      <textarea name="note" id="note-{{ p.id }}" rows="2">{{ p.note or '' }}</textarea>
+      <div class="actions">
+        <button name="action" value="apply" onclick="this.form.elements.reason.setCustomValidity('')">Apply</button>
+        <button class="secondary" name="action" value="skip" onclick="const reason=this.form.elements.reason; if(!reason.value){reason.setCustomValidity('Choose a reason for Skip');reason.reportValidity();return false;}reason.setCustomValidity('');">Skip</button>
+        <button class="secondary" name="action" value="later" onclick="this.form.elements.reason.setCustomValidity('')">Later</button>
+      </div>
+    </form>
+  </article>
+  {% else %}<p>No postings in this view. Try turning off a view toggle.</p>{% endfor %}
+</section>

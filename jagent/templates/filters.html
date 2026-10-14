@@ -1,0 +1,12 @@
+{# Filter editor; filters supplies current terms and filter_keys defines editable comma-separated lists. #}
+{% extends "base.html" %}
+{% block content %}
+<form class="card" method="post" action="/filters">
+  <p>Edit each list using commas. Saving keeps your profile text and creates a new version.</p>
+  {% for key in filter_keys %}
+  <label for="{{ key }}">{{ key|replace('_',' ')|capitalize }}</label>
+  <textarea id="{{ key }}" name="{{ key }}" rows="4">{{ filters[key]|join(', ') }}</textarea>
+  {% endfor %}
+  <button type="submit">Save filters and update queue</button>
+</form>
+{% endblock %}
