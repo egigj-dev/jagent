@@ -1,0 +1,11 @@
+# Daily schedule; OnCalendar uses Tirane time and Persistent catches missed runs after reboot.
+[Unit]
+Description=Run Jagent daily at 07:00 Europe/Tirane
+
+[Timer]
+OnCalendar=*-*-* 07:00 Europe/Tirane
+Persistent=true
+Unit=jagent.service
+
+[Install]
+WantedBy=timers.target

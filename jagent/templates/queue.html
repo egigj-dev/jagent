@@ -1,6 +1,7 @@
 {# Queue page; views contains the three display-only toggles. #}
 {% extends "base.html" %}
 {% block content %}
+{% include "health_banner.html" %}
 <form id="view-controls" method="get" action="/" hx-get="/" hx-trigger="change" hx-target="#queue-content" hx-swap="outerHTML">
   <input type="hidden" name="views" value="1">
   {% for key, label in [('hide_senior','Hide senior / lead'),('hide_languages','Hide other required languages'),('hide_contract','Hide freelance / contract / equity only')] %}

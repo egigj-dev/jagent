@@ -142,11 +142,15 @@ def test_provider_errors_do_not_print_key(analysis_db, capsys):
     assert "fake-api-key" not in capsys.readouterr().out
 
 
-@pytest.mark.parametrize("failures", [0, 1])
-def test_analyze_cli(monkeypatch, failures):
-    monkeypatch.setattr(cli, "analyze", lambda: {"failures": failures})
+@pytest.mark.parametrize("analyzed,failures,exit_code", [
+    (82, 1, 0), (8, 2, 1), (0, 3, 1), (9, 1, 0), (89, 11, 1),
+    (0, 0, 0), (83, 0, 0),
+])
+def test_analyze_cli(monkeypatch, capsys, analyzed, failures, exit_code):
+    monkeypatch.setattr(cli, "analyze", lambda: {"analyzed": analyzed, "failures": failures})
     monkeypatch.setattr("sys.argv", ["jagent", "analyze"])
-    assert cli.main() == failures
+    assert cli.main() == exit_code
+    assert capsys.readouterr().out == (f"warning: {failures} retried next run\n" if failures else "")
 
 
 @pytest.mark.parametrize("fence", ["```json", "```", "```JSON"])

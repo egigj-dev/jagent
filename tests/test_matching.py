@@ -118,7 +118,8 @@ def test_real_sql_ranking_and_model_cache(ranking_db, capsys):
     settings = {"EMBEDDINGS_MODEL": "fake-v1"}
     result = matching.match(fake_embed, settings)
     assert result == {"sections_embedded": 2, "postings_embedded": 3, "scored": 3,
-                      "queued": 1, "tokens": 15, "skipped": 0}
+                      "queued": 1, "tokens": 15, "skipped": 0,
+                      "batches_attempted": 2, "batches_skipped": 0}
     rows = ranking_db.execute(
         "SELECT posting_id,similarity,matched_section,percentile,queued FROM matches ORDER BY posting_id"
     ).fetchall()
@@ -129,6 +130,7 @@ def test_real_sql_ranking_and_model_cache(ranking_db, capsys):
     assert "Engineering: 1" in capsys.readouterr().out
     cached = matching.match(Mock(side_effect=AssertionError("Cached rows must not re-embed")), settings)
     assert cached["postings_embedded"] == cached["sections_embedded"] == cached["tokens"] == 0
+    assert cached["batches_attempted"] == cached["batches_skipped"] == 0
     changed = matching.match(fake_embed, {"EMBEDDINGS_MODEL": "fake-v2"})
     assert changed["sections_embedded"] == 2 and changed["postings_embedded"] == 3
     assert ranking_db.execute("SELECT count(*) FROM matches").fetchone()[0] == 3
@@ -139,24 +141,31 @@ def test_failed_posting_batch_is_picked_up_next_run(ranking_db):
     settings = {"EMBEDDINGS_MODEL": "fake"}
     first = matching.match(fake, settings)
     assert first["skipped"] == 3 and first["scored"] == 0
+    assert first["batches_attempted"] == 2 and first["batches_skipped"] == 1
     second = matching.match(fake_embed, settings)
     assert second["sections_embedded"] == 0 and second["postings_embedded"] == 3
     assert second["scored"] == 3
 
 
 def test_match_cli(monkeypatch):
-    run_match = Mock(return_value={"skipped": 0})
+    run_match = Mock(return_value={"batches_skipped": 0, "batches_attempted": 0})
     monkeypatch.setattr(cli, "match", run_match)
     monkeypatch.setattr("sys.argv", ["jagent", "match"])
     assert cli.main() == 0
     run_match.assert_called_once_with()
 
 
-def test_match_cli_exits_nonzero_when_a_batch_is_skipped(monkeypatch, capsys):
-    monkeypatch.setattr(cli, "match", lambda: {"skipped": 100})
+@pytest.mark.parametrize("attempted,skipped,exit_code", [
+    (83, 1, 0), (10, 2, 1), (3, 3, 1), (10, 1, 0), (100, 11, 1),
+    (0, 0, 0), (83, 0, 0),
+])
+def test_match_cli_failure_rate(monkeypatch, capsys, attempted, skipped, exit_code):
+    monkeypatch.setattr(cli, "match", lambda: {
+        "batches_skipped": skipped, "batches_attempted": attempted,
+    })
     monkeypatch.setattr("sys.argv", ["jagent", "match"])
-    assert cli.main() == 1
-    assert "Match incomplete: 100 embeddings were skipped" in capsys.readouterr().out
+    assert cli.main() == exit_code
+    assert capsys.readouterr().out == (f"warning: {skipped} retried next run\n" if skipped else "")
 
 
 def test_queue_thresholds_require_both_percentile_and_similarity(ranking_db):
@@ -184,3 +193,30 @@ def test_dedupe_index_is_non_unique_and_idempotent(ranking_db):
         "FROM pg_index i JOIN pg_class c ON c.oid=i.indexrelid "
         "WHERE i.indrelid='pg_temp.postings'::regclass AND c.relname='postings_dedupe_key_idx'"
     ).fetchone() == (False, "dedupe_key")
+
+
+@pytest.mark.parametrize("failed_table", ["profile_sections", "postings"])
+def test_match_counts_partial_failed_batches(ranking_db, monkeypatch, failed_table):
+    # A failed single-row tail is one of two posting batches, not one of 101 requests.
+    ranking_db.execute("DELETE FROM postings")
+    ranking_db.execute("""
+        INSERT INTO postings (id,title,company,locations,remote,description,first_seen)
+        SELECT id,'Engineer','Acme','{Albania}',false,'description',now()
+        FROM generate_series(1,101) AS id
+    """)
+    calls = 0
+
+    def embed(texts):
+        nonlocal calls
+        calls += 1
+        if failed_table == "profile_sections" and texts[0].startswith("Engineering"):
+            raise RuntimeError("Unavailable")
+        if failed_table == "postings" and len(texts) == 1:
+            raise RuntimeError("Unavailable")
+        return [[1, 0] for _ in texts], 0
+
+    result = matching.match(embed, {"EMBEDDINGS_MODEL": "fake"})
+    assert calls == 4  # Three batches, with one retried request.
+    assert result["batches_attempted"] == 3
+    assert result["batches_skipped"] == 1
+    assert result["skipped"] == (2 if failed_table == "profile_sections" else 1)

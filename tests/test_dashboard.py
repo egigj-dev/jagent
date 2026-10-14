@@ -170,3 +170,29 @@ def test_duapune_card_days_left_and_closing_soon(client, dashboard_db, monkeypat
     assert 'sort=closing_soon' in str(response.url)
     response = client.get('/?views=1&sort=closing_soon', headers={'HX-Request': 'true'})
     assert response.text.index('id="posting-3"') < response.text.index('id="posting-1"')
+
+
+@pytest.mark.parametrize('htmx', [False, True])
+@pytest.mark.parametrize('problems', [[], [
+    'duapune: stale (latest run older than 36 hours)',
+    'sample: status=error (<unavailable>)',
+]])
+def test_queue_health_banner(monkeypatch, htmx, problems):
+    health_check = Mock(return_value=problems)
+    monkeypatch.setattr(dashboard, 'check_health', health_check)
+    monkeypatch.setattr(dashboard, 'connect', lambda: nullcontext(None))
+    monkeypatch.setattr(dashboard, 'postings_for_page', lambda *args, **kwargs: [])
+    with TestClient(dashboard.app) as client:
+        response = client.get('/', headers={'HX-Request': 'true'} if htmx else {})
+    assert response.status_code == 200
+    health_check.assert_called_once_with()
+    assert ('role="alert"' in response.text) == bool(problems)
+    if problems:
+        assert problems[0] in response.text
+        assert '&lt;unavailable&gt;' in response.text
+        assert response.text.index('Source health problems') < response.text.index('0 shown')
+        if not htmx:
+            assert response.text.index('Source health problems') < response.text.index('id="view-controls"')
+    else:
+        assert 'Source health problems' not in response.text
+    assert ('hx-swap-oob="outerHTML"' in response.text) == htmx

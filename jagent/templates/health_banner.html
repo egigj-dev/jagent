@@ -1,0 +1,9 @@
+<!-- Health banner; health_problems comes from the CLI health check and HTMX refreshes the existing banner. -->
+<div id="health-banner"{% if request.headers.get('HX-Request') == 'true' %} hx-swap-oob="outerHTML"{% endif %}>
+  {% if health_problems %}
+  <aside class="health-banner" role="alert">
+    <strong>Source health problems</strong>
+    <ul>{% for problem in health_problems %}<li>{{ problem }}</li>{% endfor %}</ul>
+  </aside>
+  {% endif %}
+</div>

@@ -1,5 +1,6 @@
 <!-- Queue fragment; postings are visible cards and total counts cards before view toggles. -->
 <section id="queue-content" aria-live="polite">
+  {% if request.headers.get('HX-Request') == 'true' %}{% include "health_banner.html" %}{% endif %}
   <p class="muted">{{ postings|length }} shown · {{ total }} in queue</p>
   {% for p in postings %}
   <article class="card" id="posting-{{ p.id }}">

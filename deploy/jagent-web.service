@@ -1,0 +1,15 @@
+# Dashboard service; ExecStart serves localhost and Restart recovers from process failures.
+[Unit]
+Description=Jagent review dashboard on 127.0.0.1:8000
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+User=egigj
+WorkingDirectory=/home/egigj/jagent
+ExecStart=/home/egigj/.local/bin/uv run jagent serve
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

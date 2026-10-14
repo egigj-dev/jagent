@@ -11,6 +11,16 @@ from jagent.matching import match
 from jagent.runner import SOURCES, backfill_dedupe, run
 
 
+MAX_FAILURE_RATE = 0.10
+
+
+def retry_exit_code(failures, attempted):
+    if not failures:
+        return 0
+    print(f"warning: {failures} retried next run")
+    return int(failures == attempted or failures / attempted > MAX_FAILURE_RATE)
+
+
 def main():
     parser = argparse.ArgumentParser(prog="jagent")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -38,18 +48,14 @@ def main():
         except ValueError as error:
             print(str(error))
             return 1
-        return int(bool(result["failures"]))
+        return retry_exit_code(result["failures"], result["analyzed"] + result["failures"])
     if args.command == "match":
         try:
             result = match()
         except ValueError as error:
             print(str(error))
             return 1
-        if result["skipped"]:
-            print(f"Match incomplete: {result['skipped']} embeddings were skipped after batch failures. "
-                  "Exiting with code 1; rerun match to retry them.")
-            return 1
-        return 0
+        return retry_exit_code(result["batches_skipped"], result["batches_attempted"])
     if args.command == "profile":
         profile_id = set_profile(args.text_path, args.filters_path)
         print(f"Profile version {profile_id} is active.")

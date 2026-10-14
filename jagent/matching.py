@@ -1,5 +1,6 @@
 # Embedding and ranking workflow; model identifies cached vectors and passing_ids limits SQL scoring.
 from datetime import UTC, datetime
+from math import ceil
 import time
 
 from bs4 import BeautifulSoup
@@ -11,6 +12,7 @@ from jagent.embeddings import embed, embedding_settings, vector_text
 from jagent.filters import passing_postings
 from jagent.profile import active_profile
 
+EMBEDDING_BATCH_SIZE = 100
 QUEUE_MIN_PERCENTILE = 97
 QUEUE_MIN_SIMILARITY = 0.55
 
@@ -25,8 +27,8 @@ def posting_text(posting):
 
 def embed_batches(connection, table, rows, model, embed_fn):
     embedded = tokens = skipped = 0
-    for offset in range(0, len(rows), 100):
-        batch = rows[offset:offset + 100]
+    for offset in range(0, len(rows), EMBEDDING_BATCH_SIZE):
+        batch = rows[offset:offset + EMBEDDING_BATCH_SIZE]
         vectors = None
         for attempt in range(2):
             try:
@@ -176,4 +178,12 @@ def match(embed_fn=None, settings=None):
         print(f"{section}: {count}")
     return {"sections_embedded": section_count, "postings_embedded": posting_count,
             "scored": scored, "queued": queued, "tokens": tokens + posting_tokens,
-            "skipped": skipped_sections + skipped_postings}
+            "skipped": skipped_sections + skipped_postings,
+            "batches_attempted": (
+                ceil((section_count + skipped_sections) / EMBEDDING_BATCH_SIZE)
+                + ceil((posting_count + skipped_postings) / EMBEDDING_BATCH_SIZE)
+            ),
+            "batches_skipped": (
+                ceil(skipped_sections / EMBEDDING_BATCH_SIZE)
+                + ceil(skipped_postings / EMBEDDING_BATCH_SIZE)
+            )}

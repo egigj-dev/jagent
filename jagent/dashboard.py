@@ -13,6 +13,7 @@ from psycopg.types.json import Jsonb
 from jagent.db import connect
 from jagent.embeddings import embedding_settings
 from jagent.filters import passing_postings
+from jagent.health import check_health
 from jagent.matching import score_postings
 from jagent.profile import active_profile
 
@@ -77,7 +78,7 @@ def queue_context(params):
     with connect() as connection:
         rows = postings_for_page(connection, sort=sort)
     return {"postings": [row for row in rows if visible(row, views)], "views": views,
-            "sort": sort, "total": len(rows), "reasons": REASONS, "page": "Queue"}
+            "health_problems": check_health(), "sort": sort, "total": len(rows), "reasons": REASONS, "page": "Queue"}
 
 
 def save_review(connection, posting_id, action, reason, note):

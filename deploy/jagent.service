@@ -1,0 +1,14 @@
+# Daily pipeline service; ExecStart runs all four steps as egigj in the project directory.
+[Unit]
+Description=Jagent daily job-search pipeline
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+User=egigj
+WorkingDirectory=/home/egigj/jagent
+ExecStart=/home/egigj/jagent/deploy/daily.sh
+
+[Install]
+WantedBy=multi-user.target

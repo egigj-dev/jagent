@@ -13,6 +13,7 @@ h1 { margin: .7rem 0 1rem; } h2 { font-size: 1.25rem; margin: 0 0 .4rem; }
 .card { background: #fff; border: 1px solid #dce3eb; border-radius: 12px; padding: 1.25rem; margin: 1rem 0; }
 .company { font-weight: 650; } .muted { color: #526477; }
 .badge { display: inline-block; padding: .15rem .55rem; background: #e9eff7; border-radius: 6px; font-size: .8rem; font-weight: 500; }
+.health-banner { background: #fff0cf; color: #853c00; border: 1px solid #dca34a; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
 .deadline-urgent { background: #fff0cf; color: #853c00; font-weight: 700; }
 dl { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem 1rem; }
 dt { font-size: .8rem; color: #526477; } dd { margin: 0; overflow-wrap: anywhere; }
