@@ -1,6 +1,8 @@
 # Source health checks; full feeds use yield rules, incremental feeds use errors, non-ATS runs must be fresh.
 from jagent.db import connect
 
+WARNING_ONLY_SOURCES = frozenset({"duapune"})
+
 
 def check_health() -> list[str]:
     with connect() as connection:

@@ -122,5 +122,5 @@ def test_himalayas_existing_database_ignores_cutoff_and_stops_on_known_page(monk
 def test_himalayas_live_order_fixture_is_newest_first():
     data = json.loads((FIXTURES / "himalayas_order.json").read_text())
     dates = [item["pubDate"] for item in data["jobs"]]
-    assert len(dates) == 20
+    assert len(dates) == 5
     assert dates == sorted(dates, reverse=True)

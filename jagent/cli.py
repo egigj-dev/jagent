@@ -4,7 +4,7 @@ from pathlib import Path
 
 from jagent.db import connect
 from jagent.analysis import analyze
-from jagent.health import check_health
+from jagent.health import WARNING_ONLY_SOURCES, check_health
 from jagent.filters import filter_report
 from jagent.profile import set_profile
 from jagent.matching import match
@@ -65,9 +65,14 @@ def main():
         return 0
     if args.command == "health":
         problems = check_health()
+        failed = False
         for problem in problems:
-            print(problem)
-        return int(bool(problems))
+            if problem.partition(":")[0] in WARNING_ONLY_SOURCES:
+                print(f"warning: {problem}")
+            else:
+                print(problem)
+                failed = True
+        return int(failed)
     if args.command == "run":
         results = run(args.source)
         for result in results:

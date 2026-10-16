@@ -14,7 +14,7 @@ def test_daily_continues_and_reports_failure(tmp_path, failed):
     calls = tmp_path / "calls"
     # Bash allows an absolute path as a function name, intercepting the actual script's uv call.
     wrapper = '''
-function /home/egigj/.local/bin/uv() {
+function @UV@() {
     printf '%s\\n' "$*" >> "$CALLS"
     if [[ "$3" == "$FAILED_STEP" || "$FAILED_STEP" == all ]]; then
         return 7
@@ -22,7 +22,7 @@ function /home/egigj/.local/bin/uv() {
     return 0
 }
 source "$1"
-'''
+'''.replace("@UV@", str(Path.home() / ".local/bin/uv"))
     result = subprocess.run(
         ["bash", "-c", wrapper, "bash", str(SCRIPT)],
         env={**os.environ, "CALLS": str(calls), "FAILED_STEP": failed},

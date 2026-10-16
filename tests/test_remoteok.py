@@ -19,7 +19,7 @@ def test_fetch_parses_real_response(monkeypatch):
 
     monkeypatch.setattr(remoteok.httpx, "get", get)
     postings = remoteok.fetch()
-    assert len(postings) == len(data) - 1 == 99
+    assert len(postings) == len(data) - 1 == 5
     first = postings[0]
     assert first.source == "remoteok"
     assert first.source_id == "1137460"

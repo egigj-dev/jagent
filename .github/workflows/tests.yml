@@ -1,0 +1,34 @@
+# Run the test suite; DATABASE_URL points only to the local pgvector service.
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: jagent
+          POSTGRES_PASSWORD: test-password
+          POSTGRES_DB: jagent
+          TZ: UTC
+        ports:
+          - 127.0.0.1:5434:5432
+        options: >-
+          --health-cmd "pg_isready -U jagent -d jagent"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://jagent:test-password@127.0.0.1:5434/jagent
+      JAGENT_TEST_POSTGRES: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked --group dev
+      - run: uv run jagent init-db
+      - run: uv run pytest

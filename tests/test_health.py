@@ -32,6 +32,28 @@ def test_health_cli(monkeypatch, capsys, problems, exit_code):
     assert capsys.readouterr().out == "".join(problem + "\n" for problem in problems)
 
 
+@pytest.mark.parametrize("error", ["Import older than 36 hours", "Import file missing"])
+@pytest.mark.parametrize("server_failed", [False, True])
+def test_import_warning_does_not_hide_server_failure(monkeypatch, capsys, error, server_failed):
+    connection = Mock()
+    rows = [("duapune", "error", 0, error, 0, True)]
+    if server_failed:
+        rows.append(("remotive", "error", 100, "HTTP 503", 100, False))
+    connection.execute.return_value.fetchall.return_value = rows
+    monkeypatch.setattr(health, "connect", lambda: nullcontext(connection))
+    monkeypatch.setattr("sys.argv", ["jagent", "health"])
+
+    assert cli.main() == int(server_failed)
+    warning = (f"duapune: status=error ({error}); "
+               "stale (latest run older than 36 hours); fetched=0")
+    expected = f"warning: {warning}\n"
+    if server_failed:
+        expected += "remotive: status=error (HTTP 503)\n"
+    assert capsys.readouterr().out == expected
+    # Keep the underlying health message available to dashboard banner consumers.
+    assert health.check_health()[0] == warning
+
+
 def test_ats_zero_yield_is_healthy_and_errors_are_summarized(monkeypatch):
     connection = Mock()
     connection.execute.return_value.fetchall.return_value = [

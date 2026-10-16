@@ -1,0 +1,6 @@
+{
+  "countries": ["Germany"],
+  "remote_regions": ["Europe", "Worldwide"],
+  "remote_excluded": ["US only"],
+  "exclude_title_keywords": ["unpaid"]
+}

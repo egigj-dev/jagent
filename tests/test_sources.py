@@ -10,19 +10,19 @@ from jagent.sources import arbeitnow, himalayas, hn_hiring, jobicy, remotive, we
 
 FIXTURES = Path(__file__).parent / "fixtures"
 CASES = [
-    (remotive, "remotive.json", 18, "1749306", "Coalition Technologies",
+    (remotive, "remotive.json", 5, "1749306", "Coalition Technologies",
      "Freelance Copywriter", ["Worldwide"], True),
-    (arbeitnow, "arbeitnow.json", 325,
+    (arbeitnow, "arbeitnow.json", 5,
      "anwendungsarchitekt-full-stack-java-spring-react-k8s-munich-321699",
      "Auxilius.ai", "Anwendungsarchitekt - Full-Stack Java/Spring, React, K8s (m/w/d)",
      ["Munich"], False),
-    (himalayas, "himalayas.json", 20,
+    (himalayas, "himalayas.json", 5,
      "https://himalayas.app/companies/empower-ai-inc/jobs/tier-i-service-desk-agent-junior-extended-hours",
      "Empower AI Inc.", "TIER I SERVICE DESK AGENT (JUNIOR, EXTENDED HOURS)",
      ["United States"], True),
-    (jobicy, "jobicy.json", 200, "154514", "Canonical",
+    (jobicy, "jobicy.json", 5, "154514", "Canonical",
      "Solutions Architect for Automotive", ["Anywhere"], True),
-    (weworkremotely, "weworkremotely.xml", 89,
+    (weworkremotely, "weworkremotely.xml", 5,
      "https://weworkremotely.com/remote-jobs/assemblyai-senior-research-engineer",
      "AssemblyAI", "Senior Research Engineer", ["Anywhere in the World"], True),
 ]

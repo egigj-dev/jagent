@@ -12,6 +12,11 @@ from jagent import cli, dashboard
 from jagent.db import connect
 
 
+@pytest.fixture(autouse=True)
+def source_health(monkeypatch):
+    monkeypatch.setattr(dashboard, "check_health", lambda: [])
+
+
 @pytest.fixture
 def dashboard_db(monkeypatch):
     if os.environ.get("JAGENT_TEST_POSTGRES") != "1":
@@ -178,20 +183,23 @@ def test_duapune_card_days_left_and_closing_soon(client, dashboard_db, monkeypat
     'duapune: stale (latest run older than 36 hours)',
     'sample: status=error (<unavailable>)',
 ]])
-def test_queue_does_not_show_source_health(monkeypatch, htmx, problems):
+def test_queue_shows_source_health_banner(monkeypatch, htmx, problems):
     health_check = Mock(return_value=problems)
-    monkeypatch.setattr('jagent.health.check_health', health_check)
+    monkeypatch.setattr(dashboard, 'check_health', health_check)
     monkeypatch.setattr(dashboard, 'connect', lambda: nullcontext(None))
     monkeypatch.setattr(dashboard, 'postings_for_page', lambda *args, **kwargs: [])
     monkeypatch.setattr(dashboard, 'active_profile', lambda connection: None)
     with TestClient(dashboard.app) as client:
         response = client.get('/', headers={'HX-Request': 'true'} if htmx else {})
     assert response.status_code == 200
-    health_check.assert_not_called()
-    assert 'Source health problems' not in response.text
-    assert 'health-banner' not in response.text
-    assert 'stale' not in response.text
-    assert 'unavailable' not in response.text
+    health_check.assert_called_once_with()
+    assert 'id="health-banner"' in response.text
+    assert ('Source health problems' in response.text) == bool(problems)
+    if problems:
+        assert 'duapune: stale (latest run older than 36 hours)' in response.text
+        assert '&lt;unavailable&gt;' in response.text
+    if htmx:
+        assert 'hx-swap-oob="outerHTML"' in response.text
 
 
 def test_profile_create_edit_and_preserve_reviews(client, dashboard_db):

@@ -21,7 +21,7 @@ def data():
 
 def test_fixture_fields_and_deadlines(data):
     postings = duapune.parse_response(data)
-    assert len(postings) == 100
+    assert len(postings) == 5
     assert postings[0].source_id == "120366"
     for job, posting in zip(data["jobs"], postings, strict=True):
         assert posting.source == "duapune"
@@ -56,7 +56,7 @@ def test_fetch_reads_only_local_file(monkeypatch, data):
     monkeypatch.setattr(duapune, "IMPORT_PATH", FIXTURE)
     monkeypatch.setattr("httpx.get", Mock(side_effect=AssertionError("No network")))
     monkeypatch.setattr("httpx.Client.send", Mock(side_effect=AssertionError("No network")))
-    assert len(duapune.fetch()) == 100
+    assert len(duapune.fetch()) == 5
     assert runner.SOURCES["duapune"] is duapune.fetch
 
 

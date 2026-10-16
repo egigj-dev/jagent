@@ -6,9 +6,9 @@ After=docker.service
 
 [Service]
 Type=simple
-User=egigj
-WorkingDirectory=/home/egigj/jagent
-ExecStart=/home/egigj/.local/bin/uv run jagent serve
+User=@USER@
+WorkingDirectory=@PROJECT_DIR@
+ExecStart=@HOME@/.local/bin/uv run jagent serve
 Restart=on-failure
 
 [Install]
