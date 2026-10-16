@@ -1,0 +1,41 @@
+' Daily run overview; nine participants represent the timer, script, four CLI steps, sources, database and configured API.
+@startuml
+title Daily run (9 participants)
+hide footbox
+participant "Timer + daily service" as Timer
+participant "daily.sh" as Daily
+participant "CLI run" as Run
+participant "Sources + laptop import" as Sources
+database Postgres as DB
+participant "CLI match" as Match
+participant "Configured API\nTokenRouter if configured" as Router
+participant "CLI analyze" as Analyze
+participant "CLI health" as Health
+
+Timer -> Daily : 07:00 Europe/Tirane
+Daily -> Run : run
+Run -> Sources : fetch named sources, then registered ATS boards
+Sources --> Run : postings or errors
+Run -> DB : merge / save postings, discover ATS slugs, record outcomes
+Daily -> Match : match
+Match -> DB : load profile and postings
+Match -> Router : embed missing / different-model vectors
+Router --> Match : vectors
+Match -> DB : cache vectors, rank, set queue flags
+Daily -> Analyze : analyze
+Analyze -> DB : queued jobs without current-model analysis
+Analyze -> Router : job facts + whole-profile fit
+Router --> Analyze : JSON facts, evidence, explanation
+Analyze -> DB : save validated analysis and explanation
+Daily -> Health : health
+Health -> DB : latest runs + seven-day yield medians
+Health --> Daily : report source problems
+Daily --> Timer : fail if any command failed
+
+legend bottom
+  All four steps run even after an earlier failure.
+  Queue: percentile >= 97 AND similarity >= 0.55.
+  Embedding / analysis calls retry once on supported failures.
+  Cached vectors and analysis are reused by model.
+endlegend
+@enduml

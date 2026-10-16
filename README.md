@@ -1,6 +1,21 @@
 <!-- Jagent deployment instructions; unit names identify the daily pipeline, schedule and dashboard. -->
 # jagent
 
+## Using the dashboard
+
+Open <http://127.0.0.1:8000/>. Start with **Profile** to enter your background,
+skills, career goals, and preferred countries or remote regions. Plain text is
+accepted; optional `## Section` headings organize separate areas of experience.
+Changed profile text is matched during the next daily pipeline run. Saved jobs
+and application records remain available across profile versions.
+
+**Opportunities** shows your shortlist. Search by job title, company, or location;
+filter by website, experience level, employment type, remote status, or saved
+jobs. Sort by profile match, newest posting, deadline, company, or job title.
+Filters stay selected when reviewing jobs. **Preferences** changes the underlying
+location and excluded-title rules; view filters only narrow the current shortlist.
+Apply through the original job website, then use **Mark as applied** to record it.
+
 ## Daily schedule
 
 The pipeline runs at 07:00 Europe/Tirane, with missed runs caught up after reboot.

@@ -1,0 +1,44 @@
+' Posting lifecycle overview; 12 named states summarize computed eligibility, persisted matching/analysis, and user review actions.
+@startuml
+title Posting lifecycle (12 states)
+hide empty description
+
+state Fetched
+state "Merged as duplicate" as Merged
+state "Filtered out" as Filtered
+state Embedded
+state Ranked
+state Queued
+state Analysed
+state Reviewed
+state Apply
+state Skip
+state Later
+state "Expired / inactive" as Expired
+
+[*] --> Fetched : validated source result
+Fetched --> Merged : normalized company + title already exists
+Fetched --> Filtered : active but fails title / location filters
+Fetched --> Embedded : active + passes filters; cached vector or embed succeeds
+Merged --> Embedded : canonical row passes filters and has / gets vector
+Merged --> Filtered : canonical row is active but fails filters
+Embedded --> Ranked : best compatible profile-section cosine score
+Ranked --> Queued : percentile >= 97 AND similarity >= 0.55
+Queued --> Analysed : valid JSON + verbatim evidence; cache by model
+Analysed --> Reviewed : user submits valid action
+Queued --> Reviewed : user reviews before analysis
+Reviewed --> Apply : action = apply
+Reviewed --> Skip : action = skip + allowed reason
+Reviewed --> Later : action = later
+Later --> Queued : remains queued; shown after unreviewed jobs
+Queued --> Expired : next match detects inactivity and clears queue flag
+
+legend bottom
+  Logical stages, not a stored status column.
+  Inactivity applies at any processing stage: deadline <= now;
+  otherwise posted_at / first_seen falls outside the last 30 days.
+  Filtered / unqueued rows remain stored for later matching.
+  Failed embedding / analysis can retry on a later run.
+  Reviews remain stored after expiry; Apply appears in Applied.
+endlegend
+@enduml

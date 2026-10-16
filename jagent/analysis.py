@@ -136,12 +136,22 @@ def analyze(llm_fn=None, settings=None):
         if profile is None:
             raise ValueError("Set a profile with jagent profile set first")
         profile_id, profile_text, _ = profile
+        connection.execute("""
+            UPDATE matches current SET explanation=previous.explanation
+            FROM matches previous
+            JOIN profile old ON old.id=previous.profile_id
+            WHERE current.profile_id=%s AND current.explanation IS NULL
+              AND previous.posting_id=current.posting_id
+              AND old.id=(SELECT max(id) FROM profile WHERE id < %s)
+              AND old.text=%s AND previous.explanation IS NOT NULL
+        """, (profile_id, profile_id, profile_text))
         with connection.cursor(row_factory=dict_row) as cursor:
             postings = cursor.execute("""
                 SELECT p.id, p.title, p.company, p.locations, p.description
                 FROM matches m JOIN postings p ON p.id=m.posting_id
                 LEFT JOIN posting_analysis a ON a.posting_id=p.id
-                WHERE m.profile_id=%s AND m.queued AND (a.model IS DISTINCT FROM %s)
+                WHERE m.profile_id=%s AND m.queued
+                  AND (a.model IS DISTINCT FROM %s OR m.explanation IS NULL)
                 ORDER BY m.similarity DESC, p.id
             """, (profile_id, model)).fetchall()
         for posting in postings:

@@ -1,0 +1,20 @@
+{# Profile editor; profile_text is candidate background, filters holds location preferences, error preserves invalid submissions. #}
+{% extends "base.html" %}
+{% block content %}
+{% if saved %}<div class="success-banner" role="status"><strong>Your profile is saved.</strong> Updated matches and fit explanations will be prepared during the next scheduled daily run. <a href="/">View opportunities →</a></div>{% endif %}
+{% if error %}<div class="health-banner" role="alert">{{ error }}</div>{% endif %}
+<div class="profile-layout">
+<form class="card profile-form" method="post" action="/profile">
+  <div class="section-heading"><span class="eyebrow">About you</span><h2>What should your next role build on?</h2><p class="muted">Paste your CV or describe your experience, skills, and the work you want to do.</p></div>
+  <label for="profile_text">Your background and goals <span class="required-label">Required</span></label>
+  <p class="field-hint" id="profile-help">Include skills, recent projects, languages you speak, and roles you’re interested in. Optional headings starting with ## help organize different areas of experience.</p>
+  <textarea id="profile_text" name="profile_text" rows="16" required maxlength="50000" aria-describedby="profile-help" placeholder="I’m a Python developer with experience building APIs and data pipelines. I’m looking for a backend role where I can…">{{ profile_text }}</textarea>
+  <div class="section-heading preferences-heading"><span class="eyebrow">Your search</span><h2>Where would you like to work?</h2><p class="muted">Add at least one country or remote region. Separate entries with commas.</p></div>
+  {% for key, label, hint in [('countries', 'Countries', 'e.g. Albania, Germany'), ('remote_regions', 'Remote regions', 'e.g. Europe, worldwide'), ('remote_excluded', 'Locations to exclude', 'e.g. US only'), ('exclude_title_keywords', 'Job title terms to exclude', 'e.g. sales, director')] %}
+  <div class="filter-field"><label for="{{ key }}">{{ label }}</label><input type="text" id="{{ key }}" name="{{ key }}" value="{{ filters[key]|join(', ') }}" placeholder="{{ hint }}"></div>
+  {% endfor %}
+  <div class="form-footer"><p class="muted">Saving a changed profile prepares it for matching in the next daily run. Your saved jobs and application history are kept.</p><button type="submit">Save profile</button></div>
+</form>
+<aside class="profile-guide"><span class="eyebrow">A stronger starting point</span><h2>Help your matches make sense.</h2><ol><li><strong>Be specific.</strong> Name the tools you use and problems you’ve solved.</li><li><strong>Share your direction.</strong> Describe the roles and responsibilities you want next.</li><li><strong>Include constraints.</strong> Mention spoken languages and your preferred working arrangement.</li></ol><div class="guide-note"><strong>You’re in control.</strong><p>Your profile and job descriptions are sent to the configured AI service to prepare matches and explanations. Jagent never submits an application for you.</p></div></aside>
+</div>
+{% endblock %}

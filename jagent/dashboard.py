@@ -15,12 +15,15 @@ from jagent.embeddings import embedding_settings
 from jagent.filters import passing_postings
 from jagent.health import check_health
 from jagent.matching import score_postings
-from jagent.profile import active_profile
+from jagent.profile import active_profile, split_sections
 
 ROOT = Path(__file__).resolve().parent
 FILTER_KEYS = ("countries", "remote_regions", "remote_excluded", "exclude_title_keywords")
 REASONS = ("too_senior", "language", "location", "contract", "salary", "irrelevant", "other")
 VIEW_KEYS = ("hide_senior", "hide_languages", "hide_contract")
+SEARCH_KEYS = ("q", "source", "seniority", "employment", "remote", "saved")
+SORTS = {"default": "Best match", "newest": "Newest posted", "closing_soon": "Closing soon",
+         "company": "Company A–Z", "title": "Job title A–Z"}
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/static", StaticFiles(directory=ROOT / "static"), name="static")
 templates = Jinja2Templates(directory=ROOT / "templates")
@@ -37,7 +40,7 @@ templates.env.filters["days_left"] = days_left
 
 
 def view_options(params):
-    return {key: params.get(key) == "1" if params.get("views") == "1" else True for key in VIEW_KEYS}
+    return {key: params.get(key) == "1" for key in VIEW_KEYS}
 
 
 def visible(posting, views):
@@ -56,7 +59,7 @@ def visible(posting, views):
 def postings_for_page(connection, applied=False, sort="default"):
     with connection.cursor(row_factory=dict_row) as cursor:
         return cursor.execute("""
-            SELECT p.id,p.title,p.company,p.source,p.locations,p.posted_at,p.expires_at,p.url,p.other_urls,
+            SELECT p.id,p.title,p.company,p.source,p.locations,p.remote,p.posted_at,p.expires_at,p.url,p.other_urls,
                    m.similarity,m.matched_section,m.explanation,a.posting_id AS analyzed,
                    a.seniority,a.required_languages,a.employment_types,a.salary,
                    r.action,r.reason,r.note,r.decided_at
@@ -74,11 +77,41 @@ def postings_for_page(connection, applied=False, sort="default"):
 
 def queue_context(params):
     views = view_options(params)
-    sort = "closing_soon" if params.get("sort") == "closing_soon" else "default"
+    sort = params.get("sort") if params.get("sort") in SORTS else "default"
+    selected = {key: params.get(key, "").strip()[:200] for key in SEARCH_KEYS}
     with connect() as connection:
         rows = postings_for_page(connection, sort=sort)
-    return {"postings": [row for row in rows if visible(row, views)], "views": views,
+        profile = active_profile(connection)
+        matched = bool(profile and connection.execute(
+            "SELECT 1 FROM matches WHERE profile_id=%s LIMIT 1", (profile[0],),
+        ).fetchone())
+    filtered = [row for row in rows if visible(row, views) and matches_view(row, selected)]
+    if sort in ("company", "title"):
+        filtered.sort(key=lambda row: ((row.get(sort) or "").casefold(), row["id"]))
+    elif sort == "newest":
+        filtered.sort(key=lambda row: (row["posted_at"] or datetime.min.replace(tzinfo=UTC), row["id"]), reverse=True)
+    return {"postings": filtered, "views": views, "selected": selected, "sorts": SORTS,
+            "sources": sorted({row["source"] for row in rows if row["source"]}),
+            "has_profile": profile is not None, "has_matches": matched,
+            "saved_count": sum(row["action"] == "later" for row in rows),
             "health_problems": check_health(), "sort": sort, "total": len(rows), "reasons": REASONS, "page": "Queue"}
+
+
+def matches_view(row, selected):
+    haystack = " ".join([row["title"] or "", row["company"] or "", *(row["locations"] or [])]).casefold()
+    if any(term not in haystack for term in selected["q"].casefold().split()):
+        return False
+    if selected["source"] and row["source"] != selected["source"]:
+        return False
+    if selected["seniority"] and (row["seniority"] or "unknown") != selected["seniority"]:
+        return False
+    if selected["employment"] and selected["employment"] not in (row["employment_types"] or []):
+        return False
+    if selected["remote"] == "1" and not (row.get("remote") is True or any(
+        "remote" in location.casefold() for location in (row["locations"] or [])
+    )):
+        return False
+    return selected["saved"] != "1" or row["action"] == "later"
 
 
 def save_review(connection, posting_id, action, reason, note):
@@ -145,7 +178,9 @@ async def review(request: Request, posting_id: int):
         save_review(connection, posting_id, values.get("action"), values.get("reason"), values.get("note", ""))
     if request.headers.get("HX-Request") == "true":
         return templates.TemplateResponse(request=request, name="queue_content.html", context=queue_context(values))
-    params = {"views": "1", "sort": values.get("sort", "default"), **{key: "1" for key, enabled in view_options(values).items() if enabled}}
+    params = {"views": "1", "sort": values.get("sort", "default"),
+              **{key: values[key] for key in SEARCH_KEYS if values.get(key)},
+              **{key: "1" for key, enabled in view_options(values).items() if enabled}}
     return RedirectResponse("/?" + urlencode(params), status_code=303)
 
 
@@ -162,7 +197,7 @@ def filters_page(request: Request):
     with connect() as connection:
         profile = active_profile(connection)
     if profile is None:
-        raise HTTPException(404, "Set a profile with jagent profile set first")
+        return RedirectResponse("/profile", status_code=303)
     return templates.TemplateResponse(request=request, name="filters.html", context={
         "page": "Filters", "filters": profile[2], "filter_keys": FILTER_KEYS,
     })
@@ -175,3 +210,52 @@ async def filters_save(request: Request):
     with connect() as connection:
         save_filters(connection, filters)
     return RedirectResponse("/", status_code=303)
+
+
+@app.get("/profile")
+def profile_page(request: Request):
+    with connect() as connection:
+        profile = active_profile(connection)
+    return templates.TemplateResponse(request=request, name="profile.html", context={
+        "page": "Profile", "profile_text": profile[1] if profile else "",
+        "filters": profile[2] if profile else {key: [] for key in FILTER_KEYS},
+        "filter_keys": FILTER_KEYS, "saved": request.query_params.get("saved") == "1",
+    })
+
+
+@app.post("/profile")
+async def profile_save(request: Request):
+    values = await form_values(request)
+    text = values.get("profile_text", "").strip()
+    filters = {key: [term.strip() for term in values.get(key, "").split(",") if term.strip()] for key in FILTER_KEYS}
+    if not text or len(text) > 50000:
+        error = "Enter your profile (up to 50,000 characters)."
+    elif not filters["countries"] and not filters["remote_regions"]:
+        error = "Add at least one country or remote region so we know where to look."
+    else:
+        error = None
+    if not error:
+        if not text.startswith("## "):
+            text = "## Background\n" + text
+        if any(not name or not section for name, section in split_sections(text)):
+            error = "Give each profile section a heading and some details, or enter your background as plain text."
+    if error:
+        return templates.TemplateResponse(request=request, name="profile.html", status_code=422, context={
+            "page": "Profile", "profile_text": text, "filters": filters, "filter_keys": FILTER_KEYS, "error": error,
+        })
+    # Changed profile text gets fresh matches in the next daily run, avoiding stale fit explanations.
+    with connect() as connection:
+        previous = active_profile(connection)
+        if previous and previous[1] == text:
+            if previous[2] != filters:
+                save_filters(connection, filters)
+        else:
+            profile_id = connection.execute(
+                "INSERT INTO profile (text,filters) VALUES (%s,%s) RETURNING id", (text, Jsonb(filters)),
+            ).fetchone()[0]
+            for name, section in split_sections(text):
+                connection.execute(
+                    "INSERT INTO profile_sections (profile_id,name,text) VALUES (%s,%s,%s)",
+                    (profile_id, name, section),
+                )
+    return RedirectResponse("/profile?saved=1", status_code=303)

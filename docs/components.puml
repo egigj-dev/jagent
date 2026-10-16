@@ -1,0 +1,44 @@
+' Component overview; boxes name 14 components and dotted links mark external context absent from this checkout.
+@startuml
+title Components (14 elements)
+left to right direction
+skinparam componentStyle rectangle
+
+component "API / RSS sources" as API
+component "HTML sources" as HTML
+component "ATS boards" as ATS
+component "Duapune JSON import" as Import
+component "Laptop collector\n(outside checkout)" as Collector
+component "CLI\nrun / match / analyze / health\ninit-db / profile set / filter-report / serve" as CLI
+database "Postgres + pgvector\n127.0.0.1:5434" as DB
+component "Dashboard\n127.0.0.1:8000" as Dashboard
+component "Daily timer + service\n07:00 Europe/Tirane" as Timer
+component "daily.sh" as Daily
+component "Web service" as Web
+component "TokenRouter\n(if configured as API base URL)" as Router
+actor Browser
+component "SSH tunnel\n(outside checkout)" as Tunnel
+
+Collector ..> Import : collect / transfer
+Timer --> Daily
+Daily --> CLI : run, match, analyze, health
+CLI --> API : fetch
+CLI --> HTML : fetch
+CLI --> ATS : fetch registered boards
+CLI --> Import : read
+CLI --> DB : store / rank / analyze
+CLI ..> Router : embeddings / chat
+Web --> CLI : serve
+CLI --> Dashboard : start
+Dashboard --> DB : queue / reviews / filters
+Browser ..> Tunnel
+Tunnel ..> Dashboard : forward HTTP
+
+legend bottom
+  API / RSS: remoteok, remotive, arbeitnow, himalayas,
+  jobicy, weworkremotely, hn_hiring.
+  HTML: staffal, kosovajob, djinni.
+  ATS: Greenhouse, Lever, Ashby, SmartRecruiters.
+  Dotted links show external operating context.
+endlegend
+@enduml

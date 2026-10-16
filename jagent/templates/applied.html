@@ -1,11 +1,12 @@
 {# Applied page; postings contains reviewed applications in newest decision order. #}
 {% extends "base.html" %}
 {% block content %}
+<p class="queue-summary">{{ postings|length }} application{{ '' if postings|length == 1 else 's' }} recorded</p>
 {% for p in postings %}
 <article class="card">
   {% include "posting.html" %}
-  <p class="muted">Applied {{ p.decided_at.strftime('%Y-%m-%d %H:%M UTC') }}</p>
-  {% if p.note %}<p>{{ p.note }}</p>{% endif %}
+  <div class="application-record"><p class="applied-date">Applied {{ p.decided_at.strftime('%Y-%m-%d %H:%M UTC') }}</p>
+  {% if p.note %}<p class="application-note">{{ p.note }}</p>{% endif %}</div>
 </article>
-{% else %}<p>No applications yet.</p>{% endfor %}
+{% else %}<div class="empty-state"><span class="empty-symbol" aria-hidden="true">↗</span><h2>Your next chapter starts here</h2><p class="muted">No applications yet. When you mark a role as applied, it will appear here with your notes.</p><a href="/">Explore your queue →</a></div>{% endfor %}
 {% endblock %}

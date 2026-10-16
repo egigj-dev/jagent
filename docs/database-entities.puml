@@ -1,0 +1,80 @@
+' Database overview; eight entities mirror schema.sql, PK/FK mark keys, and UQ marks composite uniqueness.
+@startuml
+title Database entities (8 tables)
+hide circle
+skinparam linetype ortho
+
+entity postings {
+  id : serial <<PK>>
+  --
+  source : text
+  source_id : text
+  title : text
+  expires_at : timestamptz
+  UQ(source, source_id)
+}
+entity ats_companies {
+  platform : text
+  slug : text
+  added_at : timestamptz
+  UQ(platform, slug)
+}
+entity profile {
+  id : serial <<PK>>
+  --
+  created_at : timestamptz
+  text : text
+  filters : jsonb
+}
+entity profile_sections {
+  id : serial <<PK>>
+  profile_id : int <<FK>>
+  --
+  name : text
+  embedding : vector
+  embedding_model : text
+}
+entity matches {
+  posting_id : int <<FK>>
+  profile_id : int <<FK>>
+  --
+  similarity : double precision
+  percentile : double precision
+  queued : bool
+  UQ(posting_id, profile_id)
+}
+entity source_runs {
+  id : serial <<PK>>
+  --
+  source : text
+  started_at : timestamptz
+  status : text
+  fetched : int
+}
+entity posting_analysis {
+  posting_id : int <<PK, FK>>
+  --
+  seniority : text
+  salary : jsonb
+  model : text
+}
+entity reviews {
+  posting_id : int <<PK, FK>>
+  --
+  action : text
+  reason : text
+  decided_at : timestamptz
+}
+
+profile |o..o{ profile_sections
+profile |o..o{ matches
+postings |o..o{ matches
+postings ||..o| posting_analysis
+postings ||..o| reviews
+
+legend bottom
+  ats_companies and matches have no primary key.
+  Optional parent ends reflect nullable foreign keys.
+  Highest profile.id is active; selected columns shown.
+endlegend
+@enduml

@@ -83,8 +83,9 @@ def test_later_moves_to_bottom_without_reranking(client,dashboard_db):
     assert dashboard_db.execute('SELECT similarity FROM matches WHERE posting_id=1').fetchone()==(.9,)
 
 
-def test_view_toggles_default_on_and_do_not_rerank(client,dashboard_db):
-    assert 'id="posting-2"' not in client.get('/').text
+def test_view_filters_are_explicit_and_do_not_rerank(client,dashboard_db):
+    assert 'id="posting-2"' in client.get('/').text
+    assert 'id="posting-2"' not in client.get('/?seniority=mid').text
     assert 'id="posting-2"' in client.get('/?views=1').text
     assert dashboard_db.execute('SELECT count(*) FROM matches WHERE queued').fetchone()==(3,)
 
@@ -96,7 +97,7 @@ def test_each_view_filter(field,value):
     posting={"seniority":"mid","required_languages":["Italian","Albanian"],"employment_types":["full_time"]}
     assert dashboard.visible(posting,dashboard.view_options({}))
     posting[field]=value
-    assert not dashboard.visible(posting,dashboard.view_options({}))
+    assert not dashboard.visible(posting,dict.fromkeys(dashboard.VIEW_KEYS, True))
     assert dashboard.visible(posting,dashboard.view_options({"views":"1"}))
 
 
@@ -182,6 +183,7 @@ def test_queue_health_banner(monkeypatch, htmx, problems):
     monkeypatch.setattr(dashboard, 'check_health', health_check)
     monkeypatch.setattr(dashboard, 'connect', lambda: nullcontext(None))
     monkeypatch.setattr(dashboard, 'postings_for_page', lambda *args, **kwargs: [])
+    monkeypatch.setattr(dashboard, 'active_profile', lambda connection: None)
     with TestClient(dashboard.app) as client:
         response = client.get('/', headers={'HX-Request': 'true'} if htmx else {})
     assert response.status_code == 200
@@ -196,3 +198,77 @@ def test_queue_health_banner(monkeypatch, htmx, problems):
     else:
         assert 'Source health problems' not in response.text
     assert ('hx-swap-oob="outerHTML"' in response.text) == htmx
+
+
+def test_profile_create_edit_and_preserve_reviews(client, dashboard_db):
+    dashboard_db.execute("INSERT INTO reviews(posting_id,action,note) VALUES (1,'later','Keep this')")
+    dashboard_db.execute('DELETE FROM matches')
+    dashboard_db.execute('DELETE FROM profile_sections')
+    dashboard_db.execute('DELETE FROM profile')
+    response = client.get('/')
+    assert 'Create your profile' in response.text
+    assert client.get('/filters', follow_redirects=False).headers['location'] == '/profile'
+    assert client.get('/profile').status_code == 200
+    response = client.post('/profile', data={
+        'profile_text': 'Python developer looking for backend roles.',
+        'countries': ' Albania, Germany ', 'remote_regions': 'Europe, worldwide',
+    })
+    assert response.status_code == 200 and 'Your profile is saved.' in response.text
+    profile_id, text, filters = dashboard_db.execute('SELECT id,text,filters FROM profile').fetchone()
+    assert text == '## Background\nPython developer looking for backend roles.'
+    assert filters['countries'] == ['Albania', 'Germany']
+    assert dashboard_db.execute('SELECT name,text FROM profile_sections WHERE profile_id=%s', (profile_id,)).fetchall() == [
+        ('Background', 'Python developer looking for backend roles.'),
+    ]
+    assert 'Your profile is ready for matching.' in client.get('/').text
+    client.post('/profile', data={'profile_text': text, 'countries': 'Albania, Germany', 'remote_regions': 'Europe, worldwide'})
+    assert dashboard_db.execute('SELECT count(*) FROM profile').fetchone() == (1,)
+    response = client.post('/profile', data={'profile_text': '## Engineering\nPython and SQL\n## Goals\nBackend roles', 'countries': 'Germany'})
+    assert response.status_code == 200
+    assert dashboard_db.execute('SELECT count(*) FROM profile').fetchone() == (2,)
+    assert dashboard_db.execute('SELECT count(*) FROM matches').fetchone() == (0,)
+    assert dashboard_db.execute('SELECT action,note FROM reviews WHERE posting_id=1').fetchone() == ('later', 'Keep this')
+
+
+@pytest.mark.parametrize('data,message', [
+    ({'profile_text': '', 'countries': 'Germany'}, 'Enter your profile'),
+    ({'profile_text': 'Python developer'}, 'Add at least one country'),
+    ({'profile_text': '## Empty', 'countries': 'Germany'}, 'Give each profile section'),
+])
+def test_profile_validation_preserves_input(client, dashboard_db, data, message):
+    before = dashboard_db.execute('SELECT count(*) FROM profile').fetchone()
+    response = client.post('/profile', data=data)
+    assert response.status_code == 422 and message in response.text
+    assert dashboard_db.execute('SELECT count(*) FROM profile').fetchone() == before
+    assert 'value="Germany"' in response.text if data.get('countries') else 'Python developer' in response.text
+
+
+def test_queue_search_filters_and_review_preserves_state(client, dashboard_db):
+    dashboard_db.execute("UPDATE postings SET remote=true,source='remoteok',title='Python Engineer' WHERE id=1")
+    dashboard_db.execute("UPDATE reviews SET action='later' WHERE posting_id=1")
+    for query in ('q=python+acme', 'source=remoteok', 'seniority=mid', 'employment=full_time', 'remote=1'):
+        html = client.get('/?' + query).text
+        assert 'id="posting-1"' in html and 'id="posting-2"' not in html and 'id="posting-3"' not in html
+    for htmx in (False, True):
+        response = client.post('/reviews/1', data={
+            'action': 'later', 'q': 'Python', 'source': 'remoteok', 'remote': '1', 'sort': 'title',
+        }, headers={'HX-Request': 'true'} if htmx else {})
+        assert 'id="posting-1"' in response.text and 'id="posting-2"' not in response.text
+        assert 'name="source" value="remoteok"' in response.text
+    html = client.get('/?saved=1').text
+    assert 'id="posting-1"' in html and 'id="posting-2"' not in html
+    assert 'No roles match these filters.' in client.get('/?q=no-such-role').text
+    assert 'id="posting-1"' in client.get('/').text
+
+
+@pytest.mark.parametrize('sort,expected', [('company', [3,2,1]), ('title', [2,1,3]), ('newest', [2,3,1])])
+def test_additional_sort_orders(client, dashboard_db, sort, expected):
+    dashboard_db.execute("""
+        UPDATE postings SET company='Zulu',title='Beta',posted_at='2026-10-01' WHERE id=1;
+        UPDATE postings SET company='Middle',title='Alpha',posted_at='2026-10-03' WHERE id=2;
+        UPDATE postings SET company='Acme',title='Gamma',posted_at='2026-10-02' WHERE id=3;
+    """)
+    html = client.get('/?sort=' + sort).text
+    positions = [html.index(f'id="posting-{id}"') for id in expected]
+    assert positions == sorted(positions)
+    assert f'value="{sort}" selected' in html

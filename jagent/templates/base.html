@@ -9,11 +9,19 @@
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous" defer></script>
 </head>
 <body>
-  <header><a class="brand" href="/">jagent</a><nav aria-label="Main navigation">
-    {% for label, url in [('Queue','/'),('Filters','/filters'),('Applied','/applied')] %}
-    <a href="{{ url }}" {% if page == label %}aria-current="page"{% endif %}>{{ label }}</a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header><a class="brand" href="/">jagent<span class="brand-dot" aria-hidden="true">.</span></a><nav aria-label="Main navigation">
+    {% for label, url in [('Queue','/'),('Profile','/profile'),('Filters','/filters'),('Applied','/applied')] %}
+    <a href="{{ url }}" {% if page == label %}aria-current="page"{% endif %}>{{ 'Opportunities' if label == 'Queue' else ('Preferences' if label == 'Filters' else label) }}</a>
     {% endfor %}
   </nav></header>
-  <main><h1>{{ page }}</h1>{% block content %}{% endblock %}</main>
+  <main id="main-content">
+    <div class="page-heading">
+      <p class="eyebrow">Your next opportunity</p>
+      <h1>{{ 'Find your next move.' if page == 'Queue' else ('Your profile' if page == 'Profile' else ('Job preferences' if page == 'Filters' else 'Your applications')) }}</h1>
+      <p class="muted">{% if page == 'Queue' %}Jobs gathered from across the web, shortlisted for your experience. Review the fit, open the listing, then track your decision.{% elif page == 'Profile' %}Tell us what you bring and where you want to go. Your profile shapes your job matches.{% elif page == 'Applied' %}Keep your applications and notes in one place.{% else %}Fine-tune which opportunities make it into your queue.{% endif %}</p>
+    </div>
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>

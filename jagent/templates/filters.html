@@ -1,12 +1,22 @@
 {# Filter editor; filters supplies current terms and filter_keys defines editable comma-separated lists. #}
 {% extends "base.html" %}
 {% block content %}
-<form class="card" method="post" action="/filters">
-  <p>Edit each list using commas. Saving keeps your profile text and creates a new version.</p>
+<form class="card filter-form" method="post" action="/filters">
+  <h2>Make room for the right roles</h2>
+  <p class="muted">Separate terms with commas. Save your preferences to refresh your queue.</p>
+  {% set field_help = {
+    'countries': ('Countries', 'Locations where you would like to work.'),
+    'remote_regions': ('Remote regions', 'Regions to include for remote roles, such as Europe or worldwide.'),
+    'remote_excluded': ('Excluded location terms', 'Terms in a title or location that rule a role out.'),
+    'exclude_title_keywords': ('Excluded title keywords', 'Job title terms you would like to leave out.')
+  } %}
   {% for key in filter_keys %}
-  <label for="{{ key }}">{{ key|replace('_',' ')|capitalize }}</label>
-  <textarea id="{{ key }}" name="{{ key }}" rows="4">{{ filters[key]|join(', ') }}</textarea>
+  <div class="filter-field">
+    <label for="{{ key }}">{{ field_help[key][0] }}</label>
+    <p class="field-hint" id="{{ key }}-help">{{ field_help[key][1] }}</p>
+    <textarea id="{{ key }}" name="{{ key }}" rows="3" aria-describedby="{{ key }}-help">{{ filters[key]|join(', ') }}</textarea>
+  </div>
   {% endfor %}
-  <button type="submit">Save filters and update queue</button>
+  <div class="form-footer"><p class="muted">Your profile text stays the same.</p><button type="submit">Save filters and update queue</button></div>
 </form>
 {% endblock %}
