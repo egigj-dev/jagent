@@ -4,3 +4,9 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+profile.md
+filters.json
+imports/
+.env
+*.sql
