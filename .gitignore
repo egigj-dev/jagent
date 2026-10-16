@@ -10,3 +10,9 @@ filters.json
 imports/
 .env
 *.sql
+
+profile.md
+filters.json
+imports/
+.env
+*.sql
