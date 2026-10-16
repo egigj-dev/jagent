@@ -13,7 +13,6 @@ from psycopg.types.json import Jsonb
 from jagent.db import connect
 from jagent.embeddings import embedding_settings
 from jagent.filters import passing_postings
-from jagent.health import check_health
 from jagent.matching import score_postings
 from jagent.profile import active_profile, split_sections
 
@@ -94,7 +93,7 @@ def queue_context(params):
             "sources": sorted({row["source"] for row in rows if row["source"]}),
             "has_profile": profile is not None, "has_matches": matched,
             "saved_count": sum(row["action"] == "later" for row in rows),
-            "health_problems": check_health(), "sort": sort, "total": len(rows), "reasons": REASONS, "page": "Queue"}
+            "sort": sort, "total": len(rows), "reasons": REASONS, "page": "Queue"}
 
 
 def matches_view(row, selected):

@@ -1,6 +1,5 @@
 <!-- Queue fragment; postings are visible cards and total counts cards before view toggles. -->
 <section id="queue-content" aria-live="polite" aria-label="Job opportunities">
-  {% if request.headers.get('HX-Request') == 'true' %}{% include "health_banner.html" %}{% endif %}
   <div class="queue-summary"><p>{{ postings|length }} shown · {{ total }} in queue</p><span class="muted">Apply on the job website, then mark it here</span></div>
   {% for p in postings %}
   <article class="card" id="posting-{{ p.id }}">
