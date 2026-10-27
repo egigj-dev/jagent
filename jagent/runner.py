@@ -196,32 +196,6 @@ def discover_ats_companies(connection, postings):
         )
 
 
-def discover_existing_ats_companies(connection):
-    found = set()
-    for url, description in connection.execute(
-        "SELECT url, description FROM postings"
-    ).fetchall():
-        found.update(ats.extract_company_slugs(url or ""))
-        found.update(ats.extract_company_slugs(description or ""))
-    added = {}
-    for platform, slug in found:
-        inserted = connection.execute(
-            """
-            INSERT INTO ats_companies (platform, slug)
-            VALUES (%s, %s)
-            ON CONFLICT (platform, slug) DO NOTHING
-            RETURNING platform
-            """,
-            (platform, slug),
-        ).fetchone()
-        if inserted:
-            added[platform] = added.get(platform, 0) + 1
-    totals = dict(connection.execute(
-        "SELECT platform, count(*) FROM ats_companies GROUP BY platform"
-    ).fetchall())
-    return added, totals
-
-
 def ats_companies():
     with connect() as connection:
         return connection.execute(
