@@ -1,0 +1,88 @@
+<!-- Standalone project overview; CSS variables control the palette and SVG diagrams show end-user and technical pipeline flows. -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jagent — Job Search Pipeline</title>
+  <style>
+    :root { --ink:#152238; --muted:#617087; --paper:#f7f9fc; --line:#dce4ee; --blue:#2d6cdf; --teal:#0a9b8d; --violet:#7654d6; --amber:#eb9b27; --red:#c7525a; --card:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    header { color:#fff; padding:66px max(28px, calc((100vw - 1120px)/2)); background:radial-gradient(circle at 82% 5%, #4a8af0 0, transparent 30%), linear-gradient(125deg, #101d33, #203d6c); }
+    .eyebrow { margin:0 0 10px; color:#a8d6ff; font-size:.76rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { max-width:720px; margin:0; font-size:clamp(2.3rem, 6vw, 4.3rem); line-height:1.05; letter-spacing:-.045em; }
+    header p:last-child { max-width:670px; margin:20px 0 0; color:#dbe9ff; font-size:1.14rem; }
+    main { width:min(1120px, calc(100% - 40px)); margin:0 auto; padding:50px 0 72px; }
+    section { margin-top:56px; }
+    h2 { margin:0 0 10px; font-size:clamp(1.65rem, 3vw, 2.25rem); letter-spacing:-.035em; }
+    .intro { max-width:700px; margin:0; color:var(--muted); }
+    .audience { display:inline-block; margin:0 0 12px; padding:5px 10px; border-radius:99px; color:#176050; background:#dff5ef; font-size:.77rem; font-weight:750; }
+    .flow { display:grid; grid-template-columns:repeat(5, 1fr); gap:13px; align-items:stretch; margin-top:29px; }
+    .step { position:relative; min-height:184px; padding:22px 18px; border:1px solid var(--line); border-radius:15px; background:var(--card); box-shadow:0 7px 18px rgb(21 34 56 / 4%); }
+    .step:not(:last-child)::after { position:absolute; z-index:1; top:50%; right:-15px; width:16px; height:2px; background:#aebdd1; content:""; }
+    .step:not(:last-child)::before { position:absolute; z-index:2; top:calc(50% - 4px); right:-15px; border-width:5px 0 5px 7px; border-style:solid; border-color:transparent transparent transparent #aebdd1; content:""; }
+    .number { display:grid; width:31px; height:31px; place-items:center; border-radius:50%; color:#fff; background:var(--blue); font-size:.85rem; font-weight:800; }
+    .step:nth-child(2) .number { background:var(--teal); } .step:nth-child(3) .number { background:var(--violet); } .step:nth-child(4) .number { background:var(--amber); } .step:nth-child(5) .number { background:var(--red); }
+    h3 { margin:14px 0 5px; font-size:1rem; } .step p { margin:0; color:var(--muted); font-size:.9rem; }
+    .outcome { display:flex; gap:18px; align-items:center; margin-top:25px; padding:20px 24px; border-left:5px solid var(--teal); border-radius:10px; background:#e9f8f4; } .outcome strong { white-space:nowrap; } .outcome span { color:#35655d; }
+    .diagram { overflow:auto; margin-top:28px; padding:25px; border:1px solid var(--line); border-radius:18px; background:var(--card); box-shadow:0 7px 18px rgb(21 34 56 / 4%); }
+    svg { display:block; min-width:820px; width:100%; height:auto; } svg text { font-family:Inter, ui-sans-serif, system-ui, sans-serif; fill:var(--ink); } .svg-label { font-size:16px; font-weight:750; } .svg-copy { fill:#617087; font-size:13px; } .svg-cap { fill:#617087; font-size:12px; font-weight:750; letter-spacing:1.3px; } .svg-arrow { fill:none; stroke:#8a9bb3; stroke-width:2.2; marker-end:url(#arrow); } .svg-dash { fill:none; stroke:#8a9bb3; stroke-width:2.2; stroke-dasharray:6 5; marker-end:url(#arrow); }
+    .legend { display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; color:var(--muted); font-size:.87rem; } .key { display:flex; gap:7px; align-items:center; } .swatch { width:12px; height:12px; border-radius:3px; } .dash { width:22px; border-top:2px dashed #8a9bb3; }
+    .facts { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-top:26px; } .fact { padding:20px; border:1px solid var(--line); border-radius:13px; background:#fff; } .fact b { display:block; margin-bottom:5px; color:var(--blue); font-size:1.3rem; } .fact span { color:var(--muted); font-size:.9rem; }
+    footer { padding:28px; color:#7d8ba0; border-top:1px solid var(--line); text-align:center; font-size:.86rem; }
+    @media (max-width:760px) { header { padding-top:48px; padding-bottom:48px; } main { width:min(100% - 28px, 1120px); } .flow { grid-template-columns:1fr; gap:20px; } .step { min-height:0; } .step:not(:last-child)::after { top:auto; right:auto; bottom:-20px; left:50%; width:2px; height:20px; } .step:not(:last-child)::before { top:auto; right:auto; bottom:-20px; left:calc(50% - 4px); border-width:7px 5px 0; border-color:#aebdd1 transparent transparent; } .facts { grid-template-columns:1fr; } .outcome { align-items:flex-start; flex-direction:column; gap:5px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">jagent · personal job-search assistant</p>
+    <h1>Less job-board noise. More time for the right roles.</h1>
+    <p>jagent gathers openings from many places, identifies the roles that fit your profile, and gives you one focused place to decide what to do next.</p>
+  </header>
+  <main>
+    <section aria-labelledby="user-flow-title">
+      <p class="audience">For job seekers</p>
+      <h2 id="user-flow-title">Your daily workflow</h2>
+      <p class="intro">The system does the repetitive searching and sorting. You remain in control of the profile, the shortlist, and every application decision.</p>
+      <div class="flow" aria-label="Five-step job search flow">
+        <article class="step"><span class="number">1</span><h3>Describe your target</h3><p>Add your experience, preferred roles, locations, and deal-breakers.</p></article>
+        <article class="step"><span class="number">2</span><h3>Jobs are collected</h3><p>Openings arrive from job boards, company systems, feeds, and saved imports.</p></article>
+        <article class="step"><span class="number">3</span><h3>Duplicates disappear</h3><p>The same role from several sites is combined into one clear listing.</p></article>
+        <article class="step"><span class="number">4</span><h3>Best fits rise up</h3><p>Eligible roles are ranked against your profile and the strongest matches are explained.</p></article>
+        <article class="step"><span class="number">5</span><h3>You decide</h3><p>Review the shortlist, then apply, save for later, or skip with a reason.</p></article>
+      </div>
+      <div class="outcome"><strong>What you get</strong><span>A smaller, explainable queue of relevant openings—plus a lightweight record of your application decisions.</span></div>
+    </section>
+
+    <section aria-labelledby="technical-title">
+      <p class="audience">For technical readers</p>
+      <h2 id="technical-title">How the pipeline is assembled</h2>
+      <p class="intro">A scheduled Python pipeline fetches and stores jobs, applies deterministic filters and semantic ranking, then enriches the shortlist for a local review dashboard.</p>
+      <div class="diagram">
+        <svg viewBox="0 0 1050 488" role="img" aria-labelledby="svg-title svg-desc">
+          <title id="svg-title">jagent technical architecture</title><desc id="svg-desc">External sources feed a Python collector, a PostgreSQL pgvector database, matching and analysis services, and a local dashboard.</desc>
+          <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#8a9bb3"/></marker></defs>
+          <text x="32" y="30" class="svg-cap">INPUTS</text><text x="300" y="30" class="svg-cap">COLLECT &amp; STORE</text><text x="620" y="30" class="svg-cap">MATCH &amp; ENRICH</text><text x="881" y="30" class="svg-cap">REVIEW</text>
+          <rect x="30" y="56" width="205" height="97" rx="12" fill="#e9f1ff" stroke="#9bbced"/><text x="51" y="88" class="svg-label">Job sources</text><text x="51" y="112" class="svg-copy">APIs · RSS · HTML</text><text x="51" y="132" class="svg-copy">ATS boards · local imports</text>
+          <rect x="30" y="210" width="205" height="91" rx="12" fill="#fff4df" stroke="#efca83"/><text x="51" y="242" class="svg-label">Your inputs</text><text x="51" y="266" class="svg-copy">Profile · preferences · filters</text><text x="51" y="286" class="svg-copy">Review decisions</text>
+          <rect x="292" y="56" width="218" height="97" rx="12" fill="#e4f7f3" stroke="#8bcec4"/><text x="313" y="88" class="svg-label">Python runner</text><text x="313" y="112" class="svg-copy">Fetch, validate, deduplicate</text><text x="313" y="132" class="svg-copy">Record each source outcome</text>
+          <rect x="292" y="210" width="218" height="144" rx="12" fill="#f1edff" stroke="#b9a9ec"/><text x="313" y="244" class="svg-label">PostgreSQL + pgvector</text><text x="313" y="268" class="svg-copy">Postings &amp; source-run history</text><text x="313" y="288" class="svg-copy">Profiles &amp; section vectors</text><text x="313" y="308" class="svg-copy">Matches, analysis &amp; reviews</text><text x="313" y="332" class="svg-copy">UTC timestamps · local container</text>
+          <rect x="566" y="56" width="246" height="97" rx="12" fill="#e9f1ff" stroke="#9bbced"/><text x="587" y="88" class="svg-label">Matching</text><text x="587" y="112" class="svg-copy">Eligibility filters + embeddings</text><text x="587" y="132" class="svg-copy">Similarity score and queue cutoff</text>
+          <rect x="566" y="210" width="246" height="98" rx="12" fill="#fff0f1" stroke="#e5a2a7"/><text x="587" y="242" class="svg-label">Analysis</text><text x="587" y="266" class="svg-copy">Structured job facts + evidence</text><text x="587" y="286" class="svg-copy">Readable match explanation</text>
+          <rect x="868" y="119" width="155" height="143" rx="12" fill="#e4f7f3" stroke="#8bcec4"/><text x="889" y="153" class="svg-label">Dashboard</text><text x="889" y="178" class="svg-copy">Ranked queue</text><text x="889" y="198" class="svg-copy">Filters &amp; health</text><text x="889" y="218" class="svg-copy">Apply · later · skip</text><text x="889" y="242" class="svg-copy">Local web service</text>
+          <path d="M235 104 H292" class="svg-arrow"/><path d="M401 153 V210" class="svg-arrow"/><path d="M235 255 H292" class="svg-arrow"/><path d="M510 258 H540 V104 H566" class="svg-arrow"/><path d="M510 282 H540 V259 H566" class="svg-arrow"/><path d="M812 104 H840 V173 H868" class="svg-arrow"/><path d="M812 259 H840 V208 H868" class="svg-arrow"/><path d="M868 239 H835 V380 H401 V354" class="svg-arrow"/>
+          <rect x="593" y="389" width="190" height="54" rx="10" fill="#fff" stroke="#c8d3e1"/><text x="610" y="412" class="svg-label" style="font-size:14px">Configured AI APIs</text><text x="610" y="430" class="svg-copy">embeddings + chat analysis</text><path d="M688 389 V308" class="svg-dash"/>
+        </svg>
+        <div class="legend"><span class="key"><span class="swatch" style="background:#e9f1ff"></span>processing</span><span class="key"><span class="swatch" style="background:#f1edff"></span>durable data</span><span class="key"><span class="swatch" style="background:#e4f7f3"></span>user-facing service</span><span class="key"><span class="dash"></span>configured external API</span></div>
+      </div>
+      <div class="facts">
+        <div class="fact"><b>Source isolation</b><span>One broken source is recorded without preventing the remaining sources from running.</span></div>
+        <div class="fact"><b>Reusable results</b><span>Vectors and analysis are cached by model so unchanged work is not repeated.</span></div>
+        <div class="fact"><b>Human decision point</b><span>Ranking and explanations support review; they never apply to a job for you.</span></div>
+      </div>
+    </section>
+  </main>
+  <footer>jagent · Personal job-search pipeline · Python, PostgreSQL, pgvector</footer>
+</body>
+</html>
