@@ -1,0 +1,48 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 42232,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "f2eed030b145",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:52:39.906006+00:00",
+  "content": "{\n  \"seniority\": \"mid\",\n  \"required_languages\": [\"Albanian\", \"English\"],\n  \"employment_types\": null,\n  \"salary\": null,\n  \"evidence\": {\n    \"seniority\": \"At least 1-2 years’ experience in a similar position, in the sector.\",\n    \"required_languages\": \"Albanian and advanced English, a third language will be highly valuable.\",\n    \"employment_types\": null,\n    \"salary\": null\n  },\n  \"explanation\": \"No matched skills are evident, as the profile's Python, ML/NLP, data science, MLOps, and computer vision experience does not align with the Bar Manager role. The posting instead requires hospitality/F&B, bar operations, inventory, POS/REVO, HACCP, Office 365, Albanian and advanced English, and 1-2 years in a similar F&B position, all missing from the profile.\"\n}",
+  "analysis": {
+    "seniority": "mid",
+    "required_languages": [
+      "Albanian",
+      "English"
+    ],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "At least 1-2 years’ experience in a similar position, in the sector.",
+      "required_languages": "Albanian and advanced English, a third language will be highly valuable.",
+      "employment_types": null,
+      "salary": null
+    },
+    "explanation": "No matched skills are evident, as the profile's Python, ML/NLP, data science, MLOps, and computer vision experience does not align with the Bar Manager role. The posting instead requires hospitality/F&B, bar operations, inventory, POS/REVO, HACCP, Office 365, Albanian and advanced English, and 1-2 years in a similar F&B position, all missing from the profile."
+  },
+  "error": null,
+  "total_tokens": 4902,
+  "latency_seconds": 21.606109,
+  "usage": {
+    "completion_tokens": 3161,
+    "prompt_tokens": 1741,
+    "total_tokens": 4902,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 2963
+    }
+  },
+  "cost_usd": 0.0025893,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

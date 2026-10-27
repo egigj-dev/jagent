@@ -1,0 +1,42 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 9547,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "e78e2ab18024",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:56:35.675817+00:00",
+  "content": "{\"seniority\":\"lead\",\"required_languages\":[],\"employment_types\":null,\"salary\":null,\"evidence\":{\"seniority\":\"The Field CTO is the senior-most technical leader in the field organization.\"},\"explanation\":\"The profile shows matched Python, SQL, Docker, AWS, and ML/AI project experience, but the posting requires 12+ years in BI/data platform roles with 5+ in customer-facing technical leadership, enterprise selling, and deep cloud data warehouse expertise. It is missing Snowflake/Databricks/BigQuery/Redshift depth, security architecture (PrivateLink, OAuth, SAML, SCIM), dbt/Fivetran/Matillion, and executive-level Field CTO leadership.\"}",
+  "analysis": {
+    "seniority": "lead",
+    "required_languages": [],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "The Field CTO is the senior-most technical leader in the field organization."
+    },
+    "explanation": "The profile shows matched Python, SQL, Docker, AWS, and ML/AI project experience, but the posting requires 12+ years in BI/data platform roles with 5+ in customer-facing technical leadership, enterprise selling, and deep cloud data warehouse expertise. It is missing Snowflake/Databricks/BigQuery/Redshift depth, security architecture (PrivateLink, OAuth, SAML, SCIM), dbt/Fivetran/Matillion, and executive-level Field CTO leadership."
+  },
+  "error": null,
+  "total_tokens": 3954,
+  "latency_seconds": 13.68165,
+  "usage": {
+    "completion_tokens": 1681,
+    "prompt_tokens": 2273,
+    "total_tokens": 3954,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1530
+    }
+  },
+  "cost_usd": 0.00161946,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}
