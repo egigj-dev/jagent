@@ -1,14 +1,17 @@
-# Filter tests; NOW fixes UTC activity dates and FILTERS loads the exact starter terms.
+# Filter tests; NOW fixes UTC activity dates and FILTERS defines search terms for the cases below.
 from datetime import UTC, datetime, timedelta
-import json
-from pathlib import Path
 
 import pytest
 
 from jagent.filters import is_active, matches, passing_postings
 
 NOW = datetime(2026, 10, 6, 12, tzinfo=UTC)
-FILTERS = json.loads((Path(__file__).resolve().parent.parent / "filters.json").read_text())
+FILTERS = {
+    "countries": ["Germany", "Berlin", "Albania", "Shqiperi", "Tirane", "Istanbul"],
+    "remote_regions": ["Worldwide", "Europe", "EMEA", "EU"],
+    "remote_excluded": ["US only", "US based"],
+    "exclude_title_keywords": ["sales", "account executive"],
+}
 
 
 def posting(**updates):

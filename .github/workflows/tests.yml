@@ -11,7 +11,7 @@ jobs:
         image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: jagent
-          POSTGRES_PASSWORD: test-password
+          POSTGRES_HOST_AUTH_METHOD: trust
           POSTGRES_DB: jagent
           TZ: UTC
         ports:
@@ -22,7 +22,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     env:
-      DATABASE_URL: postgresql://jagent:test-password@127.0.0.1:5434/jagent
+      DATABASE_URL: postgresql://jagent@127.0.0.1:5434/jagent
       JAGENT_TEST_POSTGRES: "1"
     steps:
       - uses: actions/checkout@v4
