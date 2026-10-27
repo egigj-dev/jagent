@@ -1,0 +1,18 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 31901,
+  "source": "himalayas",
+  "source_id": "https://himalayas.app/companies/company-672d4b157892/jobs/company-7edf1144f78e",
+  "title": "Laravel Full Stack Developer (Cabinet Office)",
+  "company": "Company bbc48860c81d",
+  "description": "<p><strong>SOFTWARE DEVELOPER | LARAVEL DEVELOPER | CONTRACT | REMOTE | UK | OUTSIDE IR35 | £500 - £600PD | GOVERNMENT | PHP | LIVEWIRE |</strong></p><p>BSQ Talent is on a mission to find a standout Software Developer/Laravel Developer to dive into an exciting project with a leading government organisation. </p><p>If you're passionate about creating exceptional user experiences and thrive in a dynamic environment, see below. </p><h3>CONTRACT DETAILS:</h3><ul>\n<li>UK Fully Remote </li>\n<li>Duration: 3 months</li>\n<li>Outside IR35</li>\n<li>£500  £600pd </li>\n</ul><h3>MUST HAVES: </h3><ul>\n<li>Active SC Clearance </li>\n<li>Expertise in Laravel and Livewire</li>\n<li>Proficiency in HTML, CSS/SCSS, JavaScript and PHP </li>\n<li>Familiarity with version control, test-driven development, and automated testing platforms</li>\n<li>Experience with UK Government Design System and standards.</li>\n</ul><p>If you have an active SC Clearance and match the skills above, please apply now to be considered for an immediate telephone interview or contact BSQ Talent for more information. </p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+  "locations": [
+    "United Kingdom"
+  ],
+  "url": "https://himalayas.app/companies/company-672d4b157892/jobs/company-7edf1144f78e",
+  "similarity": 0.42595702665826884,
+  "percentile": 69.23172861062609,
+  "queued": false,
+  "posting_date": "2026-10-01T03:22:39+00:00",
+  "selection": "spread"
+}

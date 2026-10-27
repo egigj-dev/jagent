@@ -1,0 +1,19 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 49489,
+  "source": "duapune",
+  "source_id": "121801",
+  "title": "Accounting Specialist",
+  "company": "Company 73cf3d9bd24d",
+  "description": "Kontabël",
+  "locations": [
+    "Tirane",
+    "Albania"
+  ],
+  "url": "https://duapune.com/jobs/121801-company-11a5b4d70110",
+  "similarity": 0.29740080677248204,
+  "percentile": 15.390371663756547,
+  "queued": false,
+  "posting_date": "2026-10-14T13:16:09.715963+00:00",
+  "selection": "spread"
+}

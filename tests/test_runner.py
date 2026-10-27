@@ -91,7 +91,7 @@ def test_duplicate_with_null_remote_in_postgres(existing_remote):
         """)
         first = Posting(
             source="hn_hiring", source_id="49922593",
-            company="Shepherd (Series B)", title="ONSITE",
+            company="Company def3735d7a0d (Series B)", title="ONSITE",
             url="https://news.ycombinator.com/item?id=49922593",
             locations=["London"], remote=existing_remote,
         )

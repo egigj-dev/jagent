@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss">
+<rss version="2.0">
   <channel>
     <title>We Work Remotely: Remote jobs in design, programming, marketing and more</title>
     <link>https://weworkremotely.com/remote-jobs.rss</link>
@@ -7,11 +6,11 @@
     <language>en-US</language>
     <ttl>60</ttl>
     <item>
-      <title>AssemblyAI: Senior Research Engineer</title>
+      <title>Company 71e6d3836a65: Senior Research Engineer</title>
       <region>Anywhere in the World</region>
-      <country></country>
-      <state></state>
-      <skills></skills>
+      <country />
+      <state />
+      <skills />
       <category>Design</category>
       <type>Full-Time</type>
       <description>
@@ -20,15 +19,15 @@
   &lt;strong&gt;Headquarters:&lt;/strong&gt; Remote
 &lt;/p&gt;
 
-&lt;div class="content-intro"&gt;&lt;h3&gt;&lt;strong&gt;Why AssemblyAI&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;AssemblyAI builds the best-in-class Voice AI models powering the next generation of voice applications. Our models serve 600M+ inference calls monthly, process 1M+ hours of audio daily, and power 2 billion+ end-user experiences. The Voice AI space is at an inflection point; we’re looking for folks truly excited to join a small team and help define the future of the industry.&lt;/p&gt;
+&lt;div class="content-intro"&gt;&lt;h3&gt;&lt;strong&gt;Why Company 71e6d3836a65&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Company 71e6d3836a65 builds the best-in-class Voice AI models powering the next generation of voice applications. Our models serve 600M+ inference calls monthly, process 1M+ hours of audio daily, and power 2 billion+ end-user experiences. The Voice AI space is at an inflection point; we’re looking for folks truly excited to join a small team and help define the future of the industry.&lt;/p&gt;
 &lt;p&gt;We are one of the most capital-efficient AI companies on the planet - with under 100 people generating roughly $600K ARR per employee, we sit among the top 5 most revenue-dense teams within the fastest-growing AI companies today. That's not an accident; it's a deliberate choice to stay lean, move fast, and give every person on the team outsized ownership and impact. With thousands of customers including Granola, Fireflies, Figure AI, and CallRail, the company has real scale - processing over 2 million hours of audio daily and handling more than 1 million API calls every day. This is a rare growth-stage opportunity where the business is proven and the trajectory is steep, but the team is still small enough that your fingerprints are on everything.&lt;/p&gt;
-&lt;p&gt;If you've ever felt buried under layers of bureaucracy, starved of real ownership, or frustrated watching your work disappear into a slow-moving org, AssemblyAI is built differently. The company operates as a true meritocracy, with no heavy planning or approval processes and no gatekeeping on the tools or information you need. For anyone who genuinely cares about voice AI, not as a trend to chase, but as a technology to build,&amp;nbsp; this is the place where the most interesting problems at the most interesting scale are being solved by a team small enough that you'll actually know everyone's name.&lt;/p&gt;
+&lt;p&gt;If you've ever felt buried under layers of bureaucracy, starved of real ownership, or frustrated watching your work disappear into a slow-moving org, Company 71e6d3836a65 is built differently. The company operates as a true meritocracy, with no heavy planning or approval processes and no gatekeeping on the tools or information you need. For anyone who genuinely cares about voice AI, not as a trend to chase, but as a technology to build,  this is the place where the most interesting problems at the most interesting scale are being solved by a team small enough that you'll actually know everyone's name.&lt;/p&gt;
 &lt;p&gt;We’re committed to creating a space where our employees can bring their full selves to work and have equal opportunity to succeed. No matter your race, gender identity or expression, sexual orientation, religion, origin, ability, age, veteran status, if joining this mission speaks to you, we encourage you to apply!&lt;/p&gt;&lt;/div&gt;&lt;h2&gt;&lt;strong&gt;About the Role&lt;/strong&gt;&lt;/h2&gt;
 &lt;p&gt;We're looking for a &lt;strong&gt;Senior Research Engineer&lt;/strong&gt; to join our Research team, developing and improving the systems behind large-scale distributed training, data processing, and inference. Our goal as an organization is to solve customer problems and improve our products quickly through model development and measurement — and how fast we move depends on how quickly anyone here can run an experiment, measure it, and find out what's wrong. Raising that ceiling is the heart of this role. You'll be working inside the pipeline you're improving, not alongside it.&lt;/p&gt;
 &lt;p&gt;The ideal candidate has a deep understanding of modern deep learning systems, combined with strong engineering expertise across JAX and TPUs, layer-level optimization, large-scale distributed training, streaming, low-latency and asynchronous inference, inference compilers, and advanced parallelization techniques.&lt;/p&gt;
 &lt;p&gt;This is a cross-functional role. You'll work closely with our researchers, our infrastructure team, and production engineering — not as a handoff point, but as the person who learns enough of each domain to follow problems through to resolution. At times you'll train models, run evaluations, and analyze data yourself, both to deliver impact directly and to learn what's worth building to multiply the team's work. The bar is someone who understands the end-to-end impact they intend to make, measures it from the outset, and would rather find out they were wrong in a week than in a quarter. That discipline is what turns cross-functional ownership into an advantage.&lt;/p&gt;
-&lt;p&gt;The role is embedded within the Research team.&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;The role is embedded within the Research team. &lt;/p&gt;
 &lt;h2&gt;&lt;strong&gt;What You’ll Do&lt;/strong&gt;&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;Raise the team's experimental velocity — make it faster to launch an experiment job, get a number back you can trust, and know what to try next.&lt;/li&gt;
@@ -54,32 +53,32 @@
 &lt;/ul&gt;
 &lt;h2&gt;&lt;strong&gt;Bonus&lt;/strong&gt;&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Domain knowledge in Speech-to-Text:&lt;/strong&gt; ASR architectures, audio processing, streaming inference.&amp;nbsp;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Domain knowledge in Speech-to-Text:&lt;/strong&gt; ASR architectures, audio processing, streaming inference. &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;Pay Transparency:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;AssemblyAI strives to recruit and retain exceptional talent from diverse backgrounds while ensuring pay equity for our team. Our salary ranges are based on paying competitively for our size, stage, and industry, and are one part of many compensation, benefit, and other reward opportunities we provide.&lt;/p&gt;
+&lt;p&gt;Company 71e6d3836a65 strives to recruit and retain exceptional talent from diverse backgrounds while ensuring pay equity for our team. Our salary ranges are based on paying competitively for our size, stage, and industry, and are one part of many compensation, benefit, and other reward opportunities we provide.&lt;/p&gt;
 &lt;p&gt;There are many factors that go into salary determinations, including relevant experience, skill level, qualifications assessed during the interview process, and maintaining internal equity with peers on the team. The range shared below is a general expectation for the function as posted, but we are also open to considering candidates who may be more or less experienced than outlined in the job description. In this case, we will communicate any updates in the expected salary range.&lt;/p&gt;
 &lt;p&gt;The provided range is the expected salary for candidates in the U.S. Outside of those regions, there may be a change in the range which will be communicated to candidates throughout the interview process.&lt;/p&gt;
 &lt;p&gt;Salary range: $270,000 - $310,000&lt;/p&gt;&lt;div class="content-conclusion"&gt;&lt;h3&gt;&lt;strong&gt;AI to Interview:&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;If you’re selected for an interview, please review this &lt;a href="https://www.assemblyai.com/candidate-ai-guidance"&gt;resource&lt;/a&gt; to better understand how AssemblyAI approaches the use of AI in our interview process.&lt;/p&gt;
+&lt;p&gt;If you’re selected for an interview, please review this &lt;a href="https://company-cc05b8faba8f.example.com/company-de61d96449f8"&gt;resource&lt;/a&gt; to better understand how Company 71e6d3836a65 approaches the use of AI in our interview process.&lt;/p&gt;
 &lt;h3&gt;&lt;strong&gt;GDPR privacy notice:&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;Candidates from the EU should review &lt;a href="https://www.assemblyai.com/legal/gdpr-job-applicant-and-worker-privacy-notice"&gt;this job applicant privacy notice&lt;/a&gt; before applying.&amp;nbsp;&lt;/p&gt;
-&lt;h3&gt;&lt;strong&gt;Keep Exploring AssemblyAI:&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;&lt;a href="https://www.assemblyai.com/products/speech-to-text"&gt;Speech-to-text&lt;/a&gt; | &lt;a href="https://www.assemblyai.com/products/streaming-speech-to-text"&gt;Streaming speech-to-text&lt;/a&gt; | &lt;a href="https://www.assemblyai.com/products/speech-understanding"&gt;Speech Understanding&lt;/a&gt; | &lt;a href="https://www.assemblyai.com/products/llm-gateway"&gt;LLM Gateway&lt;br&gt;&lt;/a&gt;&lt;a href="https://www.assemblyai.com/playground/source"&gt;Try the Playground&lt;/a&gt;&lt;br&gt;&lt;a href="https://www.assemblyai.com/blog/announcing-our-50m-series-c-to-build-superhuman-speech-ai-models/"&gt;Our $50M Series C fundraise&lt;/a&gt;&lt;br&gt;&lt;a href="https://www.youtube.com/@AssemblyAI"&gt;Check us out on YouTube!&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;p&gt;Candidates from the EU should review &lt;a href="https://company-cc05b8faba8f.example.com/company-a708df92c9e4/company-63991a0dbaf7"&gt;this job applicant privacy notice&lt;/a&gt; before applying. &lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;Keep Exploring Company 71e6d3836a65:&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-f9b954eac601"&gt;Speech-to-text&lt;/a&gt; | &lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-a07e9183afa0"&gt;Streaming speech-to-text&lt;/a&gt; | &lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-c22dfabd3a42"&gt;Speech Understanding&lt;/a&gt; | &lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-1a89c40bda2b"&gt;LLM Gateway&lt;br&gt;&lt;/a&gt;&lt;a href="https://company-cc05b8faba8f.example.com/company-f3cc87f78b21/company-41cf6794ba42"&gt;Try the Playground&lt;/a&gt;&lt;br&gt;&lt;a href="https://company-cc05b8faba8f.example.com/company-def53e95f1fc/company-73642c345c39/"&gt;Our $50M Series C fundraise&lt;/a&gt;&lt;br&gt;&lt;a href="https://company-6860776e5611.example.com/company-02f751e8f1d7"&gt;Check us out on YouTube!&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/assemblyai-senior-research-engineer"&gt;https://weworkremotely.com/remote-jobs/assemblyai-senior-research-engineer&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/company-7ea8d3ae8312"&gt;https://weworkremotely.com/remote-jobs/company-7ea8d3ae8312&lt;/a&gt;&lt;/p&gt;
 </description>
       <pubDate>Sun, 04 Oct 2026 07:31:28 +0000</pubDate>
       <expires_at>Tue, 03 Nov 2026 07:31:28 +0000</expires_at>
-      <guid>https://weworkremotely.com/remote-jobs/assemblyai-senior-research-engineer</guid>
-      <link>https://weworkremotely.com/remote-jobs/assemblyai-senior-research-engineer</link>
+      <guid>https://weworkremotely.com/remote-jobs/company-7ea8d3ae8312</guid>
+      <link>https://weworkremotely.com/remote-jobs/company-7ea8d3ae8312</link>
     </item>
     <item>
-      <title>Descript: Account Executive</title>
+      <title>Company 71e3b7ab11b5: Account Executive</title>
       <region>Anywhere in the World</region>
-      <country></country>
-      <state></state>
-      <skills></skills>
+      <country />
+      <state />
+      <skills />
       <category>Sales and Marketing</category>
       <type>Full-Time</type>
       <description>
@@ -89,8 +88,8 @@
 &lt;/p&gt;
 
 &lt;h2&gt;The Role&lt;/h2&gt;
-&lt;p&gt;We’re looking for a driven and creative Account Executive to bring Descript’s video and AI solutions to more businesses around the world.&lt;/p&gt;
-&lt;p&gt;As one of our early sales hires, you’ll help shape our sales playbook, refine our strategy, and drive new revenue growth. This role offers a rare opportunity to partner closely with Product and Marketing teams, working across the company to define the future of Descript’s enterprise and creator sales motion.&lt;/p&gt;
+&lt;p&gt;We’re looking for a driven and creative Account Executive to bring Company 71e3b7ab11b5’s video and AI solutions to more businesses around the world.&lt;/p&gt;
+&lt;p&gt;As one of our early sales hires, you’ll help shape our sales playbook, refine our strategy, and drive new revenue growth. This role offers a rare opportunity to partner closely with Product and Marketing teams, working across the company to define the future of Company 71e3b7ab11b5’s enterprise and creator sales motion.&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2&gt;What You’ll Do&lt;/h2&gt;
 &lt;ul&gt;
@@ -114,28 +113,28 @@
 &lt;li&gt;Enthusiasm for creator-oriented tools, especially in video, audio, or AI&lt;/li&gt;
 &lt;li&gt;Knowledge of media creation workflows within organizations&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
 &lt;p&gt;&lt;/p&gt;
 &lt;p&gt;The base salary range for this role is $100,000- $125,000/year and the compensation structure will follow a 50/50 base/variable split. Final offer amounts will carefully consider multiple factors, including prior experience, expertise, location, and may vary from the amount above.&lt;/p&gt;
-&lt;p&gt;#LI-Remote&lt;/p&gt;&lt;div class="content-conclusion"&gt;&lt;h2 class="p-security"&gt;About Descript&lt;/h2&gt;
-&lt;p class="p-security"&gt;Descript is building a simple, intuitive, fully-powered editing tool for video and audio — an editing tool built for the age of AI. We are a team of 150&amp;nbsp;and the backing of some of the world's greatest investors (&lt;a href="https://www.descript.com/blog/article/all-new-descript-backed-by-openai-startup-fund"&gt;OpenAI&lt;/a&gt;, &lt;a href="https://www.a16z.com/"&gt;Andreessen Horowitz&lt;/a&gt;,&amp;nbsp;&lt;a href="https://redpoint.com/"&gt;Redpoint Ventures&lt;/a&gt;, &lt;a href="https://medium.com/spark-capital/welcome-descript-a6caddb91039"&gt;Spark Capital&lt;/a&gt;).&amp;nbsp;&lt;/p&gt;
-&lt;p class="p-security"&gt;Descript is the special company that's in possession of both product market fit and the raw materials (passionate user community, great product, large market) for growth, but is still early enough that each new employee has a measurable influence on the direction of the company.&lt;/p&gt;
-&lt;p class="p-security"&gt;Benefits include a generous healthcare package, 401k matching program, catered lunches, and flexible vacation time.&amp;nbsp;&lt;a href="https://tours.momentumvirtualtours.com/tours/WtZKwedwv"&gt;Our headquarters&lt;/a&gt; are located in the Mission District of San Francisco, CA. We're hiring for a mix of remote roles and hybrid roles.&amp;nbsp; For those who are remote, we have a handful of opportunities throughout the year for in person collaboration.&amp;nbsp; For our hybrid roles, we're flexible, and you're an adult—we don't expect or mandate that you're in the office every day. We do believe there are valuable and serendipitous moments of discovery and collaboration that come from working together in person.&amp;nbsp;&lt;/p&gt;
-&lt;p class="p-security"&gt;Descript is an equal opportunity workplace—we are dedicated to equal employment opportunities regardless of race, color, ancestry, religion, sex, national origin, sexual orientation, age, citizenship, marital status, disability, gender identity, or Veteran status. We believe in actively building a team rich in diverse backgrounds, experiences, and opinions to better allow our employees, products, and community to thrive.&amp;nbsp;&lt;/p&gt;&lt;/div&gt;
+&lt;p&gt;#LI-Remote&lt;/p&gt;&lt;div class="content-conclusion"&gt;&lt;h2 class="p-security"&gt;About Company 71e3b7ab11b5&lt;/h2&gt;
+&lt;p class="p-security"&gt;Company 71e3b7ab11b5 is building a simple, intuitive, fully-powered editing tool for video and audio — an editing tool built for the age of AI. We are a team of 150 and the backing of some of the world's greatest investors (&lt;a href="https://company-5bfcb4694dee.example.com/company-def53e95f1fc/company-84393add8c48/company-26758a9fa567"&gt;OpenAI&lt;/a&gt;, &lt;a href="https://company-78ca325555f6.example.com/"&gt;Andreessen Horowitz&lt;/a&gt;, &lt;a href="https://company-a80ee8700d1a.example.com/"&gt;Redpoint Ventures&lt;/a&gt;, &lt;a href="https://company-4609d127e39f.example.com/company-145348fbc3f3/company-2a7cd3daf285"&gt;Spark Capital&lt;/a&gt;). &lt;/p&gt;
+&lt;p class="p-security"&gt;Company 71e3b7ab11b5 is the special company that's in possession of both product market fit and the raw materials (passionate user community, great product, large market) for growth, but is still early enough that each new employee has a measurable influence on the direction of the company.&lt;/p&gt;
+&lt;p class="p-security"&gt;Benefits include a generous healthcare package, 401k matching program, catered lunches, and flexible vacation time. &lt;a href="https://company-df744d70773d.example.com/company-69b60601ca00/company-09e049a8b8d5"&gt;Our headquarters&lt;/a&gt; are located in the Mission District of San Francisco, CA. We're hiring for a mix of remote roles and hybrid roles.  For those who are remote, we have a handful of opportunities throughout the year for in person collaboration.  For our hybrid roles, we're flexible, and you're an adult—we don't expect or mandate that you're in the office every day. We do believe there are valuable and serendipitous moments of discovery and collaboration that come from working together in person. &lt;/p&gt;
+&lt;p class="p-security"&gt;Company 71e3b7ab11b5 is an equal opportunity workplace—we are dedicated to equal employment opportunities regardless of race, color, ancestry, religion, sex, national origin, sexual orientation, age, citizenship, marital status, disability, gender identity, or Veteran status. We believe in actively building a team rich in diverse backgrounds, experiences, and opinions to better allow our employees, products, and community to thrive. &lt;/p&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/descript-account-executive"&gt;https://weworkremotely.com/remote-jobs/descript-account-executive&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/company-40e351b43679"&gt;https://weworkremotely.com/remote-jobs/company-40e351b43679&lt;/a&gt;&lt;/p&gt;
 </description>
       <pubDate>Sun, 04 Oct 2026 07:31:28 +0000</pubDate>
       <expires_at>Tue, 03 Nov 2026 07:31:28 +0000</expires_at>
-      <guid>https://weworkremotely.com/remote-jobs/descript-account-executive</guid>
-      <link>https://weworkremotely.com/remote-jobs/descript-account-executive</link>
+      <guid>https://weworkremotely.com/remote-jobs/company-40e351b43679</guid>
+      <link>https://weworkremotely.com/remote-jobs/company-40e351b43679</link>
     </item>
     <item>
-      <title>AssemblyAI: Senior GTM AI Engineer</title>
+      <title>Company 71e6d3836a65: Senior GTM AI Engineer</title>
       <region>Anywhere in the World</region>
-      <country></country>
-      <state></state>
-      <skills></skills>
+      <country />
+      <state />
+      <skills />
       <category>Design</category>
       <type>Full-Time</type>
       <description>
@@ -144,17 +143,17 @@
   &lt;strong&gt;Headquarters:&lt;/strong&gt; Remote - North America
 &lt;/p&gt;
 
-&lt;div class="content-intro"&gt;&lt;h3&gt;&lt;strong&gt;Why AssemblyAI&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;AssemblyAI builds the best-in-class Voice AI models powering the next generation of voice applications. Our models serve 600M+ inference calls monthly, process 1M+ hours of audio daily, and power 2 billion+ end-user experiences. The Voice AI space is at an inflection point; we’re looking for folks truly excited to join a small team and help define the future of the industry.&lt;/p&gt;
+&lt;div class="content-intro"&gt;&lt;h3&gt;&lt;strong&gt;Why Company 71e6d3836a65&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Company 71e6d3836a65 builds the best-in-class Voice AI models powering the next generation of voice applications. Our models serve 600M+ inference calls monthly, process 1M+ hours of audio daily, and power 2 billion+ end-user experiences. The Voice AI space is at an inflection point; we’re looking for folks truly excited to join a small team and help define the future of the industry.&lt;/p&gt;
 &lt;p&gt;We are one of the most capital-efficient AI companies on the planet - with under 100 people generating roughly $600K ARR per employee, we sit among the top 5 most revenue-dense teams within the fastest-growing AI companies today. That's not an accident; it's a deliberate choice to stay lean, move fast, and give every person on the team outsized ownership and impact. With thousands of customers including Granola, Fireflies, Figure AI, and CallRail, the company has real scale - processing over 2 million hours of audio daily and handling more than 1 million API calls every day. This is a rare growth-stage opportunity where the business is proven and the trajectory is steep, but the team is still small enough that your fingerprints are on everything.&lt;/p&gt;
-&lt;p&gt;If you've ever felt buried under layers of bureaucracy, starved of real ownership, or frustrated watching your work disappear into a slow-moving org, AssemblyAI is built differently. The company operates as a true meritocracy, with no heavy planning or approval processes and no gatekeeping on the tools or information you need. For anyone who genuinely cares about voice AI, not as a trend to chase, but as a technology to build,&amp;nbsp; this is the place where the most interesting problems at the most interesting scale are being solved by a team small enough that you'll actually know everyone's name.&lt;/p&gt;
+&lt;p&gt;If you've ever felt buried under layers of bureaucracy, starved of real ownership, or frustrated watching your work disappear into a slow-moving org, Company 71e6d3836a65 is built differently. The company operates as a true meritocracy, with no heavy planning or approval processes and no gatekeeping on the tools or information you need. For anyone who genuinely cares about voice AI, not as a trend to chase, but as a technology to build,  this is the place where the most interesting problems at the most interesting scale are being solved by a team small enough that you'll actually know everyone's name.&lt;/p&gt;
 &lt;p&gt;We’re committed to creating a space where our employees can bring their full selves to work and have equal opportunity to succeed. No matter your race, gender identity or expression, sexual orientation, religion, origin, ability, age, veteran status, if joining this mission speaks to you, we encourage you to apply!&lt;/p&gt;&lt;/div&gt;&lt;h2&gt;&lt;strong&gt;About the Role&lt;/strong&gt;&lt;/h2&gt;
 &lt;p&gt;We're hiring our first &lt;strong&gt;Senior GTM AI Engineer&lt;/strong&gt;. This is a software engineering job inside the revenue org. You will build the pipelines, internal tools, and agents that decide which companies we go after, how we reach them, and what our sellers see when they open their laptop in the morning.&lt;/p&gt;
 &lt;p&gt;Most of what a sales ops team used to do by hand is now something you can write software to do. Finding every company building voice AI before they contact us. Researching an account and drafting the first email. Watching product usage and telling an AE when a customer is about to expand or churn. Keeping the CRM clean without anyone filling in forms. You will build those systems, run them in production, and be judged on whether pipeline and revenue move.&lt;/p&gt;
 &lt;p&gt;Your users are our AEs, SDRs, and GTM leaders. Your job is to make a small team perform like one three times its size.&lt;/p&gt;
 &lt;h2&gt;&lt;strong&gt;What You'll Do&lt;/strong&gt;&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;Write code every day. Python services, SQL models, scheduled jobs, and small internal apps are most of the job. You'll use Claude Code and similar tools to ship in days what used to take a quarter.&lt;/li&gt;
+&lt;li&gt;Write code every day. Python services, SQL models, scheduled jobs, and small internal apps are most of the job. You'll use development tooling Code and similar tools to ship in days what used to take a quarter.&lt;/li&gt;
 &lt;li&gt;Build agents that do the work: account research, lead qualification, outreach drafting, CRM hygiene, and usage monitoring. Design them, give them tools and data, evaluate their output, and keep them running.&lt;/li&gt;
 &lt;li&gt;Turn product usage data in BigQuery and Looker into signals sellers act on: usage alerts, expansion triggers, and account health scores.&lt;/li&gt;
 &lt;li&gt;Build the account targeting machine: sourcing, enrichment, dedupe, and ICP scoring, from raw data to a ranked list in a rep's queue.&lt;/li&gt;
@@ -168,7 +167,7 @@
 &lt;li&gt;4+ years as a software engineer, data engineer, or growth/GTM engineer, with time spent shipping systems that other people depend on.&lt;/li&gt;
 &lt;li&gt;Strong Python and SQL. You have owned production automations end to end: APIs, webhooks, scheduled jobs, retries, error handling, and monitoring.&lt;/li&gt;
 &lt;li&gt;Experience building with LLMs beyond a single prompt: multi-step agents, tool use, retrieval, and evaluation. You can tell whether an agent's output is good, and you know when a plain script is the better tool.&lt;/li&gt;
-&lt;li&gt;AI-assisted development is how you work. You use Claude Code or similar tools daily, and you have the engineering judgment to review, test, and stand behind what they produce.&lt;/li&gt;
+&lt;li&gt;AI-assisted development is how you work. You use development tooling Code or similar tools daily, and you have the engineering judgment to review, test, and stand behind what they produce.&lt;/li&gt;
 &lt;li&gt;Solid fundamentals: clean code, version control, code review, debugging, and a habit of thinking in systems. You do not need an engineering team to ship.&lt;/li&gt;
 &lt;li&gt;Curiosity about how a sales org works. You don't need a RevOps background, but you need to care about how deals get found and closed, and be willing to learn our CRM and the tools around it quickly.&lt;/li&gt;
 &lt;li&gt;A builder's mindset with an operator's judgment: you scope for business impact, ship iteratively, and measure results in pipeline and revenue.&lt;/li&gt;
@@ -182,29 +181,29 @@
 &lt;li&gt;You've been the first engineer in a sales or growth org and built the function from scratch.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;Pay Transparency:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;AssemblyAI strives to recruit and retain exceptional talent from diverse backgrounds while ensuring pay equity for our team. Our salary ranges are based on paying competitively for our size, stage, and industry, and are one part of many compensation, benefit, and other reward opportunities we provide.&lt;/p&gt;
+&lt;p&gt;Company 71e6d3836a65 strives to recruit and retain exceptional talent from diverse backgrounds while ensuring pay equity for our team. Our salary ranges are based on paying competitively for our size, stage, and industry, and are one part of many compensation, benefit, and other reward opportunities we provide.&lt;/p&gt;
 &lt;p&gt;There are many factors that go into salary determinations, including relevant experience, skill level, qualifications assessed during the interview process, and maintaining internal equity with peers on the team. The range shared below is a general expectation for the function as posted, but we are also open to considering candidates who may be more or less experienced than outlined in the job description. In this case, we will communicate any updates in the expected salary range.&lt;/p&gt;
 &lt;p&gt;The provided range is the expected salary for candidates in the U.S. Outside of those regions, there may be a change in the range which will be communicated to candidates throughout the interview process.&lt;/p&gt;
 &lt;p&gt;Salary range: &lt;strong&gt;$160,000 to $220,000&lt;/strong&gt;&lt;/p&gt;&lt;div class="content-conclusion"&gt;&lt;h3&gt;&lt;strong&gt;AI to Interview:&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;If you’re selected for an interview, please review this &lt;a href="https://www.assemblyai.com/candidate-ai-guidance"&gt;resource&lt;/a&gt; to better understand how AssemblyAI approaches the use of AI in our interview process.&lt;/p&gt;
+&lt;p&gt;If you’re selected for an interview, please review this &lt;a href="https://company-cc05b8faba8f.example.com/company-de61d96449f8"&gt;resource&lt;/a&gt; to better understand how Company 71e6d3836a65 approaches the use of AI in our interview process.&lt;/p&gt;
 &lt;h3&gt;&lt;strong&gt;GDPR privacy notice:&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;Candidates from the EU should review &lt;a href="https://www.assemblyai.com/legal/gdpr-job-applicant-and-worker-privacy-notice"&gt;this job applicant privacy notice&lt;/a&gt; before applying.&amp;nbsp;&lt;/p&gt;
-&lt;h3&gt;&lt;strong&gt;Keep Exploring AssemblyAI:&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;&lt;a href="https://www.assemblyai.com/products/speech-to-text"&gt;Speech-to-text&lt;/a&gt; | &lt;a href="https://www.assemblyai.com/products/streaming-speech-to-text"&gt;Streaming speech-to-text&lt;/a&gt; | &lt;a href="https://www.assemblyai.com/products/speech-understanding"&gt;Speech Understanding&lt;/a&gt; | &lt;a href="https://www.assemblyai.com/products/llm-gateway"&gt;LLM Gateway&lt;br&gt;&lt;/a&gt;&lt;a href="https://www.assemblyai.com/playground/source"&gt;Try the Playground&lt;/a&gt;&lt;br&gt;&lt;a href="https://www.assemblyai.com/blog/announcing-our-50m-series-c-to-build-superhuman-speech-ai-models/"&gt;Our $50M Series C fundraise&lt;/a&gt;&lt;br&gt;&lt;a href="https://www.youtube.com/@AssemblyAI"&gt;Check us out on YouTube!&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;
+&lt;p&gt;Candidates from the EU should review &lt;a href="https://company-cc05b8faba8f.example.com/company-a708df92c9e4/company-63991a0dbaf7"&gt;this job applicant privacy notice&lt;/a&gt; before applying. &lt;/p&gt;
+&lt;h3&gt;&lt;strong&gt;Keep Exploring Company 71e6d3836a65:&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-f9b954eac601"&gt;Speech-to-text&lt;/a&gt; | &lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-a07e9183afa0"&gt;Streaming speech-to-text&lt;/a&gt; | &lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-c22dfabd3a42"&gt;Speech Understanding&lt;/a&gt; | &lt;a href="https://company-cc05b8faba8f.example.com/company-0a3e27b8ca81/company-1a89c40bda2b"&gt;LLM Gateway&lt;br&gt;&lt;/a&gt;&lt;a href="https://company-cc05b8faba8f.example.com/company-f3cc87f78b21/company-41cf6794ba42"&gt;Try the Playground&lt;/a&gt;&lt;br&gt;&lt;a href="https://company-cc05b8faba8f.example.com/company-def53e95f1fc/company-73642c345c39/"&gt;Our $50M Series C fundraise&lt;/a&gt;&lt;br&gt;&lt;a href="https://company-6860776e5611.example.com/company-02f751e8f1d7"&gt;Check us out on YouTube!&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/assemblyai-senior-gtm-ai-engineer"&gt;https://weworkremotely.com/remote-jobs/assemblyai-senior-gtm-ai-engineer&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/company-d83bb8f51b54"&gt;https://weworkremotely.com/remote-jobs/company-d83bb8f51b54&lt;/a&gt;&lt;/p&gt;
 </description>
       <pubDate>Sun, 04 Oct 2026 07:31:28 +0000</pubDate>
       <expires_at>Tue, 03 Nov 2026 07:31:28 +0000</expires_at>
-      <guid>https://weworkremotely.com/remote-jobs/assemblyai-senior-gtm-ai-engineer</guid>
-      <link>https://weworkremotely.com/remote-jobs/assemblyai-senior-gtm-ai-engineer</link>
+      <guid>https://weworkremotely.com/remote-jobs/company-d83bb8f51b54</guid>
+      <link>https://weworkremotely.com/remote-jobs/company-d83bb8f51b54</link>
     </item>
     <item>
-      <title>Smartsheet: Group Product Manager – Corporate Systems</title>
+      <title>Company 6cf5e6317a23: Group Product Manager – Corporate Systems</title>
       <region>Anywhere in the World</region>
-      <country></country>
-      <state></state>
-      <skills></skills>
+      <country />
+      <state />
+      <skills />
       <category>Product</category>
       <type>Full-Time</type>
       <description>
@@ -213,14 +212,14 @@
   &lt;strong&gt;Headquarters:&lt;/strong&gt; -REMOTE, USA-
 &lt;/p&gt;
 
-&lt;div class="content-intro"&gt;&lt;p&gt;For over 20 years, Smartsheet has empowered teams to manage work seamlessly and scale solutions smarter. Now, in our most ambitious chapter yet, we are uniting human teams with AI agents. By orchestrating the work agents do best, automating manual tasks and uncovering insights at scale, we create the space for people to focus on what truly matters: judgment, creativity, and big thinking. That is magic at work, and it’s what we show up for every day.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Corporate Systems Engineering&lt;/strong&gt; builds and operates the software platforms, integrations, and automations that power Smartsheet’s core business functions across Finance, Sales/GTM, and People &amp;amp; Culture.&amp;nbsp; Our team owns mission-critical systems and workflows that enable how the company hires, sells, bills, pays, reports, and scales. We operate at the intersection of software engineering, enterprise platforms, and business-critical data, treating internal systems with the same rigor, reliability, and product mindset as customer-facing software.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Corporate Systems Product Managemen&lt;/strong&gt;t focuses on the internal platforms that power how Smartsheet operates - including Finance, People, Sales and Entitlements, Billing and Monetization, Enterprise Systems Data, and AI &amp;amp; Automation. Product Managers in this team steward product strategy, roadmaps, business workflows, and long-term platform evolution across these domains, partnering closely with Engineering and business stakeholders to translate complex enterprise needs into scalable technology outcomes.&lt;/p&gt;
-&lt;p&gt;As&lt;strong&gt; Group Product Manager – Corporate Systems&lt;/strong&gt;, you will lead the Product Management function across Corporate Systems, managing and developing a team of Product Managers responsible for some of Smartsheet’s most critical internal technology domains. You will establish a cohesive product strategy across the portfolio, ensuring domain roadmaps connect to company priorities while identifying dependencies and opportunities that span traditional organizational and system boundaries.&lt;/p&gt;
+&lt;div class="content-intro"&gt;&lt;p&gt;For over 20 years, Company 6cf5e6317a23 has empowered teams to manage work seamlessly and scale solutions smarter. Now, in our most ambitious chapter yet, we are uniting human teams with AI agents. By orchestrating the work agents do best, automating manual tasks and uncovering insights at scale, we create the space for people to focus on what truly matters: judgment, creativity, and big thinking. That is magic at work, and it’s what we show up for every day.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Corporate Systems Engineering&lt;/strong&gt; builds and operates the software platforms, integrations, and automations that power Company 6cf5e6317a23’s core business functions across Finance, Sales/GTM, and People &amp; Culture.  Our team owns mission-critical systems and workflows that enable how the company hires, sells, bills, pays, reports, and scales. We operate at the intersection of software engineering, enterprise platforms, and business-critical data, treating internal systems with the same rigor, reliability, and product mindset as customer-facing software.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Corporate Systems Product Managemen&lt;/strong&gt;t focuses on the internal platforms that power how Company 6cf5e6317a23 operates - including Finance, People, Sales and Entitlements, Billing and Monetization, Enterprise Systems Data, and AI &amp; Automation. Product Managers in this team steward product strategy, roadmaps, business workflows, and long-term platform evolution across these domains, partnering closely with Engineering and business stakeholders to translate complex enterprise needs into scalable technology outcomes.&lt;/p&gt;
+&lt;p&gt;As&lt;strong&gt; Group Product Manager – Corporate Systems&lt;/strong&gt;, you will lead the Product Management function across Corporate Systems, managing and developing a team of Product Managers responsible for some of Company 6cf5e6317a23’s most critical internal technology domains. You will establish a cohesive product strategy across the portfolio, ensuring domain roadmaps connect to company priorities while identifying dependencies and opportunities that span traditional organizational and system boundaries.&lt;/p&gt;
 &lt;p&gt;You will operate at both the strategic and execution levels: coaching Product Managers to develop strong product practices, partnering with Engineering leadership on portfolio strategy and investment decisions, and directly engaging in the most complex cross-functional initiatives. You will help evolve Corporate Systems from a collection of enterprise applications and projects into a product-led portfolio of platforms, capabilities, data, integrations, and employee experiences designed for long-term scale.&lt;/p&gt;
-&lt;p&gt;You will report to the &lt;strong&gt;Senior Director of Corporate Systems&lt;/strong&gt; and collaborate closely with Engineering leadership and senior stakeholders across Finance, People &amp;amp; Culture, Sales/GTM, Product Engineering, Data, Security, and other business functions.&lt;/p&gt;
+&lt;p&gt;You will report to the &lt;strong&gt;Senior Director of Corporate Systems&lt;/strong&gt; and collaborate closely with Engineering leadership and senior stakeholders across Finance, People &amp; Culture, Sales/GTM, Product Engineering, Data, Security, and other business functions.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;You Will:&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Lead, coach, and develop a team of Product Managers responsible for Financial Systems, People Systems, Sales &amp;amp; Entitlements, Billing &amp;amp; Monetization, Enterprise Systems Data, and AI &amp;amp; Automation&lt;/li&gt;
+&lt;li&gt;Lead, coach, and develop a team of Product Managers responsible for Financial Systems, People Systems, Sales &amp; Entitlements, Billing &amp; Monetization, Enterprise Systems Data, and AI &amp; Automation&lt;/li&gt;
 &lt;li&gt;Define and evolve the product-management operating model for Corporate Systems, establishing consistent practices for product discovery, customer problem definition, roadmap development, prioritization, requirements, metrics, and lifecycle management&lt;/li&gt;
 &lt;li&gt;Establish a cohesive portfolio strategy that connects individual product domains to Corporate Systems and company-level objectives&lt;/li&gt;
 &lt;li&gt;Partner with Engineering leadership to align product and technical strategy, ensuring investments balance new capabilities with platform health, reliability, scalability, security, technical debt, and operational sustainability&lt;/li&gt;
@@ -237,7 +236,7 @@
 &lt;li&gt;Champion data-informed product management, including clear product KPIs, adoption measures, operational metrics, customer feedback, and outcome measurement&lt;/li&gt;
 &lt;li&gt;Partner with Engineering leadership to improve how Product and Engineering teams work together from discovery and design through delivery, operational readiness, adoption, and continuous improvement&lt;/li&gt;
 &lt;li&gt;Communicate portfolio strategy, investment decisions, progress, risks, dependencies, and tradeoffs clearly to senior leadership&lt;/li&gt;
-&lt;li&gt;Build strong relationships across Product Engineering, Finance, People &amp;amp; Culture, Sales/GTM, Data, Security, and other functions, influencing outcomes across organizational boundaries without direct authority&lt;/li&gt;
+&lt;li&gt;Build strong relationships across Product Engineering, Finance, People &amp; Culture, Sales/GTM, Data, Security, and other functions, influencing outcomes across organizational boundaries without direct authority&lt;/li&gt;
 &lt;li&gt;Support hiring, onboarding, performance management, career development, and capability building for the Corporate Systems Product Management team&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;You Have:&lt;/strong&gt;&lt;/p&gt;
@@ -258,43 +257,43 @@
 &lt;li&gt;Demonstrated ability to influence across organizational boundaries, navigate competing priorities, and create clarity in ambiguous environments&lt;/li&gt;
 &lt;li&gt;Experience with SaaS business models, enterprise AI, usage-based monetization, enterprise data, or large-scale business-system transformation is a strong plus&lt;/li&gt;
 &lt;li&gt;Bachelor’s degree in Business, Information Systems, Computer Science, or a related field — or equivalent practical experience. Advanced degree is a plus but not required.&lt;/li&gt;
-&lt;li&gt;&amp;nbsp;&lt;/li&gt;
-&lt;/ul&gt;&lt;div class="content-pay-transparency"&gt;&lt;div class="pay-input"&gt;&lt;div class="description"&gt;&lt;p&gt;&lt;strong&gt;Current US Perks &amp;amp; Benefits:&lt;/strong&gt;&lt;/p&gt;
+&lt;li&gt; &lt;/li&gt;
+&lt;/ul&gt;&lt;div class="content-pay-transparency"&gt;&lt;div class="pay-input"&gt;&lt;div class="description"&gt;&lt;p&gt;&lt;strong&gt;Current US Perks &amp; Benefits:&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Employer subsidized medical/vision and dental coverage for full-time employees&lt;/li&gt;
 &lt;li&gt;401k Match to help you save for your future (50% of your contribution up to the first 6% of your eligible pay)&lt;/li&gt;
 &lt;li&gt;Monthly stipend to support your work and productivity&lt;/li&gt;
 &lt;li&gt;Flexible Time Away Program, plus Sick Time Off&lt;/li&gt;
-&lt;li&gt;US employees are automatically covered under Smartsheet-sponsored life insurance, short-term, and long-term disability plans&lt;/li&gt;
+&lt;li&gt;US employees are automatically covered under Company 6cf5e6317a23-sponsored life insurance, short-term, and long-term disability plans&lt;/li&gt;
 &lt;li&gt;US employees receive 12 paid holidays per year&lt;/li&gt;
 &lt;li&gt;Up to 24 weeks of Parental Leave&lt;/li&gt;
 &lt;li&gt;Personal paid Volunteer Day to support our community&lt;/li&gt;
 &lt;li&gt;Opportunities for professional growth and development including access to Udemy online courses&lt;/li&gt;
-&lt;li&gt;Company Funded Perks, including a counseling membership, local retail discounts, and your own personal Smartsheet account&lt;/li&gt;
+&lt;li&gt;Company Funded Perks, including a counseling membership, local retail discounts, and your own personal Company 6cf5e6317a23 account&lt;/li&gt;
 &lt;li&gt;Teleworking options from any registered location in the U.S. (role specific)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Smartsheet provides a competitive base salary range for roles that may be hired in different geographic areas we are licensed to operate our business from. Actual compensation is determined by several factors including, but not limited to, level of professional, educational experience, skills, and specific candidate location. In addition, this role will be eligible for a market competitive incentive opportunity.&lt;/em&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class="title"&gt;US Base Salary Pay Range&lt;/div&gt;&lt;div class="pay-range"&gt;&lt;span&gt;$182,500&lt;/span&gt;&lt;span class="divider"&gt;—&lt;/span&gt;&lt;span&gt;$240,000 USD&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="content-conclusion"&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Company 6cf5e6317a23 provides a competitive base salary range for roles that may be hired in different geographic areas we are licensed to operate our business from. Actual compensation is determined by several factors including, but not limited to, level of professional, educational experience, skills, and specific candidate location. In addition, this role will be eligible for a market competitive incentive opportunity.&lt;/em&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class="title"&gt;US Base Salary Pay Range&lt;/div&gt;&lt;div class="pay-range"&gt;&lt;span&gt;$182,500&lt;/span&gt;&lt;span class="divider"&gt;—&lt;/span&gt;&lt;span&gt;$240,000 USD&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="content-conclusion"&gt;&lt;p&gt; &lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Get to Know Us:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;At Smartsheet, your ideas are heard, your potential is supported, and your contributions have real impact. You’ll have the freedom to explore, push boundaries, and grow beyond your role. We welcome diverse perspectives and nontraditional paths—because we know that impact comes from individuals who care deeply and challenge thoughtfully. When you’re doing work that stretches you, excites you, and connects you to something bigger, that’s magic at work. Let’s build what’s next, together.&lt;/p&gt;
+&lt;p&gt;At Company 6cf5e6317a23, your ideas are heard, your potential is supported, and your contributions have real impact. You’ll have the freedom to explore, push boundaries, and grow beyond your role. We welcome diverse perspectives and nontraditional paths—because we know that impact comes from individuals who care deeply and challenge thoughtfully. When you’re doing work that stretches you, excites you, and connects you to something bigger, that’s magic at work. Let’s build what’s next, together.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Equal Opportunity Employer:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Smartsheet is an Equal Opportunity (EEO) employer committed to fostering an inclusive environment with the best employees. It is our policy to provide equal employment opportunities to all qualified applicants in accordance with applicable laws in the US, UK, Australia, Germany, Costa Rica, Japan, Bulgaria, India, and Singapore. All qualified applicants will receive consideration without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, age, protected veteran or disabled status, or genetic information.&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Company 6cf5e6317a23 is an Equal Opportunity (EEO) employer committed to fostering an inclusive environment with the best employees. It is our policy to provide equal employment opportunities to all qualified applicants in accordance with applicable laws in the US, UK, Australia, Germany, Costa Rica, Japan, Bulgaria, India, and Singapore. All qualified applicants will receive consideration without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, age, protected veteran or disabled status, or genetic information. &lt;/p&gt;
 &lt;p&gt;If there are preparations we can make to help ensure you have a comfortable and positive interview experience, please let us know.&lt;/p&gt;
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
 &lt;p&gt;&lt;span&gt;#LI-Remote&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/smartsheet-group-product-manager-corporate-systems"&gt;https://weworkremotely.com/remote-jobs/smartsheet-group-product-manager-corporate-systems&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/company-7a9e475edbf8"&gt;https://weworkremotely.com/remote-jobs/company-7a9e475edbf8&lt;/a&gt;&lt;/p&gt;
 </description>
       <pubDate>Sun, 04 Oct 2026 07:31:27 +0000</pubDate>
       <expires_at>Tue, 03 Nov 2026 07:31:27 +0000</expires_at>
-      <guid>https://weworkremotely.com/remote-jobs/smartsheet-group-product-manager-corporate-systems</guid>
-      <link>https://weworkremotely.com/remote-jobs/smartsheet-group-product-manager-corporate-systems</link>
+      <guid>https://weworkremotely.com/remote-jobs/company-7a9e475edbf8</guid>
+      <link>https://weworkremotely.com/remote-jobs/company-7a9e475edbf8</link>
     </item>
     <item>
-      <title>Smartsheet: Director, Finance Systems &amp; ERP</title>
+      <title>Company 6cf5e6317a23: Director, Finance Systems &amp; ERP</title>
       <region>Anywhere in the World</region>
-      <country></country>
-      <state></state>
-      <skills></skills>
+      <country />
+      <state />
+      <skills />
       <category>Product</category>
       <type>Full-Time</type>
       <description>
@@ -303,19 +302,19 @@
   &lt;strong&gt;Headquarters:&lt;/strong&gt; -REMOTE, USA-
 &lt;/p&gt;
 
-&lt;div class="content-intro"&gt;&lt;p&gt;For over 20 years, Smartsheet has empowered teams to manage work seamlessly and scale solutions smarter. Now, in our most ambitious chapter yet, we are uniting human teams with AI agents. By orchestrating the work agents do best, automating manual tasks and uncovering insights at scale, we create the space for people to focus on what truly matters: judgment, creativity, and big thinking. That is magic at work, and it’s what we show up for every day.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Corporate Systems Engineering &lt;/strong&gt;builds and operates the software platforms, integrations, and automations that power Smartsheet’s core business functions across Finance, Sales/GTM, and People &amp;amp; Culture. Our team owns mission-critical systems and workflows that enable how the company hires, sells, bills, pays, reports, and scales. We operate at the intersection of software engineering, enterprise platforms, and business-critical data, treating internal systems with the same rigor, reliability, and product mindset as customer-facing software.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Financial Systems Engineering&lt;/strong&gt; owns and evolves the technology ecosystem that powers Smartsheet’s financial operations and monetization capabilities. The team is responsible for platforms including NetSuite, Coupa, Planful, Stripe, ZoneBilling, Metronome, and supporting technologies such as Avalara, along with the integrations, data, automation, and engineering capabilities that connect these platforms across the enterprise.&lt;/p&gt;
-&lt;p&gt;As&lt;strong&gt; Director, Finance Systems &amp;amp; ERP, &lt;/strong&gt;you will lead the engineering organization responsible for Smartsheet’s financial technology ecosystem and define the long-term technical strategy for how these platforms evolve. You will own the architecture, engineering maturity, technical health, and delivery of systems supporting core financial operations, procurement, planning, payments, billing, revenue processes, and emerging monetization models.&lt;/p&gt;
+&lt;div class="content-intro"&gt;&lt;p&gt;For over 20 years, Company 6cf5e6317a23 has empowered teams to manage work seamlessly and scale solutions smarter. Now, in our most ambitious chapter yet, we are uniting human teams with AI agents. By orchestrating the work agents do best, automating manual tasks and uncovering insights at scale, we create the space for people to focus on what truly matters: judgment, creativity, and big thinking. That is magic at work, and it’s what we show up for every day.&lt;/p&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Corporate Systems Engineering &lt;/strong&gt;builds and operates the software platforms, integrations, and automations that power Company 6cf5e6317a23’s core business functions across Finance, Sales/GTM, and People &amp; Culture. Our team owns mission-critical systems and workflows that enable how the company hires, sells, bills, pays, reports, and scales. We operate at the intersection of software engineering, enterprise platforms, and business-critical data, treating internal systems with the same rigor, reliability, and product mindset as customer-facing software.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Financial Systems Engineering&lt;/strong&gt; owns and evolves the technology ecosystem that powers Company 6cf5e6317a23’s financial operations and monetization capabilities. The team is responsible for platforms including NetSuite, Coupa, Planful, Stripe, ZoneBilling, Metronome, and supporting technologies such as Avalara, along with the integrations, data, automation, and engineering capabilities that connect these platforms across the enterprise.&lt;/p&gt;
+&lt;p&gt;As&lt;strong&gt; Director, Finance Systems &amp; ERP, &lt;/strong&gt;you will lead the engineering organization responsible for Company 6cf5e6317a23’s financial technology ecosystem and define the long-term technical strategy for how these platforms evolve. You will own the architecture, engineering maturity, technical health, and delivery of systems supporting core financial operations, procurement, planning, payments, billing, revenue processes, and emerging monetization models.&lt;/p&gt;
 &lt;p&gt;This is a strategic and highly visible technology leadership role. You will lead major transformation initiatives including ERP modernization, billing transformation, and the evolution toward usage-based and consumption-based monetization. You will represent Corporate Systems in executive steering committees and major transformation programs, partnering closely with Finance, Accounting, Procurement, Product Engineering, Sales/GTM, Data, and other technology leaders.&lt;/p&gt;
-&lt;p&gt;You will partner closely with Product Managers across Financial Systems and Billing &amp;amp; Monetization to combine business and product strategy with a forward-looking technical strategy. You will be expected to challenge legacy architectures and operating models, identify opportunities to simplify and automate financial processes, and determine how modern software engineering, enterprise data, automation, and AI can improve how Finance technology operates.&lt;/p&gt;
+&lt;p&gt;You will partner closely with Product Managers across Financial Systems and Billing &amp; Monetization to combine business and product strategy with a forward-looking technical strategy. You will be expected to challenge legacy architectures and operating models, identify opportunities to simplify and automate financial processes, and determine how modern software engineering, enterprise data, automation, and AI can improve how Finance technology operates.&lt;/p&gt;
 &lt;p&gt;You will report to the &lt;strong&gt;Senior Director of Corporate Systems &lt;/strong&gt;and collaborate closely with Product and Engineering leaders across the organization.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;You Will:&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Own the technical strategy and long-term architecture for Smartsheet’s financial systems ecosystem across ERP, procurement, financial planning, payments, billing, tax, revenue processes, integrations, data, automation, and AI&lt;/li&gt;
+&lt;li&gt;Own the technical strategy and long-term architecture for Company 6cf5e6317a23’s financial systems ecosystem across ERP, procurement, financial planning, payments, billing, tax, revenue processes, integrations, data, automation, and AI&lt;/li&gt;
 &lt;li&gt;Lead, coach, and develop the Financial Systems Engineering organization responsible for platforms including NetSuite, Coupa, Planful, Stripe, ZoneBilling, Metronome, Avalara, and associated technologies&lt;/li&gt;
 &lt;li&gt;Serve as the senior technology leader for NetSuite and ERP, ensuring the platform and surrounding architecture remain scalable, maintainable, secure, auditable, and aligned with the long-term needs of a complex SaaS business&lt;/li&gt;
 &lt;li&gt;Provide technology leadership for major Finance transformation programs, including ERP reimplementation and modernization, establishing architecture, engineering standards, technical governance, delivery practices, and long-term platform direction&lt;/li&gt;
-&lt;li&gt;Partner with Product Managers for Financial Systems and Billing &amp;amp; Monetization to translate product strategy and business priorities into technical roadmaps, architecture, investment decisions, and executable engineering plans&lt;/li&gt;
+&lt;li&gt;Partner with Product Managers for Financial Systems and Billing &amp; Monetization to translate product strategy and business priorities into technical roadmaps, architecture, investment decisions, and executable engineering plans&lt;/li&gt;
 &lt;li&gt;Shape the technology architecture required to support evolving SaaS monetization models, including subscription, multi-year, usage-based, consumption-based, and AI-related pricing and billing models&lt;/li&gt;
 &lt;li&gt;Partner across Product Engineering, Sales/GTM, Finance, and Corporate Systems to ensure pricing and packaging strategies can be represented reliably from quote and entitlement through provisioning, usage, billing, accounting, and revenue processes&lt;/li&gt;
 &lt;li&gt;Establish clear architectural boundaries and systems of record across CRM, product, billing, ERP, payments, tax, planning, and downstream data platforms, reducing ambiguity, duplication, and unnecessary coupling&lt;/li&gt;
@@ -331,10 +330,10 @@
 &lt;li&gt;Own the technical health and lifecycle of the Financial Systems portfolio, proactively addressing architectural debt, platform limitations, fragile integrations, unnecessary customization, manual processes, and recurring operational problems&lt;/li&gt;
 &lt;li&gt;Establish architecture reviews, technical standards, engineering metrics, platform health reviews, and other mechanisms that continuously improve the maturity of Financial Systems Engineering&lt;/li&gt;
 &lt;li&gt;Represent Financial Systems Engineering on executive steering committees, transformation governance forums, and major program reviews, clearly communicating architecture decisions, delivery status, risks, dependencies, investment needs, and tradeoffs&lt;/li&gt;
-&lt;li&gt;Provide technical leadership across implementation partners and strategic vendors, ensuring system integrators and software providers operate within Smartsheet’s architecture, engineering, security, and delivery expectations rather than allowing vendors to define the long-term architecture&lt;/li&gt;
-&lt;li&gt;Partner with Finance leadership, Accounting, FP&amp;amp;A, Procurement, Tax, Revenue, and other stakeholders to understand business strategy while maintaining clear technology ownership of architecture and engineering decisions&lt;/li&gt;
+&lt;li&gt;Provide technical leadership across implementation partners and strategic vendors, ensuring system integrators and software providers operate within Company 6cf5e6317a23’s architecture, engineering, security, and delivery expectations rather than allowing vendors to define the long-term architecture&lt;/li&gt;
+&lt;li&gt;Partner with Finance leadership, Accounting, FP&amp;A, Procurement, Tax, Revenue, and other stakeholders to understand business strategy while maintaining clear technology ownership of architecture and engineering decisions&lt;/li&gt;
 &lt;li&gt;Balance delivery of major transformation programs with operational reliability, roadmap commitments, technical debt reduction, platform modernization, security, controls, and long-term engineering investments&lt;/li&gt;
-&lt;li&gt;Build strong partnerships across Finance, Product Engineering, Sales/GTM, Data, Security, AI &amp;amp; Automation, and Corporate Systems to ensure Financial Systems operate as part of a coherent enterprise architecture&lt;/li&gt;
+&lt;li&gt;Build strong partnerships across Finance, Product Engineering, Sales/GTM, Data, Security, AI &amp; Automation, and Corporate Systems to ensure Financial Systems operate as part of a coherent enterprise architecture&lt;/li&gt;
 &lt;li&gt;Recruit, develop, and retain engineering talent with a combination of Finance platform expertise, software engineering capability, systems thinking, and curiosity about the future of financial technology&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;You Have:&lt;/strong&gt;&lt;/p&gt;
@@ -359,35 +358,35 @@
 &lt;li&gt;Demonstrated ability to challenge legacy processes and architectures constructively and lead organizations through significant technology and operating-model change&lt;/li&gt;
 &lt;li&gt;Excellent analytical, verbal, and written communication skills, with demonstrated executive presence and the ability to communicate complex technology decisions, risks, and tradeoffs clearly&lt;/li&gt;
 &lt;li&gt;Bachelor’s degree in Computer Science, Information Systems, Engineering, Finance, Business, or a related field - or equivalent practical experience&lt;/li&gt;
-&lt;/ul&gt;&lt;div class="content-pay-transparency"&gt;&lt;div class="pay-input"&gt;&lt;div class="description"&gt;&lt;p&gt;&lt;strong&gt;Current US Perks &amp;amp; Benefits:&lt;/strong&gt;&lt;/p&gt;
+&lt;/ul&gt;&lt;div class="content-pay-transparency"&gt;&lt;div class="pay-input"&gt;&lt;div class="description"&gt;&lt;p&gt;&lt;strong&gt;Current US Perks &amp; Benefits:&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Employer subsidized medical/vision and dental coverage for full-time employees&lt;/li&gt;
 &lt;li&gt;401k Match to help you save for your future (50% of your contribution up to the first 6% of your eligible pay)&lt;/li&gt;
 &lt;li&gt;Monthly stipend to support your work and productivity&lt;/li&gt;
 &lt;li&gt;Flexible Time Away Program, plus Sick Time Off&lt;/li&gt;
-&lt;li&gt;US employees are automatically covered under Smartsheet-sponsored life insurance, short-term, and long-term disability plans&lt;/li&gt;
+&lt;li&gt;US employees are automatically covered under Company 6cf5e6317a23-sponsored life insurance, short-term, and long-term disability plans&lt;/li&gt;
 &lt;li&gt;US employees receive 12 paid holidays per year&lt;/li&gt;
 &lt;li&gt;Up to 24 weeks of Parental Leave&lt;/li&gt;
 &lt;li&gt;Personal paid Volunteer Day to support our community&lt;/li&gt;
 &lt;li&gt;Opportunities for professional growth and development including access to Udemy online courses&lt;/li&gt;
-&lt;li&gt;Company Funded Perks, including a counseling membership, local retail discounts, and your own personal Smartsheet account&lt;/li&gt;
+&lt;li&gt;Company Funded Perks, including a counseling membership, local retail discounts, and your own personal Company 6cf5e6317a23 account&lt;/li&gt;
 &lt;li&gt;Teleworking options from any registered location in the U.S. (role specific)&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Smartsheet provides a competitive base salary range for roles that may be hired in different geographic areas we are licensed to operate our business from. Actual compensation is determined by several factors including, but not limited to, level of professional, educational experience, skills, and specific candidate location. In addition, this role will be eligible for a market competitive incentive opportunity.&lt;/em&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class="title"&gt;US Base Salary Pay Range&lt;/div&gt;&lt;div class="pay-range"&gt;&lt;span&gt;$175,000&lt;/span&gt;&lt;span class="divider"&gt;—&lt;/span&gt;&lt;span&gt;$290,000 USD&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="content-conclusion"&gt;&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Company 6cf5e6317a23 provides a competitive base salary range for roles that may be hired in different geographic areas we are licensed to operate our business from. Actual compensation is determined by several factors including, but not limited to, level of professional, educational experience, skills, and specific candidate location. In addition, this role will be eligible for a market competitive incentive opportunity.&lt;/em&gt;&lt;/p&gt;&lt;/div&gt;&lt;div class="title"&gt;US Base Salary Pay Range&lt;/div&gt;&lt;div class="pay-range"&gt;&lt;span&gt;$175,000&lt;/span&gt;&lt;span class="divider"&gt;—&lt;/span&gt;&lt;span&gt;$290,000 USD&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class="content-conclusion"&gt;&lt;p&gt; &lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Get to Know Us:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;At Smartsheet, your ideas are heard, your potential is supported, and your contributions have real impact. You’ll have the freedom to explore, push boundaries, and grow beyond your role. We welcome diverse perspectives and nontraditional paths—because we know that impact comes from individuals who care deeply and challenge thoughtfully. When you’re doing work that stretches you, excites you, and connects you to something bigger, that’s magic at work. Let’s build what’s next, together.&lt;/p&gt;
+&lt;p&gt;At Company 6cf5e6317a23, your ideas are heard, your potential is supported, and your contributions have real impact. You’ll have the freedom to explore, push boundaries, and grow beyond your role. We welcome diverse perspectives and nontraditional paths—because we know that impact comes from individuals who care deeply and challenge thoughtfully. When you’re doing work that stretches you, excites you, and connects you to something bigger, that’s magic at work. Let’s build what’s next, together.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Equal Opportunity Employer:&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Smartsheet is an Equal Opportunity (EEO) employer committed to fostering an inclusive environment with the best employees. It is our policy to provide equal employment opportunities to all qualified applicants in accordance with applicable laws in the US, UK, Australia, Germany, Costa Rica, Japan, Bulgaria, India, and Singapore. All qualified applicants will receive consideration without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, age, protected veteran or disabled status, or genetic information.&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Company 6cf5e6317a23 is an Equal Opportunity (EEO) employer committed to fostering an inclusive environment with the best employees. It is our policy to provide equal employment opportunities to all qualified applicants in accordance with applicable laws in the US, UK, Australia, Germany, Costa Rica, Japan, Bulgaria, India, and Singapore. All qualified applicants will receive consideration without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, age, protected veteran or disabled status, or genetic information. &lt;/p&gt;
 &lt;p&gt;If there are preparations we can make to help ensure you have a comfortable and positive interview experience, please let us know.&lt;/p&gt;
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
 &lt;p&gt;&lt;span&gt;#LI-Remote&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/smartsheet-director-finance-systems-erp"&gt;https://weworkremotely.com/remote-jobs/smartsheet-director-finance-systems-erp&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/company-b7fdae36a744"&gt;https://weworkremotely.com/remote-jobs/company-b7fdae36a744&lt;/a&gt;&lt;/p&gt;
 </description>
       <pubDate>Sun, 04 Oct 2026 07:31:27 +0000</pubDate>
       <expires_at>Tue, 03 Nov 2026 07:31:27 +0000</expires_at>
-      <guid>https://weworkremotely.com/remote-jobs/smartsheet-director-finance-systems-erp</guid>
-      <link>https://weworkremotely.com/remote-jobs/smartsheet-director-finance-systems-erp</link>
+      <guid>https://weworkremotely.com/remote-jobs/company-b7fdae36a744</guid>
+      <link>https://weworkremotely.com/remote-jobs/company-b7fdae36a744</link>
     </item>
 
   </channel>

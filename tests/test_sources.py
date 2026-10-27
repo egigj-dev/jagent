@@ -10,21 +10,21 @@ from jagent.sources import arbeitnow, himalayas, hn_hiring, jobicy, remotive, we
 
 FIXTURES = Path(__file__).parent / "fixtures"
 CASES = [
-    (remotive, "remotive.json", 5, "1749306", "Coalition Technologies",
+    (remotive, "remotive.json", 5, "1749306", "Company 7b0d2bb9d317",
      "Freelance Copywriter", ["Worldwide"], True),
     (arbeitnow, "arbeitnow.json", 5,
      "anwendungsarchitekt-full-stack-java-spring-react-k8s-munich-321699",
-     "Auxilius.ai", "Anwendungsarchitekt - Full-Stack Java/Spring, React, K8s (m/w/d)",
+     "Company 97b000ad7080", "Anwendungsarchitekt - Full-Stack Java/Spring, React, K8s (m/w/d)",
      ["Munich"], False),
     (himalayas, "himalayas.json", 5,
-     "https://himalayas.app/companies/empower-ai-inc/jobs/tier-i-service-desk-agent-junior-extended-hours",
-     "Empower AI Inc.", "TIER I SERVICE DESK AGENT (JUNIOR, EXTENDED HOURS)",
+     "https://himalayas.app/companies/company-9feb9b2bf1bc/jobs/company-afa995284fb2",
+     "Company aef6c93f7357", "TIER I SERVICE DESK AGENT (JUNIOR, EXTENDED HOURS)",
      ["United States"], True),
-    (jobicy, "jobicy.json", 5, "154514", "Canonical",
+    (jobicy, "jobicy.json", 5, "154514", "Company 0deeb8fa1dbb",
      "Solutions Architect for Automotive", ["Anywhere"], True),
     (weworkremotely, "weworkremotely.xml", 5,
-     "https://weworkremotely.com/remote-jobs/assemblyai-senior-research-engineer",
-     "AssemblyAI", "Senior Research Engineer", ["Anywhere in the World"], True),
+     "https://weworkremotely.com/remote-jobs/company-7ea8d3ae8312",
+     "Company 71e6d3836a65", "Senior Research Engineer", ["Anywhere in the World"], True),
 ]
 
 
@@ -77,7 +77,7 @@ def test_hn_fetch_latest_story_and_top_level_comments(monkeypatch):
     first = postings[0]
     assert first.source == "hn_hiring"
     assert first.source_id == "49922584"
-    assert first.title == ("PrairieLearn (Remote US) — Full-Stack Software Engineer — "
+    assert first.title == ("Company 9bee4cacf39a (Remote US) — Full-Stack Software Engineer — "
                            "TypeScript / Postgres / React / AI")
     assert first.url == "https://news.ycombinator.com/item?id=49922584"
     assert first.description == story["children"][0]["text"]
@@ -128,8 +128,8 @@ def test_hn_skips_deleted_comments_and_preserves_inline_title_text():
     (" Acme | Software Engineer | Berlin | Full-time ",
      "Acme", "Software Engineer", ["Berlin"]),
     ("Example Co | Designer", "Example Co", "Designer", None),
-    ("PrairieLearn — Full-Stack Engineer — Remote US",
-     None, "PrairieLearn — Full-Stack Engineer — Remote US", None),
+    ("Company 9bee4cacf39a — Full-Stack Engineer — Remote US",
+     None, "Company 9bee4cacf39a — Full-Stack Engineer — Remote US", None),
 ])
 def test_hn_first_line_fields(first_line, company, title, locations):
     story = {"children": [{

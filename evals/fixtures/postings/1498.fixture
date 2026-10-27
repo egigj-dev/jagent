@@ -1,0 +1,23 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 1498,
+  "source": "himalayas",
+  "source_id": "https://himalayas.app/companies/company-45fc236694f0/jobs/company-434e5acb16f3",
+  "title": "Amazon Graphic Designer",
+  "company": "Company 45fc236694f0",
+  "description": "<p>Trivium Group is a dynamic and results-driven organization dedicated to helping businesses scale and grow. We specialize in driving highly profitable outcomes for Amazon brands through our expertise in digital marketing, PPC management, creative services, and customer experience. With a global team of marketing experts and cutting-edge technology, we empower our clients to achieve their business goals.</p><p>We are currently seeking a talented and passionate Amazon Graphic Designer to join our team on a full-time basis. In this role you will combine different editing softwares to create unique and high quality listing optimizations.</p><h3>RESPONSIBILITIES</h3><ul>\n<li>Collaborate with the creative team to conceptualize and create visually appealing and effective graphic designs for various projects.</li>\n<li>Design modern infographics, product listings, and store fronts that communicate our clients' brand messages and enhance the user experience.</li>\n<li>Utilize industry-standard graphic design software, including Photoshop, Illustrator, InDesign, and Quark, to create unique and high-quality designs.</li>\n<li>Understand marketing objectives, corporate identity guidelines, advertisements, and website design principles to deliver designs that align with client requirements.</li>\n<li>Combine colors, fonts, and layouts in a visually appealing and cohesive manner, showcasing strong aesthetic skills and creativity.</li>\n<li>Meet project deadlines while maintaining the quality and integrity of the designs.</li>\n<li>Collaborate effectively with the team, including other designers, marketers, and project managers, to ensure design consistency and project success.</li>\n<li>Stay updated with industry trends, design best practices, and emerging technologies to continuously enhance your skills and deliver innovative designs.</li>\n</ul><h3>QUALIFICATIONS</h3><ul>\n<li>Proven experience as a graphic designer or in a related field, with a strong portfolio showcasing your design skills and creativity</li>\n<li>Proficiency in using graphic design tools, including Photoshop, Illustrator, InDesign, and Quark</li>\n<li>Solid understanding of marketing principles, corporate identity, advertisements, and website design</li>\n<li>Strong aesthetic skills, with the ability to combine colors, fonts, and layouts effectively</li>\n<li>Ability to work collaboratively in a team environment, meet deadlines, and effectively manage multiple projects</li>\n<li>Proficient in English (at least B2 level)</li>\n<li>Experience with Amazon A+ content, product images, and store branding is highly desired</li>\n</ul><h3>- Familiarity with Amazon SEO is a plus</h3><ul>\n<li>Experience with PickFu and polling is a plus</li>\n</ul><h3>COMPENSATION &amp; BENEFITS</h3><h3>- Competitive salary</h3><h3>- Semi flexible working hours</h3><h3>- Remote work year-round</h3><h3>- 4 weeks paid vacation/year + sick time</h3><ul>\n<li>9 paid National holidays + your birthday</li>\n<li>The possibility to work in an international team</li>\n</ul><h3>- Continuous growth</h3><p>This will be a remotely administered FULL TIME [40 hr/week] position with an immediate starting date upon hire. You will need to be able to accommodate different schedules and time zones (6am-11am PST hours are mandatory, other 3 are flexible). You will need a quiet workspace with fast internet, a webcam, and a microphone for video.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+  "locations": [
+    "Philippines",
+    "Croatia",
+    "Poland",
+    "Romania",
+    "Portugal",
+    "Serbia"
+  ],
+  "url": "https://himalayas.app/companies/company-45fc236694f0/jobs/company-434e5acb16f3",
+  "similarity": 0.37366437348633763,
+  "percentile": 46.158643053130454,
+  "queued": false,
+  "posting_date": "2026-10-04T16:08:48+00:00",
+  "selection": "spread"
+}

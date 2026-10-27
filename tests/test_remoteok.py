@@ -23,7 +23,7 @@ def test_fetch_parses_real_response(monkeypatch):
     first = postings[0]
     assert first.source == "remoteok"
     assert first.source_id == "1137460"
-    assert first.company == "Empire Assets"
+    assert first.company == "Company cf6d74b7aa2e"
     assert first.title == "Junior Crypto Analyst & Trader"
     assert first.url == data[1]["url"]
     assert first.description == data[1]["description"]
