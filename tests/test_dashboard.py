@@ -39,7 +39,7 @@ def dashboard_db(monkeypatch):
                 INSERT INTO postings(id,source,source_id,title,company,locations,first_seen,
                     embedding,embedding_model,url,other_urls)
                 VALUES (%s,'sample',%s,%s,'Acme','{Albania}',%s,'[1,0]','fake',
-                    'https://example.com/job','{https://example.org/other}')
+                    'https://example.com/job','{https://example.org/company-d9298a10d1b0}')
             """, (id,str(id),f"Engineer {id}",datetime.now(UTC)))
             connection.execute("""
                 INSERT INTO matches(posting_id,profile_id,similarity,matched_section,percentile,queued,explanation)

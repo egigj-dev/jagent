@@ -66,7 +66,7 @@ def test_djinni_existing_database_stops_on_first_page(monkeypatch):
     ))
     monkeypatch.setattr(djinni.httpx, "get", get)
     monkeypatch.setattr(djinni, "parse_response", lambda page: [Posting(
-        source="djinni", source_id="known", url="https://djinni.co/jobs/1-job",
+        source="djinni", source_id="known", url="https://djinni.co/jobs/1-company-5e8c9902207a",
         company="Company", title="Job",
     )])
     assert len(djinni.fetch()) == 1

@@ -1,0 +1,18 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 34795,
+  "source": "himalayas",
+  "source_id": "https://himalayas.app/companies/company-05e1c67322de/jobs/company-a69f083e6820",
+  "title": "LLM Engineer - Freelancer",
+  "company": "Company 05e1c67322de",
+  "description": "<p>We're building a network of <strong>LLM Engineers</strong> who can design, build, and integrate practical AI features into existing products. We're looking for people to collaborate with on a freelance basis - part-time or full-time, depending on project needs.</p><p>This role is focused on delivery, not ML research. What matters most is your engineering foundation and your ability to integrate AI into real production systems using Python, Node.js, or Ruby codebases.</p><h3>Requirements</h3><h3><strong>What we’re looking for</strong></h3><ul>\n<li>Strong software engineering background - Python, Node.js, or Ruby</li>\n<li>Hands-on experience integrating LLM APIs into production systems (OpenAI, Anthropic, or similar)</li>\n<li>Ability to design pragmatic AI solutions within existing architectures</li>\n<li>Experience building RAG pipelines, embeddings, and vector search</li>\n<li>Understanding of cost, latency, and reliability constraints of AI systems</li>\n<li>Ability to work independently with clients and set realistic expectations</li>\n<li>Background in big data or data pipelines is a big plus</li>\n<li>English B2/C1</li>\n<li>Availability part-time or full-time (B2B contract)</li>\n</ul><h3><strong>What you'll do</strong></h3><ul>\n<li>Add AI functionality into existing Python, Node.js, and Ruby codebases</li>\n<li>Build LLM-powered features: chat, summaries, classification, smart search, document Q&amp;A</li>\n<li>Design lightweight RAG pipelines using embeddings and vector search</li>\n<li>Work with vector DBs (pgvector, Pinecone, Qdrant)</li>\n<li>Implement safe, reliable LLM endpoints (OpenAI, Anthropic, Azure)</li>\n<li>Work directly with clients to shape AI features and reduce manual effort</li>\n<li>Advise clients when NOT to use AI and navigate trade-offs around latency, accuracy, and cost</li>\n</ul><h3><strong>What do we mean by freelance? </strong></h3><ul><li>Read more at <strong><a href=\"https://himalayas.app/companies/company-05e1c67322de\">Company 05e1c67322de</a> Tech Network </strong>\n</li></ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+  "locations": [
+    "Poland"
+  ],
+  "url": "https://himalayas.app/companies/company-05e1c67322de/jobs/company-a69f083e6820",
+  "similarity": 0.730285739048327,
+  "percentile": 100.0,
+  "queued": true,
+  "posting_date": "2026-09-30T20:30:45+00:00",
+  "selection": "spread"
+}

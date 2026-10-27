@@ -1,0 +1,41 @@
+# Selection provenance; parameters freeze SQL inputs and score_percentiles describe recent matches.
+{
+  "parameters": {
+    "as_of": "2026-10-27T22:50:27.970997+00:00",
+    "profile_id": 10,
+    "min_percentile": 97,
+    "min_similarity": 0.55
+  },
+  "selected_ids": [
+    49582,
+    49862,
+    49489,
+    61910,
+    42232,
+    18143,
+    1498,
+    6458,
+    34491,
+    31901,
+    21983,
+    56182,
+    35541,
+    23456,
+    29091,
+    50181,
+    9547,
+    57153,
+    4817,
+    34795
+  ],
+  "recent_scored_count": 7882,
+  "score_percentiles": {
+    "p10": 0.27306592068072627,
+    "p25": 0.32772173845997077,
+    "p50": 0.3814183778792625,
+    "p75": 0.4427582759844677,
+    "p90": 0.5011211676092641,
+    "p97": 0.5603847148156541
+  },
+  "near_cutoff_count": 6
+}

@@ -1,17 +1,20 @@
 <!-- remoteok.json is the trimmed API response; its first item contains metadata. -->
-remoteok.json was downloaded from https://remoteok.com/api on 2026-10-04.
+remoteok.json was downloaded from the Remote OK API on 2026-10-04.
 It remains valid JSON without a leading comment. Remote OK attribution and API
-terms are preserved in its metadata, and each posting retains its source URL.
+terms remain in its metadata. Employer identities, contacts and company-specific
+URL components use deterministic placeholders; source domains remain intact.
+Original responses remain in history at commit `0287af0`. The per-posting audit
+uses identifier digests rather than publishing an employer-name dictionary.
 
 The following additional responses were downloaded on 2026-10-04 and saved
 as samples (JSON and XML fixtures retain their native formats):
 
-- remotive.json: https://remotive.com/api/remote-jobs?category=software-dev
-- arbeitnow.json: https://www.arbeitnow.com/api/job-board-api
+- remotive.json: Remotive software-development feed
+- arbeitnow.json: Arbeitnow job-board API
 - himalayas.json: https://himalayas.app/jobs/api
 - jobicy.json: https://jobicy.com/api/v2/remote-jobs
 - weworkremotely.xml: https://weworkremotely.com/remote-jobs.rss
-- hn_hiring_search.json: https://hn.algolia.com/api/v1/search?tags=story,author_whoishiring&query=Ask%20HN%3A%20Who%20is%20hiring%3F&hitsPerPage=1000
+- hn_hiring_search.json: HN Algolia hiring-thread search
 - hn_hiring.json: https://hn.algolia.com/api/v1/items/49922569
 - staffal.html: https://staff.al/sq/job-list
 - kosovajob.html: https://kosovajob.com/
@@ -25,7 +28,7 @@ Pagination evidence checked on 2026-10-04:
   `nextCursor`. Its `comments` field explains passing that value as `cursor`.
   https://himalayas.app/api documents the 20-job maximum and cursor pagination.
 - The saved Remotive response has `job-count: 18` and `total-job-count: 18` (original response metadata).
-  https://github.com/remotive-com/remote-jobs-api documents `limit` as optional
+  The Remotive API documentation describes `limit` as optional
   with default `all`; no pagination parameters are documented.
 - Himalayas follows cursors with a one-second delay after each page. When there
   are existing Himalayas postings, it stops after processing a page containing

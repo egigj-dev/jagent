@@ -1,0 +1,19 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 49862,
+  "source": "duapune",
+  "source_id": "121384",
+  "title": "Teknik / Instalues Rrjeti Fiks Durres",
+  "company": "Company 654ef2cc456c",
+  "description": "Teknik",
+  "locations": [
+    "Durres",
+    "Albania"
+  ],
+  "url": "https://duapune.com/jobs/121384-company-215174eb1f95",
+  "similarity": 0.26078561114189813,
+  "percentile": 7.695185831878273,
+  "queued": false,
+  "posting_date": "2026-10-14T13:24:42.874528+00:00",
+  "selection": "spread"
+}

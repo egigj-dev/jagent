@@ -10,3 +10,6 @@ filters.json
 imports/
 .env
 *.sql
+
+# Private evaluation inputs and recordings stay local.
+evals/private/
