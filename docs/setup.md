@@ -70,3 +70,16 @@ Bot-protected sources are collected from a home connection by an external
 collector. Transfer its output to `imports/duapune.json`. Missing or stale Duapune
 imports appear as warnings in `jagent health` and in the dashboard banner; they
 do not make health exit with failure. Other source health failures still do.
+
+
+## Source coverage
+
+Workday has no adapter and is not called by the runner. Company boards currently
+support Greenhouse, Lever, Ashby and SmartRecruiters; these run after the named
+sources. The dashboard's **Health** page at `/health` shows the latest run for each
+source and the freshness of the Duapune import.
+
+CI runs the complete suite with `JAGENT_TEST_POSTGRES=1` against a temporary
+pgvector/PostgreSQL 16 service. Local tests remain opt-in for database access;
+`uv run pytest` runs without that gate. Filter tests use explicit search terms
+and do not read personal configuration.

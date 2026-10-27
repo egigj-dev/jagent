@@ -13,7 +13,7 @@ from psycopg.types.json import Jsonb
 from jagent.db import connect
 from jagent.embeddings import embedding_settings
 from jagent.filters import passing_postings
-from jagent.health import check_health
+from jagent.health import check_health, duapune_freshness, latest_source_runs
 from jagent.matching import score_postings
 from jagent.profile import active_profile, split_sections
 
@@ -183,6 +183,18 @@ async def review(request: Request, posting_id: int):
               **{key: values[key] for key in SEARCH_KEYS if values.get(key)},
               **{key: "1" for key, enabled in view_options(values).items() if enabled}}
     return RedirectResponse("/?" + urlencode(params), status_code=303)
+
+
+@app.get("/health")
+def health_page(request: Request):
+    runs = latest_source_runs()
+    for run in runs:
+        if run["finished_at"]:
+            run["finished_at"] = run["finished_at"].astimezone(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+    return templates.TemplateResponse(request=request, name="health.html", context={
+        "page": "Health", "runs": runs, "health_problems": check_health(),
+        "duapune_import": duapune_freshness(),
+    })
 
 
 @app.get("/applied")

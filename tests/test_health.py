@@ -1,5 +1,7 @@
 # Health tests; rows represent latest runs and their seven-day fetched medians.
 from contextlib import nullcontext
+from datetime import UTC, datetime, timedelta
+import json
 from unittest.mock import Mock
 
 import pytest
@@ -90,3 +92,22 @@ def test_non_ats_staleness(monkeypatch, source):
     connection.execute.return_value.fetchall.return_value = [(source, "ok", 100, None, 100, True)]
     monkeypatch.setattr(health, "connect", lambda: nullcontext(connection))
     assert health.check_health() == [f"{source}: stale (latest run older than 36 hours)"]
+
+
+@pytest.mark.parametrize("age,status", [(1, "Fresh"), (37, "Stale")])
+def test_duapune_import_freshness(monkeypatch, tmp_path, age, status):
+    path = tmp_path / "duapune.json"
+    collected_at = datetime.now(UTC) - timedelta(hours=age)
+    path.write_text(json.dumps({"collected_at": collected_at.isoformat()}))
+    monkeypatch.setattr(health.duapune, "IMPORT_PATH", path)
+    assert health.duapune_freshness() == (
+        f"{status}: collected at {collected_at:%Y-%m-%d %H:%M:%S} UTC"
+    )
+
+
+@pytest.mark.parametrize("contents", ['{}', '{', '{"collected_at":"2026-10-27T10:00:00"}'])
+def test_invalid_duapune_import_freshness(monkeypatch, tmp_path, contents):
+    path = tmp_path / "duapune.json"
+    path.write_text(contents)
+    monkeypatch.setattr(health.duapune, "IMPORT_PATH", path)
+    assert health.duapune_freshness().startswith("Invalid")

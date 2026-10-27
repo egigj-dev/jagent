@@ -8,7 +8,7 @@ from unittest.mock import Mock
 from fastapi.testclient import TestClient
 import pytest
 
-from jagent import cli, dashboard
+from jagent import cli, dashboard, health
 from jagent.db import connect
 
 
@@ -274,3 +274,25 @@ def test_additional_sort_orders(client, dashboard_db, sort, expected):
     positions = [html.index(f'id="posting-{id}"') for id in expected]
     assert positions == sorted(positions)
     assert f'value="{sort}" selected' in html
+
+
+def test_health_page_shows_latest_failed_source(client, dashboard_db, monkeypatch, tmp_path):
+    dashboard_db.execute("""
+        CREATE TEMP TABLE source_runs (
+            id serial, source text, started_at timestamptz, finished_at timestamptz,
+            status text, fetched int, error text
+        );
+        INSERT INTO source_runs(source, started_at, finished_at, status, fetched, error)
+        VALUES ('broken', '2026-10-25 10:00+00', '2026-10-25 10:01+00', 'ok', 20, NULL),
+               ('broken', '2026-10-26 12:00+02', '2026-10-26 12:01+02', 'error', 0, '<unavailable>');
+    """)
+    monkeypatch.setattr(health, 'connect', lambda: nullcontext(dashboard_db))
+    monkeypatch.setattr(health.duapune, 'IMPORT_PATH', tmp_path / 'missing.json')
+    response = client.get('/health')
+    assert response.status_code == 200
+    assert response.text.count('<h3>broken</h3>') == 1
+    assert 'Status: Failed' in response.text
+    assert '2026-10-26 10:01:00 UTC' in response.text
+    assert 'Postings yielded: 0' in response.text
+    assert '&lt;unavailable&gt;' in response.text
+    assert 'Duapune import' in response.text and 'Missing' in response.text

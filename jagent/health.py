@@ -1,5 +1,11 @@
 # Source health checks; full feeds use yield rules, incremental feeds use errors, non-ATS runs must be fresh.
+from datetime import UTC, datetime, timedelta
+import json
+
+from psycopg.rows import dict_row
+
 from jagent.db import connect
+from jagent.sources import duapune
 
 WARNING_ONLY_SOURCES = frozenset({"duapune"})
 
@@ -55,3 +61,29 @@ def check_health() -> list[str]:
             f"ats: {len(ats_errors)} of {ats_total} boards failed ({listed}{suffix})"
         )
     return problems
+
+
+def latest_source_runs():
+    with connect() as connection:
+        with connection.cursor(row_factory=dict_row) as cursor:
+            return cursor.execute("""
+                SELECT DISTINCT ON (source)
+                    source, status, finished_at, fetched, error
+                FROM source_runs
+                ORDER BY source, started_at DESC, id DESC
+            """).fetchall()
+
+
+def duapune_freshness():
+    try:
+        data = json.loads(duapune.IMPORT_PATH.read_text())
+        collected_at = datetime.fromisoformat(data["collected_at"])
+        if collected_at.tzinfo is None:
+            return "Invalid: collected_at must include a timezone"
+    except FileNotFoundError:
+        return "Missing"
+    except (ValueError, KeyError, TypeError):
+        return "Invalid import timestamp or JSON"
+    collected_at = collected_at.astimezone(UTC)
+    status = "Stale" if datetime.now(UTC) - collected_at > timedelta(hours=36) else "Fresh"
+    return f"{status}: collected at {collected_at:%Y-%m-%d %H:%M:%S} UTC"

@@ -1,0 +1,21 @@
+<!-- Source health page; runs holds latest audit rows and duapune_import describes import freshness. -->
+{% extends "base.html" %}
+{% block content %}
+{% include "health_banner.html" %}
+<section class="panel">
+  <h2>Duapune import</h2>
+  <p>{{ duapune_import }}</p>
+</section>
+<section class="panel">
+  <h2>Latest source runs</h2>
+  {% for run in runs %}
+  <article>
+    <h3>{{ run.source }}</h3>
+    <p>Status: {{ 'Failed' if run.status == 'error' else run.status }}</p>
+    <p>Finished: {{ run.finished_at or 'Unfinished' }}</p>
+    <p>Postings yielded: {{ run.fetched }}</p>
+    {% if run.status == 'error' and run.error %}<p>{{ run.error }}</p>{% endif %}
+  </article>
+  {% else %}<p>No source runs recorded.</p>{% endfor %}
+</section>
+{% endblock %}
