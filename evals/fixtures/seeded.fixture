@@ -1,0 +1,104 @@
+# Seeded drafts; failed_rules identifies one fault per negative case and empty lists mark controls.
+{
+  "job_excerpts": {
+    "job:ff6f99103f47:0": "Python and SQL experience. Kubernetes and Terraform required.",
+    "job:ff6f99103f47:1": "SQL experience."
+  },
+  "profile_excerpts": {
+    "profile:Engineering:0": "Python experience.",
+    "profile:Engineering:1": "SQL experience."
+  },
+  "profile": "## Engineering\nPython experience. SQL experience.",
+  "cases": [
+    {
+      "name": "missing_job",
+      "draft": {
+        "kind": "strength",
+        "skill": "Python",
+        "job_excerpt_id": "missing",
+        "profile_excerpt_id": "profile:Engineering:0"
+      },
+      "failed_rules": [
+        1
+      ]
+    },
+    {
+      "name": "missing_profile",
+      "draft": {
+        "kind": "strength",
+        "skill": "Python",
+        "job_excerpt_id": "job:ff6f99103f47:0",
+        "profile_excerpt_id": null
+      },
+      "failed_rules": [
+        2
+      ]
+    },
+    {
+      "name": "skill_absent_job",
+      "draft": {
+        "kind": "strength",
+        "skill": "Python",
+        "job_excerpt_id": "job:ff6f99103f47:1",
+        "profile_excerpt_id": "profile:Engineering:0"
+      },
+      "failed_rules": [
+        3
+      ]
+    },
+    {
+      "name": "skill_absent_profile",
+      "draft": {
+        "kind": "strength",
+        "skill": "Python",
+        "job_excerpt_id": "job:ff6f99103f47:0",
+        "profile_excerpt_id": "profile:Engineering:1"
+      },
+      "failed_rules": [
+        4
+      ]
+    },
+    {
+      "name": "gap_present_profile",
+      "draft": {
+        "kind": "not_demonstrated",
+        "skill": "Python",
+        "job_excerpt_id": "job:ff6f99103f47:0",
+        "profile_excerpt_id": null
+      },
+      "failed_rules": [
+        5
+      ]
+    },
+    {
+      "name": "valid_strength",
+      "draft": {
+        "kind": "strength",
+        "skill": "Python",
+        "job_excerpt_id": "job:ff6f99103f47:0",
+        "profile_excerpt_id": "profile:Engineering:0"
+      },
+      "failed_rules": []
+    },
+    {
+      "name": "valid_gap",
+      "draft": {
+        "kind": "not_demonstrated",
+        "skill": "Terraform",
+        "job_excerpt_id": "job:ff6f99103f47:0",
+        "profile_excerpt_id": null
+      },
+      "failed_rules": []
+    },
+    {
+      "name": "valid_synonym_gap",
+      "draft": {
+        "kind": "not_demonstrated",
+        "skill": "k8s",
+        "job_excerpt_id": "job:ff6f99103f47:0",
+        "profile_excerpt_id": null
+      },
+      "failed_rules": []
+    }
+  ]
+}
