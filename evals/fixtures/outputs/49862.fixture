@@ -1,0 +1,45 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 49862,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "fc1a61a32aeb",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:53:44.908801+00:00",
+  "content": "{\n  \"seniority\": \"unknown\",\n  \"required_languages\": null,\n  \"employment_types\": null,\n  \"salary\": null,\n  \"evidence\": {\n    \"seniority\": null,\n    \"required_languages\": null,\n    \"employment_types\": null,\n    \"salary\": null\n  },\n  \"explanation\": \"The posting is for a fixed-network technician/installer in Durres, while the profile is centered on ML/NLP/LLM engineering, data science, and MLOps. Matched skills are limited to general technical tools such as Linux and Git, but the role's core networking and installation requirements are missing from the profile.\"\n}",
+  "analysis": {
+    "seniority": "unknown",
+    "required_languages": null,
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": null,
+      "required_languages": null,
+      "employment_types": null,
+      "salary": null
+    },
+    "explanation": "The posting is for a fixed-network technician/installer in Durres, while the profile is centered on ML/NLP/LLM engineering, data science, and MLOps. Matched skills are limited to general technical tools such as Linux and Git, but the role's core networking and installation requirements are missing from the profile."
+  },
+  "error": null,
+  "total_tokens": 2460,
+  "latency_seconds": 16.128878,
+  "usage": {
+    "completion_tokens": 1931,
+    "prompt_tokens": 529,
+    "total_tokens": 2460,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1789
+    }
+  },
+  "cost_usd": 0.00148554,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

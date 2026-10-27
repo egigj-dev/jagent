@@ -1,0 +1,47 @@
+# Recorded baseline response; model, usage, estimated cost and latency describe one request.
+{
+  "posting_id": 900001,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "38863b0f8f37",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:10:01.415563+00:00",
+  "content": "{\"seniority\":\"unknown\",\"required_languages\":[\"English\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"required_languages\":\"English required.\",\"employment_types\":\"Full-time.\"},\"explanation\":\"The posting’s Python and SQL requirements match the profile’s Python scikit-learn classifier and PostgreSQL/SQL query documentation. The profile does not explicitly evidence the required English language or production-level Python/SQL experience, and seniority/salary are unstated.\"}",
+  "analysis": {
+    "seniority": "unknown",
+    "required_languages": [
+      "English"
+    ],
+    "employment_types": [
+      "full_time"
+    ],
+    "salary": null,
+    "evidence": {
+      "required_languages": "English required.",
+      "employment_types": "Full-time."
+    },
+    "explanation": "The posting’s Python and SQL requirements match the profile’s Python scikit-learn classifier and PostgreSQL/SQL query documentation. The profile does not explicitly evidence the required English language or production-level Python/SQL experience, and seniority/salary are unstated."
+  },
+  "error": null,
+  "total_tokens": 1767,
+  "latency_seconds": 9.595925,
+  "usage": {
+    "completion_tokens": 1220,
+    "prompt_tokens": 547,
+    "total_tokens": 1767,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1118
+    }
+  },
+  "cost_usd": 0.00097686,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

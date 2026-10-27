@@ -1,0 +1,47 @@
+# Recorded baseline response; model, usage, estimated cost and latency describe one request.
+{
+  "posting_id": 900003,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "c30f9ab8226d",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:10:26.296483+00:00",
+  "content": "{\"seniority\":\"unknown\",\"required_languages\":[\"English\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"required_languages\":\"English required.\",\"employment_types\":\"Full-time.\"},\"explanation\":\"The profile matches the posting’s Python and SQL requirements through its Python classifier and PostgreSQL/SQL demonstration work, but it lacks explicit evidence of English proficiency and production-scale Python/SQL engineering. Overall, it is a plausible skills match for a full-time Python engineer role, with seniority and role-level fit still unclear.\"}",
+  "analysis": {
+    "seniority": "unknown",
+    "required_languages": [
+      "English"
+    ],
+    "employment_types": [
+      "full_time"
+    ],
+    "salary": null,
+    "evidence": {
+      "required_languages": "English required.",
+      "employment_types": "Full-time."
+    },
+    "explanation": "The profile matches the posting’s Python and SQL requirements through its Python classifier and PostgreSQL/SQL demonstration work, but it lacks explicit evidence of English proficiency and production-scale Python/SQL engineering. Overall, it is a plausible skills match for a full-time Python engineer role, with seniority and role-level fit still unclear."
+  },
+  "error": null,
+  "total_tokens": 1738,
+  "latency_seconds": 9.266032,
+  "usage": {
+    "completion_tokens": 1197,
+    "prompt_tokens": 541,
+    "total_tokens": 1738,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1083
+    }
+  },
+  "cost_usd": 0.0009592199999999999,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

@@ -1,0 +1,42 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 4817,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "63beb17b1d88",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:53:03.014903+00:00",
+  "content": "{\"seniority\":\"senior\",\"required_languages\":[],\"employment_types\":null,\"salary\":null,\"evidence\":{\"seniority\":\"5+ years of experience in data analytics and reporting\"},\"explanation\":\"The profile shows relevant Python, SQL, ML/NLP, Docker, and AWS experience that aligns with the technical and AI-tool aspects of the role, but it lacks the required 5+ years in data analytics/reporting and client configuration or technical product operations experience. The posting also expects Jira/Confluence, JSON, UX/UI collaboration, and preferred multilingual skills (French, German, Spanish, Italian), none of which are evidenced in the profile.\"}",
+  "analysis": {
+    "seniority": "senior",
+    "required_languages": [],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "5+ years of experience in data analytics and reporting"
+    },
+    "explanation": "The profile shows relevant Python, SQL, ML/NLP, Docker, and AWS experience that aligns with the technical and AI-tool aspects of the role, but it lacks the required 5+ years in data analytics/reporting and client configuration or technical product operations experience. The posting also expects Jira/Confluence, JSON, UX/UI collaboration, and preferred multilingual skills (French, German, Spanish, Italian), none of which are evidenced in the profile."
+  },
+  "error": null,
+  "total_tokens": 3631,
+  "latency_seconds": 15.466021,
+  "usage": {
+    "completion_tokens": 2183,
+    "prompt_tokens": 1448,
+    "total_tokens": 3631,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 2043
+    }
+  },
+  "cost_usd": 0.0018324,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

@@ -1,0 +1,52 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 34795,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "11209f907c12",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:59:59.906326+00:00",
+  "content": "{\n  \"seniority\": \"unknown\",\n  \"required_languages\": [\"English\"],\n  \"employment_types\": [\"freelance\", \"part_time\", \"full_time\", \"contract\"],\n  \"salary\": null,\n  \"evidence\": {\n    \"seniority\": null,\n    \"required_languages\": \"English B2/C1\",\n    \"employment_types\": \"Availability part-time or full-time (B2B contract)\",\n    \"salary\": null\n  },\n  \"explanation\": \"The profile's Python, scikit-learn, PostgreSQL, Docker, AWS, Linux, and Git experience partially matches the posting's demand for Python engineering and production AI integration, and its text classifier project is relevant to LLM features. However, it lacks the required hands-on LLM API integration, RAG pipelines, embeddings/vector search, vector DB experience, Node.js/Ruby codebases, and client-facing independent delivery, and it does not show English B2/C1, so the overall fit is partial.\"\n}",
+  "analysis": {
+    "seniority": "unknown",
+    "required_languages": [
+      "English"
+    ],
+    "employment_types": [
+      "freelance",
+      "part_time",
+      "full_time",
+      "contract"
+    ],
+    "salary": null,
+    "evidence": {
+      "seniority": null,
+      "required_languages": "English B2/C1",
+      "employment_types": "Availability part-time or full-time (B2B contract)",
+      "salary": null
+    },
+    "explanation": "The profile's Python, scikit-learn, PostgreSQL, Docker, AWS, Linux, and Git experience partially matches the posting's demand for Python engineering and production AI integration, and its text classifier project is relevant to LLM features. However, it lacks the required hands-on LLM API integration, RAG pipelines, embeddings/vector search, vector DB experience, Node.js/Ruby codebases, and client-facing independent delivery, and it does not show English B2/C1, so the overall fit is partial."
+  },
+  "error": null,
+  "total_tokens": 5825,
+  "latency_seconds": 32.377962,
+  "usage": {
+    "completion_tokens": 4975,
+    "prompt_tokens": 850,
+    "total_tokens": 5825,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 4765
+    }
+  },
+  "cost_usd": 0.003735,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

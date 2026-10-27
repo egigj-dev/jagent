@@ -1,0 +1,50 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 31901,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "a7a9e19f2fa2",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-27T22:52:05.657802+00:00",
+  "content": "{\"seniority\":\"unknown\",\"required_languages\":[],\"employment_types\":[\"contract\"],\"salary\":{\"min\":500,\"max\":600,\"currency\":\"GBP\",\"period\":\"day\"},\"evidence\":{\"employment_types\":\"CONTRACT | REMOTE | UK | OUTSIDE IR35\",\"salary\":\"£500 - £600PD\"},\"explanation\":\"The profile shows Python/ML engineering experience plus Git/version control, but the posting is a Laravel/Livewire full-stack contract requiring PHP, HTML, CSS/SCSS, JavaScript, TDD, UK Government Design System experience, and active SC clearance. It therefore lacks the core web-development stack and security clearance for this role, with only Git/version control and basic testing as partial overlaps.\"}",
+  "analysis": {
+    "seniority": "unknown",
+    "required_languages": [],
+    "employment_types": [
+      "contract"
+    ],
+    "salary": {
+      "min": 500.0,
+      "max": 600.0,
+      "currency": "GBP",
+      "period": "day"
+    },
+    "evidence": {
+      "employment_types": "CONTRACT | REMOTE | UK | OUTSIDE IR35",
+      "salary": "£500 - £600PD"
+    },
+    "explanation": "The profile shows Python/ML engineering experience plus Git/version control, but the posting is a Laravel/Livewire full-stack contract requiring PHP, HTML, CSS/SCSS, JavaScript, TDD, UK Government Design System experience, and active SC clearance. It therefore lacks the core web-development stack and security clearance for this role, with only Git/version control and basic testing as partial overlaps."
+  },
+  "error": null,
+  "total_tokens": 2594,
+  "latency_seconds": 13.346583,
+  "usage": {
+    "completion_tokens": 1858,
+    "prompt_tokens": 736,
+    "total_tokens": 2594,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1702
+    }
+  },
+  "cost_usd": 0.00147024,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}
