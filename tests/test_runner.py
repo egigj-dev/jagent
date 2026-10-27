@@ -2,6 +2,7 @@
 from contextlib import nullcontext
 from datetime import UTC, datetime
 import os
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -108,3 +109,36 @@ def test_duplicate_with_null_remote_in_postgres(existing_remote):
             existing_remote, [duplicate.url], ["London", "Berlin"],
             first_seen, last_seen,
         )]
+
+
+def test_source_failure_preserves_successful_postings(monkeypatch):
+    if os.environ.get("JAGENT_TEST_POSTGRES") != "1":
+        pytest.skip("Set JAGENT_TEST_POSTGRES=1 to test source isolation in temporary tables")
+    with connect() as connection:
+        schema = (Path(__file__).resolve().parent.parent / "schema.sql").read_text()
+        for name in ("postings", "source_runs", "ats_companies"):
+            start = schema.index(f"CREATE TABLE IF NOT EXISTS {name} (")
+            statement = schema[start:schema.index(";", start) + 1]
+            connection.execute(statement.replace("CREATE TABLE IF NOT EXISTS", "CREATE TEMP TABLE"))
+        monkeypatch.setattr(runner, "connect", lambda: nullcontext(connection))
+
+        def fail():
+            raise RuntimeError("Source unavailable")
+
+        posting = Posting(source="working", source_id="1", title="Engineer",
+                          company="Example", url="https://example.com/job")
+        monkeypatch.setattr(runner, "SOURCES", {
+            "broken": fail, "working": lambda: [posting],
+        })
+        results = runner.run()
+        assert [result["status"] for result in results] == ["error", "ok"]
+        assert connection.execute("SELECT source, source_id, title FROM postings").fetchall() == [
+            ("working", "1", "Engineer"),
+        ]
+        assert connection.execute(
+            "SELECT source, status, fetched, new, error FROM source_runs ORDER BY id"
+        ).fetchall() == [
+            ("broken", "error", 0, 0, "Source unavailable"),
+            ("working", "ok", 1, 1, None),
+        ]
+        assert all(result["finished_at"] >= result["started_at"] for result in results)
