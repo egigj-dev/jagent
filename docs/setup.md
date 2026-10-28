@@ -32,10 +32,19 @@ location and excluded-title rules. **Opportunities** supports searching, filteri
 saving and marking jobs as applied. Profile changes take effect on the next run.
 PostgreSQL binds to `127.0.0.1:5434`; the dashboard binds to `127.0.0.1:8000`.
 
-Tests use temporary tables in the configured database (including pgvector):
+Create a separate local database for tests and enable pgvector:
 
 ```bash
-JAGENT_TEST_POSTGRES=1 uv run pytest
+docker exec jagent-db-1 createdb -U jagent jagent_test
+docker exec jagent-db-1 psql -U jagent -d jagent_test -c 'CREATE EXTENSION IF NOT EXISTS vector'
+```
+
+Tests use temporary tables in that database. Set `TEST_DATABASE_URL` explicitly
+with your local database password; tests never read `DATABASE_URL` or `.env`.
+Both the configured and connected database names must end in `_test`:
+
+```bash
+TEST_DATABASE_URL=postgresql://jagent:change-me@127.0.0.1:5434/jagent_test JAGENT_TEST_POSTGRES=1 uv run pytest
 ```
 
 ### Optional systemd deployment
@@ -80,6 +89,7 @@ sources. The dashboard's **Health** page at `/health` shows the latest run for e
 source and the freshness of the Duapune import.
 
 CI runs the complete suite with `JAGENT_TEST_POSTGRES=1` against a temporary
-pgvector/PostgreSQL 16 service. Local tests remain opt-in for database access;
+pgvector/PostgreSQL 16 service with database `jagent_test`.
+Local tests remain opt-in for database access;
 `uv run pytest` runs without that gate. Filter tests use explicit search terms
 and do not read personal configuration.
