@@ -1,4 +1,4 @@
-# Run the test suite; DATABASE_URL points only to the local pgvector service.
+# Run the test suite; TEST_DATABASE_URL points only to the temporary pgvector service.
 name: Tests
 on: [push, pull_request]
 permissions:
@@ -12,17 +12,17 @@ jobs:
         env:
           POSTGRES_USER: jagent
           POSTGRES_HOST_AUTH_METHOD: trust
-          POSTGRES_DB: jagent
+          POSTGRES_DB: jagent_test
           TZ: UTC
         ports:
           - 127.0.0.1:5434:5432
         options: >-
-          --health-cmd "pg_isready -U jagent -d jagent"
+          --health-cmd "pg_isready -U jagent -d jagent_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
     env:
-      DATABASE_URL: postgresql://jagent@127.0.0.1:5434/jagent
+      TEST_DATABASE_URL: postgresql://jagent@127.0.0.1:5434/jagent_test
       JAGENT_TEST_POSTGRES: "1"
     steps:
       - uses: actions/checkout@v4
@@ -30,5 +30,10 @@ jobs:
         with:
           python-version: "3.12"
       - run: uv sync --locked --group dev
-      - run: uv run jagent init-db
+      - run: |
+          uv run python - <<'PY'
+          from tests.conftest import connect_test_database
+          with connect_test_database() as connection:
+              connection.execute("CREATE EXTENSION IF NOT EXISTS vector")
+          PY
       - run: uv run pytest
