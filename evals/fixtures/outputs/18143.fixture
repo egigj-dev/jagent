@@ -1,11 +1,11 @@
-# Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.
+# Recorded baseline response; model, usage, cost and latency describe one request.
 {
   "posting_id": 18143,
   "model": "deepseek/deepseek-v4.1-flash",
   "job_snapshot_id": "9182ff290a7e",
   "profile_version": "00d1c6840fff",
-  "recorded_at": "2026-10-27T22:51:03.168011+00:00",
-  "content": "{\"seniority\":\"mid\",\"required_languages\":[\"English\",\"Spanish\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"seniority\":\"Minimum of 3 years of experience as a Network Engineer in similar or related positions\",\"required_languages\":\"Fluent in English and Spanish\",\"employment_types\":\"Permanent position (no freelance or other contingent model).\",\"salary\":null},\"explanation\":\"The profile matches only adjacent skills such as Python, AWS, Linux, Git, and a training-level security/access-control example, while the posting requires production networking, LAN/WAN, firewalling, Zero Trust, Zscaler, and Security Operations experience. The profile also lacks the required 3+ years as a Network Engineer and does not show Spanish fluency, so fit for this corporate network engineering role is low.\"}",
+  "recorded_at": "2026-10-29T02:33:57.435504+00:00",
+  "content": "{\"seniority\":\"mid\",\"required_languages\":[\"English\",\"Spanish\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"seniority\":\"Minimum of 3 years of experience as a Network Engineer in similar or related positions\",\"required_languages\":\"Fluent in English and Spanish\",\"employment_types\":\"Permanent position (no freelance or other contingent model).\",\"salary\":null},\"explanation\":\"The profile is focused on ML/NLP/LLM engineering with Python, scikit-learn, PyTorch, Docker, AWS, and some SQL/security exposure, while this role is a corporate network engineering position requiring LAN/WAN, firewalling, Zero Trust, Zscaler, and Cisco/Juniper/FortiGate skills that are absent from the profile. The main overlaps are AWS, Linux, Git, and a small amount of security training, but the posting's core networking and Spanish/English requirements are not matched by the candidate profile.\"}",
   "analysis": {
     "seniority": "mid",
     "required_languages": [
@@ -22,23 +22,23 @@
       "employment_types": "Permanent position (no freelance or other contingent model).",
       "salary": null
     },
-    "explanation": "The profile matches only adjacent skills such as Python, AWS, Linux, Git, and a training-level security/access-control example, while the posting requires production networking, LAN/WAN, firewalling, Zero Trust, Zscaler, and Security Operations experience. The profile also lacks the required 3+ years as a Network Engineer and does not show Spanish fluency, so fit for this corporate network engineering role is low."
+    "explanation": "The profile is focused on ML/NLP/LLM engineering with Python, scikit-learn, PyTorch, Docker, AWS, and some SQL/security exposure, while this role is a corporate network engineering position requiring LAN/WAN, firewalling, Zero Trust, Zscaler, and Cisco/Juniper/FortiGate skills that are absent from the profile. The main overlaps are AWS, Linux, Git, and a small amount of security training, but the posting's core networking and Spanish/English requirements are not matched by the candidate profile."
   },
   "error": null,
-  "total_tokens": 3930,
-  "latency_seconds": 14.344045,
+  "total_tokens": 3475,
+  "latency_seconds": 13.327394,
   "usage": {
-    "completion_tokens": 1967,
-    "prompt_tokens": 1963,
-    "total_tokens": 3930,
+    "completion_tokens": 1509,
+    "prompt_tokens": 1966,
+    "total_tokens": 3475,
     "prompt_tokens_details": {
       "cached_tokens": 0
     },
     "completion_tokens_details": {
-      "reasoning_tokens": 1795
+      "reasoning_tokens": 1309
     }
   },
-  "cost_usd": 0.00176958,
+  "cost_usd": 0.0014403600000000001,
   "cost_basis": {
     "kind": "published rate estimate",
     "model": "deepseek/deepseek-v4.1-flash",
@@ -46,6 +46,5 @@
     "output_per_million": 0.72,
     "checked_at": "2026-10-27",
     "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
-  },
-  "recorded_job_snapshot_id": "54d7c8f5f208"
+  }
 }
