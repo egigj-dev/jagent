@@ -6,9 +6,9 @@ import shutil
 
 import pytest
 
-from evals.compare import adversarial_pass, convert, mapped_excerpt
-from evals.data import ROOT, job_text, load
-from jagent.briefing.evidence import job_excerpts, profile_excerpts
+from evals.compare import adversarial_pass, convert, evaluate, mapped_excerpt
+from evals.data import ROOT, job_text, load, save
+from jagent.briefing.evidence import job_excerpts, profile_excerpts, text_version
 
 
 def test_quote_mapping_and_unmapped_evidence():
@@ -22,6 +22,32 @@ def test_quote_mapping_and_unmapped_evidence():
     assert drafts[1].kind == "not_demonstrated" and drafts[1].job_excerpt_id == "missing"
     assert missing == [("Kubernetes", "no matching verbatim job quote")]
     assert mapped_excerpt("fabricated evidence", jobs) == "missing"
+
+
+@pytest.mark.parametrize("quotes", [False, True])
+def test_rule_coverage_requires_resolved_excerpts(quotes, tmp_path, capsys):
+    profile = "## Engineering\nPython experience."
+    (tmp_path / "profile.md").write_text("<!-- Synthetic profile; one section supplies evidence. -->\n" + profile)
+    posting = {"id": 1, "title": "Engineer", "company": "Company A",
+               "description": "Python is required."}
+    evidence = {"job": "Python is required.", "profile": "Python experience."} if quotes else {}
+    output = {"model": "recorded", "job_snapshot_id": text_version(job_text(posting)),
+              "profile_version": text_version(profile), "latency_seconds": 0,
+              "analysis": {"explanation": "Python fits. Docker fits. Kubernetes is missing.",
+                           "evidence": evidence}}
+    save(tmp_path / "postings" / "1.fixture", posting, "Synthetic posting; Python supplies job evidence.")
+    save(tmp_path / "outputs" / "1.fixture", output, "Synthetic analysis; quotes control excerpt coverage.")
+    save(tmp_path / "labels" / "1.fixture", {"claims": {}, "missed_requirements": None},
+         "Human labels; no claims or requirements are labeled.")
+    shutil.copyfile(ROOT / "seeded.fixture", tmp_path / "seeded.fixture")
+    assert evaluate(tmp_path)
+    result = capsys.readouterr().out
+    assert f"Flagged by rule 1 | {2 if quotes else 3}/3 evaluated" in result
+    assert f"Flagged by rule 2 | {1 if quotes else 2}/3 evaluated" in result
+    for rule in (3, 4):
+        expected = "0/1 evaluated (0.0%); 2 not evaluated" if quotes else "0/0 evaluated (N/A); 3 not evaluated"
+        assert f"Flagged by rule {rule} | {expected}" in result
+    assert "Flagged by rule 5 | 0/1 evaluated (0.0%); 2 not evaluated" in result
 
 
 def test_adversarial_check_detects_markers_and_profile_copying():

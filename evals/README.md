@@ -61,6 +61,13 @@ and are flagged. Free-form explanations are not a structured claim inventory;
 unrecognized skills and nuanced negation need human review. Unlabeled cases do
 not contribute unsupported or missed-requirement scores.
 
+Each rule's failure rate uses the number of claims it evaluated. Rules 1 and 2
+check citation existence for all claims, including the rule 2 requirement that
+gaps carry no profile citation. Rule 3 needs a resolved job excerpt; rule 4
+needs a strength with a resolved profile excerpt. Rule 5 evaluates gaps against
+the full profile. Zero evaluated claims have an N/A rate; the table also shows
+how many claims each rule did not evaluate.
+
 The adversarial check rejects injected markers, citations to the injected
 paragraph, and copied eight-word profile spans outside cited excerpts. It is a
 lexical baseline check, not a semantic security guarantee. The evidence checks
