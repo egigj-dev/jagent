@@ -1,4 +1,4 @@
-# Sanitize saved parser responses; BASELINE supplies original records and replacement pairs keep test literals aligned.
+# Sanitize frozen postings and parser responses; BASELINE supplies originals and replacement pairs align test literals.
 import io
 import html
 import json
@@ -10,8 +10,10 @@ import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
 
-from evals.anonymize import company_token, redact, redact_record, token
-from evals.data import ROOT, load, save
+from evals.anonymize import company_token, employer_identifiers, redact, redact_record, token
+from evals.data import ROOT, job_text, load, save
+from jagent.briefing.evidence import text_version
+from jagent.db import connect
 
 BASELINE = "0287af0"
 REPO = Path(__file__).resolve().parents[1]
@@ -39,7 +41,57 @@ def pairs(before, after):
     return []
 
 
+def sanitize_postings():
+    paths = sorted((ROOT / "postings").glob("*.fixture"))
+    with connect() as connection:
+        if connection.info.port == 5433:
+            raise ValueError("Database port is reserved")
+        connection.execute("SET TRANSACTION READ ONLY")
+        rows = connection.execute(
+            "SELECT id, company, url, source_id FROM postings WHERE id = ANY(%s)",
+            ([int(path.stem) for path in paths],),
+        ).fetchall()
+    sources = {str(row[0]): dict(zip(("id", "company", "url", "source_id"), row)) for row in rows}
+    manifest_path = ROOT / "redactions.fixture"
+    manifest = load(manifest_path)
+    entries = {entry["file"]: entry for entry in manifest if not entry["scope"]}
+    changed = []
+    for path in paths:
+        if path.stem not in sources:
+            continue
+        source = sources[path.stem]
+        posting = load(path)
+        company = source["company"] or posting["company"]
+        identifiers = employer_identifiers(source, source["company"])
+        cleaned, digests = redact_record(posting, company, identifiers)
+        if cleaned != posting:
+            changed.append(path.stem)
+            save(path, cleaned, "Anonymized posting; id preserves sample identity and selection records its stratum.")
+        output_path = ROOT / "outputs" / path.name
+        output = load(output_path)
+        cleaned_output, _ = redact_record(output, company, identifiers)
+        snapshot = text_version(job_text(cleaned))
+        if snapshot != output["job_snapshot_id"]:
+            # Keep recording provenance when employer redaction changes the public input view.
+            cleaned_output.setdefault("recorded_job_snapshot_id", output["job_snapshot_id"])
+            cleaned_output["job_snapshot_id"] = snapshot
+        if cleaned_output != output:
+            save(output_path, cleaned_output, "Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.")
+        for target in (path, output_path):
+            filename = str(target.relative_to(REPO))
+            entry = entries.get(filename)
+            if entry is None:
+                entry = {"file": filename, "scope": [], "identifiers": []}
+                manifest.append(entry)
+            merged = {item["sha256"]: item for item in entry["identifiers"]}
+            merged.update({item["sha256"]: item for item in digests})
+            entry["identifiers"] = list(merged.values())
+    save(manifest_path, manifest, "Employer audit; original identifier digests include legal-name, compact and source-slug variants.")
+    print("Anonymized frozen postings; text changed:", ", ".join(changed) or "none")
+
+
 def sanitize():
+    sanitize_postings()
     manifest_path = ROOT / "redactions.fixture"
     manifest = [entry for entry in load(manifest_path) if not entry["file"].startswith("tests/")]
     replacements = []
@@ -114,10 +166,13 @@ def sanitize():
     for slug in ("stripe", "acme", "leverco", "notion"):
         replacements.append((f'"{slug}"', '"' + safe_url(f'https://jobs.lever.co/{slug}').rsplit('/', 1)[1] + '"'))
     changed_tests = []
+    original_paths = set(subprocess.check_output(
+        ["git", "ls-tree", "-r", "--name-only", BASELINE, "tests/"], text=True,
+    ).splitlines())
     for path in sorted((REPO / "tests").glob("test_*.py")):
-        if path.name in {"test_evidence.py", "test_evaluation.py", "test_anonymize.py"}:
+        if str(path.relative_to(REPO)) not in original_paths:
             continue
-        original = subprocess.check_output(["git", "show", f"{BASELINE}:{path.relative_to(REPO)}"], text=True)
+        original = path.read_text()
         tokens = []
         for item in tokenize.generate_tokens(io.StringIO(original).readline):
             value = item.string

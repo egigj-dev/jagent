@@ -85,20 +85,27 @@ lexical baseline check, not a semantic security guarantee. The evidence checks
 also cannot distinguish an affirmative mention from a negated mention.
 
 `redactions.fixture` stores hashes and lengths of each posting's employer
-identifiers, scoped to that posting. The audit uses case-sensitive word
-boundaries and never scans for all database employers. Source domains and
+identifiers, scoped to that posting and its recorded output. Identifiers include
+the company name, names without legal suffixes, compact spellings, and ATS
+slugs. Compact hashes let the audit detect punctuation and spacing variants
+while preserving case-sensitive word boundaries. It never scans for all
+database employers. Source domains and
 numeric URL identity are preserved; other company-specific URL components and
 contact details receive deterministic tokens. Other companies' product names
 in requirements are retained. Exact retained employer occurrences, if needed,
 must appear in `allowed_terms.txt` as file, line, and full surrounding line,
 separated by tabs. There are currently no exceptions.
 
-The saved parser responses can be reproduced from originals retained in
-history without rewriting it:
+Re-anonymize the frozen postings and saved parser responses:
 
 ```bash
 uv run python -m evals.sanitize
 ```
 
-This changes only existing test literals alongside the fixtures. Original
-assertions and the deduplication equivalence of the saved postings are preserved.
+The sanitizer reads employer names and source URLs from the local database in
+a read-only transaction, keeping frozen job requirements intact. Parser
+originals come from retained history; current test code is preserved while
+matching literals are sanitized. Original assertions and posting deduplication
+equivalence are preserved. When employer redaction changes a frozen input hash,
+the recording keeps its original hash as `recorded_job_snapshot_id` and updates
+`job_snapshot_id` to identify the sanitized public view. No model is called.

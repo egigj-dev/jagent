@@ -1,8 +1,8 @@
-# Recorded baseline response; model, usage, cost and latency describe one request.
+# Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.
 {
   "posting_id": 34491,
   "model": "deepseek/deepseek-v4.1-flash",
-  "job_snapshot_id": "51a0791bcbdd",
+  "job_snapshot_id": "87fc5c5f8e4d",
   "profile_version": "00d1c6840fff",
   "recorded_at": "2026-10-27T22:52:20.513969+00:00",
   "content": "{\"seniority\":\"mid\",\"required_languages\":[\"German\",\"English\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"seniority\":\"Rund zwei bis drei Jahre Berufserfahrung\",\"required_languages\":\"Deutsch auf C2-Niveau, weil du mit deutschsprachigen Finanz- und Buchhaltungsdaten arbeitest, sowie gute Englischkenntnisse für die Zusammenarbeit im Team\",\"employment_types\":\"Vollzeit und unbefristet\",\"salary\":null},\"explanation\":\"The candidate's Python, SQL, and data-preparation experience partially matches the optional automation and data-quality aspects of this financial analyst role, but the profile does not show the required finance/controlling domain experience, Excel expertise, or German C2. Key missing skills include financial reconciliation, controlling, BI tools such as Power BI/Tableau/Looker, and business understanding of revenue versus cashflow.\"}",
@@ -46,5 +46,6 @@
     "output_per_million": 0.72,
     "checked_at": "2026-10-27",
     "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
-  }
+  },
+  "recorded_job_snapshot_id": "51a0791bcbdd"
 }

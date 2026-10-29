@@ -34,6 +34,7 @@ def posting_scope(path, scope):
 
 def remaining_identifiers(text, identifiers):
     by_length = {}
+    found = set()
     for item in identifiers:
         by_length.setdefault(item["length"], set()).add(item["sha256"])
     starts = [i for i in range(len(text)) if i == 0 or not re.match(r"\w", text[i - 1])]
@@ -43,7 +44,27 @@ def remaining_identifiers(text, identifiers):
             if end > len(text) or (end < len(text) and re.match(r"\w", text[end])):
                 continue
             value = text[start:end]
-            if hashlib.sha256(value.encode()).hexdigest() in digests:
+            if value not in found and hashlib.sha256(value.encode()).hexdigest() in digests:
+                found.add(value)
+                yield value
+    compact_hashes = {}
+    for item in identifiers:
+        if item.get("compact_length"):
+            compact_hashes.setdefault(item["compact_length"], set()).add(item["compact_sha256"])
+    positions = [i for i, char in enumerate(text) if char.isalnum()]
+    compact = "".join(text[i] for i in positions)
+    # Preserve original word boundaries while comparing spellings without spaces or punctuation.
+    for length, digests in compact_hashes.items():
+        for start, position in enumerate(positions):
+            end = start + length
+            if end > len(positions) or (position and re.match(r"\w", text[position - 1])):
+                continue
+            last = positions[end - 1] + 1
+            if last < len(text) and re.match(r"\w", text[last]):
+                continue
+            value = text[position:last]
+            if value not in found and hashlib.sha256(compact[start:end].encode()).hexdigest() in digests:
+                found.add(value)
                 yield value
 
 

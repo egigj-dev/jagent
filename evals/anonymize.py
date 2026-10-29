@@ -21,6 +21,9 @@ PHONE = re.compile(r"(?<!\w)(?:\+\d(?:[ ().-]*\d){7,14}|\(\d{2,4}\)[ .-]*\d{3,4}
 ADDRESS = re.compile(r"\b\d{1,5}\s+(?:[A-Z][a-z]+\s+){1,4}(?:Street|St\.?|Road|Rd\.?|Avenue|Ave\.?|Boulevard|Blvd\.?)\b")
 REDACTED_PRODUCT_NAMES = {'c857d09db23e6822e3600bc06ad8d58f92ed62bc8efd81c753f77048662cb97d', '57de4cf40144bdf7d00010f2f5557a7d642c2b9705309bfade167dd313e2ca93', '60965168ce762e949600281ba6d01fee136e5b6e8257b1f216f9025ed324474c'}
 PERSON = re.compile(r"\b(?i:contact|recruiter|hiring manager|founder|my name is|I'm|I am)\s*:?\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2})\b")
+LEGAL_SUFFIX = re.compile(
+    r"[\s,&]+(?:GmbH|AG|Inc\.?|Incorporated|Ltd\.?|Limited|LLC|LLP|LP|PLC|SE|Corp\.?|Corporation|Co\.?|KG|UG|S\.?A\.?|B\.?V\.?|N\.?V\.?|Group|Computing)[\s.,]*$", re.I,
+)
 
 
 def token(value):
@@ -33,9 +36,19 @@ def company_token(value):
     return "Company " + token(value)
 
 
+def compact_identifier(value):
+    return "".join(char for char in value if char.isalnum())
+
+
 @lru_cache(maxsize=4)
 def company_pattern(companies):
-    return re.compile(r"(?<!\w)(?:" + "|".join(re.escape(name) for name in companies) + r")(?!\w)", re.I)
+    patterns = []
+    for name in companies:
+        patterns.append(re.escape(name))
+        compact = compact_identifier(name)
+        if compact:
+            patterns.append(r"[\W_]*".join(re.escape(char) for char in compact))
+    return re.compile(r"(?<!\w)(?:" + "|".join(patterns) + r")(?!\w)", re.I)
 
 
 def safe_url(value):
@@ -74,7 +87,10 @@ def redact(text, companies, people=()):
     names = tuple(sorted({company for company in companies if company and not company.startswith("Company ")},
                          key=lambda name: (-len(name), name)))
     if names:
-        text = company_pattern(names).sub(lambda match: company_token(match[0]), text)
+        compact_names = {compact_identifier(name).casefold(): name for name in reversed(names)}
+        text = company_pattern(names).sub(
+            lambda match: company_token(compact_names[compact_identifier(match[0]).casefold()]), text,
+        )
     text = re.sub(r"\b\w+\b", lambda match: "development tooling"
                   if hashlib.sha256(match[0].casefold().encode()).hexdigest() in REDACTED_PRODUCT_NAMES
                   else match[0], text)
@@ -82,35 +98,47 @@ def redact(text, companies, people=()):
 
 
 def employer_identifiers(record, company):
-    names = {company}
-    short = re.sub(r"(?:,?\s+(?:Inc\.?|LLC|Ltd\.?|GmbH|Group|Computing))+$", "", company).strip()
-    if len(short) >= 4:
-        names.add(short)
+    names = {company} if company else set()
     text = html.unescape(json.dumps(record, ensure_ascii=False))
     for url in URL.findall(text):
         parts = urlsplit(html.unescape(url))
         host = parts.hostname or ""
         if host and not any(host == domain or host.endswith("." + domain) for domain in PLATFORMS):
             names.add(host)
-        if any(domain in host for domain in ("greenhouse.io", "lever.co", "ashbyhq.com", "smartrecruiters.com")):
+        if any(host == domain or host.endswith("." + domain) for domain in
+               ("greenhouse.io", "lever.co", "ashbyhq.com", "smartrecruiters.com", "himalayas.app")):
             segments = [part for part in parts.path.split("/") if part]
-            if "boards" in segments and segments.index("boards") + 1 < len(segments):
-                names.add(segments[segments.index("boards") + 1])
-            elif segments:
+            marker = next((part for part in ("boards", "companies", "job-board", "postings")
+                           if part in segments), None)
+            if marker and segments.index(marker) + 1 < len(segments):
+                names.add(segments[segments.index(marker) + 1])
+            elif segments and segments[0] not in {"api", "v0", "v1", "posting-api"}:
                 names.add(segments[0])
+    names = {name for name in names if name and not re.fullmatch(r"(?:Company |company-)[0-9a-f]{12}", name)}
+    for name in tuple(names):
+        # Strip suffix chains before compacting so both the brand and its legal name are covered.
+        short = name.strip()
+        while LEGAL_SUFFIX.search(short):
+            short = LEGAL_SUFFIX.sub("", short).strip()
+            names.add(short)
+        for value in (name, short):
+            names.add("".join(char for char in value if not unicodedata.category(char).startswith("P")))
+            names.add(compact_identifier(value))
     names.update(email.rsplit("@", 1)[1] for email in EMAIL.findall(text)
                  if not email.endswith("@example.com"))
     return sorted(name for name in names if name)
 
 
 def identifier_hashes(identifiers):
-    return [{"sha256": hashlib.sha256(value.encode()).hexdigest(), "length": len(value)}
+    return [{"sha256": hashlib.sha256(value.encode()).hexdigest(), "length": len(value),
+             "compact_sha256": hashlib.sha256(compact_identifier(value).encode()).hexdigest(),
+             "compact_length": len(compact_identifier(value))}
             for value in sorted(set(identifiers))]
 
 
-def redact_record(record, company):
-    identifiers = employer_identifiers(record, company)
-    placeholder = company_token(company)
+def redact_record(record, company, identifiers=()):
+    identifiers = sorted(set(identifiers) | set(employer_identifiers(record, company)))
+    placeholder = company if re.fullmatch(r"Company [0-9a-f]{12}", company) else company_token(company)
 
     def walk(value):
         if isinstance(value, dict):

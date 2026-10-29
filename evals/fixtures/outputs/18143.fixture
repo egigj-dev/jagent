@@ -1,8 +1,8 @@
-# Recorded baseline response; model, usage, cost and latency describe one request.
+# Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.
 {
   "posting_id": 18143,
   "model": "deepseek/deepseek-v4.1-flash",
-  "job_snapshot_id": "54d7c8f5f208",
+  "job_snapshot_id": "9182ff290a7e",
   "profile_version": "00d1c6840fff",
   "recorded_at": "2026-10-27T22:51:03.168011+00:00",
   "content": "{\"seniority\":\"mid\",\"required_languages\":[\"English\",\"Spanish\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"seniority\":\"Minimum of 3 years of experience as a Network Engineer in similar or related positions\",\"required_languages\":\"Fluent in English and Spanish\",\"employment_types\":\"Permanent position (no freelance or other contingent model).\",\"salary\":null},\"explanation\":\"The profile matches only adjacent skills such as Python, AWS, Linux, Git, and a training-level security/access-control example, while the posting requires production networking, LAN/WAN, firewalling, Zero Trust, Zscaler, and Security Operations experience. The profile also lacks the required 3+ years as a Network Engineer and does not show Spanish fluency, so fit for this corporate network engineering role is low.\"}",
@@ -46,5 +46,6 @@
     "output_per_million": 0.72,
     "checked_at": "2026-10-27",
     "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
-  }
+  },
+  "recorded_job_snapshot_id": "54d7c8f5f208"
 }
