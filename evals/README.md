@@ -15,6 +15,17 @@ use the same layout under the ignored `evals/private/` directory:
 uv run python -m evals.compare evals/private
 ```
 
+Inspect a posting before filling its labels:
+
+```bash
+uv run python -m evals.show 34491
+```
+
+The viewer prints the anonymized job text, synthetic profile sections, and
+converted claims with their zero-based label indices, kinds, skills, and first
+source sentences from the recorded explanation. It reads fixtures only and
+makes no model or database calls.
+
 Each `.fixture` file starts with a descriptive comment, followed by JSON.
 `postings/` contains twenty database postings and three synthetic adversarial
 cases; `outputs/` contains the captured response, parsed analysis, model, UTC
