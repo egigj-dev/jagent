@@ -79,6 +79,7 @@ def evaluate(root=ROOT):
     profiles = profile_excerpts(profile)
     total = flagged = labeled = unsupported = missed = unmapped_count = 0
     rule_counts = Counter()
+    evaluated_counts = Counter()
     latencies, costs = [], []
     adversarial = []
     details = []
@@ -106,6 +107,14 @@ def evaluate(root=ROOT):
             total += 1
             flagged += check(draft, jobs, profiles, profile).status == "flagged"
             rule_counts.update(failed_rules(draft, jobs, profiles, profile))
+            # Citation existence is always checked; mention checks need resolved excerpts.
+            evaluated_counts.update((1, 2))
+            if draft.job_excerpt_id in jobs:
+                evaluated_counts[3] += 1
+            if draft.kind == "strength" and draft.profile_excerpt_id in profiles:
+                evaluated_counts[4] += 1
+            if draft.kind == "not_demonstrated":
+                evaluated_counts[5] += 1
             label = labels["claims"].get(str(index))
             if label in ("supported", "unsupported"):
                 labeled += 1
@@ -123,7 +132,9 @@ def evaluate(root=ROOT):
     print(f"Claims total | {total}")
     print(f"Claims flagged | {flagged}/{total}")
     for rule in range(1, 6):
-        print(f"Flagged by rule {rule} | {rule_counts[rule]}/{total} ({100 * rule_counts[rule] / max(1, total):.1f}%)")
+        evaluated = evaluated_counts[rule]
+        rate = f"{100 * rule_counts[rule] / evaluated:.1f}%" if evaluated else "N/A"
+        print(f"Flagged by rule {rule} | {rule_counts[rule]}/{evaluated} evaluated ({rate}); {total - evaluated} not evaluated")
     print(f"Unmapped claims | {unmapped_count}")
     print(f"Human labels | {labeled} labeled claims; {total - labeled} unlabeled")
     print(f"Unsupported rate | {unsupported}/{labeled}" if labeled else "Unsupported rate | N/A (0 labeled claims)")
