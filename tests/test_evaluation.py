@@ -64,7 +64,18 @@ def test_adversarial_check_detects_markers_and_profile_copying():
     assert not adversarial_pass(posting, output, [], jobs, profiles, profile)
 
 
-def test_seeded_faults_each_break_one_rule_and_labels_are_empty():
+def assert_label_structure(labels, claim_count):
+    assert isinstance(labels, dict)
+    assert isinstance(labels["claims"], dict)
+    valid_indices = {str(index) for index in range(claim_count)}
+    for index, value in labels["claims"].items():
+        assert index in valid_indices, f"Claim index does not exist: {index}"
+        assert value in ("supported", "unsupported")
+    missed = labels["missed_requirements"]
+    assert missed is None or (isinstance(missed, list) and all(isinstance(item, str) for item in missed))
+
+
+def test_seeded_faults_each_break_one_rule_and_labels_have_valid_structure():
     from jagent.briefing.contract import ClaimDraft
     from jagent.briefing.evidence import failed_rules
     seeds = load(ROOT / "seeded.fixture")
@@ -72,8 +83,41 @@ def test_seeded_faults_each_break_one_rule_and_labels_are_empty():
         rules = failed_rules(ClaimDraft.model_validate(case["draft"]), seeds["job_excerpts"],
                              seeds["profile_excerpts"], seeds["profile"])
         assert rules == case["failed_rules"] and len(rules) <= 1
+    profiles = profile_excerpts((ROOT / "profile.md").read_text().split("\n", 1)[1])
     for path in (ROOT / "labels").glob("*.fixture"):
-        assert load(path) == {"claims": {}, "missed_requirements": None}
+        posting = load(ROOT / "postings" / path.name)
+        output = load(ROOT / "outputs" / path.name)
+        drafts, _ = convert(output, job_excerpts(job_text(posting)), profiles)
+        assert_label_structure(load(path), len(drafts))
+
+
+@pytest.mark.parametrize("claim_count", [0, 2])
+def test_label_structure_rejects_out_of_range_claim_index(claim_count):
+    labels = {"claims": {str(claim_count): "supported"}, "missed_requirements": None}
+    with pytest.raises(AssertionError, match="Claim index does not exist"):
+        assert_label_structure(labels, claim_count)
+
+
+@pytest.mark.parametrize("labels", [
+    {"claims": {}, "missed_requirements": None},
+    {"claims": {"0": "supported", "1": "unsupported"}, "missed_requirements": ["Python"]},
+    {"claims": {"1": "supported"}, "missed_requirements": []},
+])
+def test_label_structure_accepts_empty_and_reviewed_labels(labels):
+    assert_label_structure(labels, 2)
+
+
+@pytest.mark.parametrize("labels", [
+    {"claims": {"-1": "supported"}, "missed_requirements": None},
+    {"claims": {"01": "supported"}, "missed_requirements": None},
+    {"claims": {"0": "unknown"}, "missed_requirements": None},
+    {"claims": [], "missed_requirements": None},
+    {"claims": {}, "missed_requirements": "Python"},
+    {"claims": {}, "missed_requirements": [1]},
+])
+def test_label_structure_rejects_invalid_fields(labels):
+    with pytest.raises(AssertionError):
+        assert_label_structure(labels, 2)
 
 
 @pytest.mark.parametrize("private", [False, True])
