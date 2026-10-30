@@ -24,6 +24,17 @@ PERSON = re.compile(r"\b(?i:contact|recruiter|hiring manager|founder|my name is|
 LEGAL_SUFFIX = re.compile(
     r"[\s,&]+(?:GmbH|AG|Inc\.?|Incorporated|Ltd\.?|Limited|LLC|LLP|LP|PLC|SE|Corp\.?|Corporation|Co\.?|KG|UG|S\.?A\.?|B\.?V\.?|N\.?V\.?|Group|Computing)[\s.,]*$", re.I,
 )
+# Short words and ordinary nouns need their original case to preserve prose and skills.
+COMMON_NAMES = {"go", "r", "it", "we", "us", "on", "at", "as", "in", "the", "and",
+                "remote", "next", "group", "company", "shepherd", "neon", "open", "talent"}
+
+
+def fold_identifier(value):
+    return len(compact_identifier(value)) >= 4 and value.casefold() not in COMMON_NAMES
+
+
+def normalize_apostrophes(text):
+    return text.replace("\u00e2\u0080\u0099", "’").replace("\u00e2\u20ac\u2122", "’")
 
 
 def token(value):
@@ -44,11 +55,12 @@ def compact_identifier(value):
 def company_pattern(companies):
     patterns = []
     for name in companies:
-        patterns.append(re.escape(name))
+        variants = [re.escape(name)]
         compact = compact_identifier(name)
         if compact:
-            patterns.append(r"[\W_]*".join(re.escape(char) for char in compact))
-    return re.compile(r"(?<!\w)(?:" + "|".join(patterns) + r")(?!\w)", re.I)
+            variants.append(r"[\W_]*".join(re.escape(char) for char in compact))
+        patterns.append("(?" + ("i" if fold_identifier(name) else "") + ":" + "|".join(variants) + ")")
+    return re.compile(r"(?<!\w)(?:" + "|".join(patterns) + r")(?!\w)")
 
 
 def safe_url(value):
@@ -78,6 +90,7 @@ def safe_url(value):
 
 
 def redact(text, companies, people=()):
+    text = normalize_apostrophes(text)
     text = EMAIL.sub(lambda match: match[0] if match[0].endswith("@example.com") else "person-" + token(match[0]) + "@example.com", text)
     text = URL.sub(lambda match: match[0] if "{" in match[0] else safe_url(match[0]), text)
     text = PHONE.sub(lambda match: "phone-" + token(match[0]), text)
@@ -132,7 +145,12 @@ def employer_identifiers(record, company):
 def identifier_hashes(identifiers):
     return [{"sha256": hashlib.sha256(value.encode()).hexdigest(), "length": len(value),
              "compact_sha256": hashlib.sha256(compact_identifier(value).encode()).hexdigest(),
-             "compact_length": len(compact_identifier(value))}
+             "compact_length": len(compact_identifier(value)),
+             **({"casefold_sha256": hashlib.sha256(value.casefold().encode()).hexdigest(),
+                 "casefold_length": len(value.casefold()),
+                 "compact_casefold_sha256": hashlib.sha256(compact_identifier(value).casefold().encode()).hexdigest(),
+                 "compact_casefold_length": len(compact_identifier(value).casefold())}
+                if fold_identifier(value) else {})}
             for value in sorted(set(identifiers))]
 
 

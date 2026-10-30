@@ -40,10 +40,10 @@ def test_url_tokens_are_deterministic_and_idempotent(url):
         assert result.split('/')[2] == url.split('/')[2]
 
 
-def test_company_audit_is_case_sensitive_and_uses_word_boundaries():
+def test_company_audit_uses_word_boundaries():
     hashes = identifier_hashes(["Invented Example"])
     assert list(remaining_identifiers("Join Invented Example today", hashes)) == ["Invented Example"]
-    assert not list(remaining_identifiers("invented example or Invented Examples", hashes))
+    assert list(remaining_identifiers("invented example or Invented Examples", hashes)) == ["invented example"]
 
 
 def test_company_tokens_preserve_deduplication_equivalence():
@@ -119,3 +119,48 @@ def test_redaction_matches_punctuation_and_spacing_variants():
     placeholder = company_token(record["company"])
     assert result["description"] == f"{placeholder}, {placeholder}, {placeholder} use Python."
     assert not list(remaining_identifiers(json.dumps(result), identifiers))
+
+
+@pytest.mark.parametrize('spelling', ['INVENTED EXAMPLE', 'invented example', 'Invented-Example'])
+def test_employer_audit_folds_distinctive_names(spelling):
+    identifiers = identifier_hashes(['Invented Example'])
+    assert spelling in list(remaining_identifiers(f'Join {spelling} today', identifiers))
+    assert not list(remaining_identifiers('Invented Examples and OtherInventedExample', identifiers))
+
+
+@pytest.mark.parametrize('name', ['Go', 'IT', 'We', 'Remote', 'Shepherd'])
+def test_common_employer_words_preserve_ordinary_prose(name):
+    record = {'company': name, 'description': f'{name} hires; {name.lower()} stays in prose. Python required.'}
+    result, identifiers = redact_record(record, name)
+    assert result['description'] == f'{company_token(name)} hires; {name.lower()} stays in prose. Python required.'
+    assert not list(remaining_identifiers(result['description'], identifiers))
+
+
+@pytest.mark.parametrize('apostrophe', ['\u00e2\u0080\u0099', '\u00e2\u20ac\u2122'])
+def test_employer_possessive_with_misdecoded_apostrophe(apostrophe):
+    record = {'company': 'Invented Example', 'description': f'Invented Example{apostrophe}s team uses Python.'}
+    identifiers = identifier_hashes([record['company']])
+    assert 'Invented Example' in list(remaining_identifiers(record['description'], identifiers))
+    result, _ = redact_record(record, record['company'])
+    assert result['description'] == f'{company_token(record["company"])}’s team uses Python.'
+
+
+def test_scoped_extra_identifier_is_reported_before_redaction(tmp_path, monkeypatch, capsys):
+    root = tmp_path / 'evals' / 'fixtures'
+    monkeypatch.setattr(privacy, 'REPO', tmp_path)
+    monkeypatch.setattr(privacy, 'ROOT', root)
+    filename = 'evals/fixtures/postings/1.fixture'
+    record = {'company': 'Invented Recruiting', 'description': 'Alternate Brand hires Python developers.'}
+    extras = ['Alternate Brand']
+    identifiers = identifier_hashes(employer_identifiers(record, record['company']) + extras)
+    save(tmp_path / filename, record, 'Employer example; description contains a client brand.')
+    save(root / 'redactions.fixture', [{'file': filename, 'scope': [], 'identifiers': identifiers,
+                                      'extra_identifiers': identifier_hashes(extras)}],
+         'Scoped employer digests; extra_identifiers covers a reviewed brand.')
+    (tmp_path / 'evals' / 'allowed_terms.txt').write_text('# No exceptions.\n')
+    assert not audit()
+    assert 'Alternate Brand' in capsys.readouterr().out
+    cleaned, _ = redact_record(record, record['company'], extras)
+    save(tmp_path / filename, cleaned, 'Employer example; description uses a placeholder.')
+    assert audit()
+    assert capsys.readouterr().out == ''

@@ -1,8 +1,8 @@
-# Recorded baseline response; model, usage, cost and latency describe one request.
+# Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.
 {
   "posting_id": 31901,
   "model": "deepseek/deepseek-v4.1-flash",
-  "job_snapshot_id": "a7a9e19f2fa2",
+  "job_snapshot_id": "e72964da1ce7",
   "profile_version": "00d1c6840fff",
   "recorded_at": "2026-10-27T22:52:05.657802+00:00",
   "content": "{\"seniority\":\"unknown\",\"required_languages\":[],\"employment_types\":[\"contract\"],\"salary\":{\"min\":500,\"max\":600,\"currency\":\"GBP\",\"period\":\"day\"},\"evidence\":{\"employment_types\":\"CONTRACT | REMOTE | UK | OUTSIDE IR35\",\"salary\":\"£500 - £600PD\"},\"explanation\":\"The profile shows Python/ML engineering experience plus Git/version control, but the posting is a Laravel/Livewire full-stack contract requiring PHP, HTML, CSS/SCSS, JavaScript, TDD, UK Government Design System experience, and active SC clearance. It therefore lacks the core web-development stack and security clearance for this role, with only Git/version control and basic testing as partial overlaps.\"}",
@@ -46,5 +46,6 @@
     "output_per_million": 0.72,
     "checked_at": "2026-10-27",
     "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
-  }
+  },
+  "recorded_job_snapshot_id": "a7a9e19f2fa2"
 }

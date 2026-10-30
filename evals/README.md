@@ -88,7 +88,13 @@ also cannot distinguish an affirmative mention from a negated mention.
 identifiers, scoped to that posting and its recorded output. Identifiers include
 the company name, names without legal suffixes, compact spellings, and ATS
 slugs. Compact hashes let the audit detect punctuation and spacing variants
-while preserving case-sensitive word boundaries. It never scans for all
+with case-insensitive matching for distinctive names. Short or common words
+retain their original case, and all matches preserve word boundaries.
+Misdecoded possessive apostrophes are normalized before matching.
+Reviewed aliases in `extra_identifiers` use the same digest format, scoped to
+one posting; the sanitizer recovers their spellings from the original source
+description or retained parser response. These cover brands and shortened
+names that cannot be inferred from the company field. It never scans for all
 database employers. Source domains and
 numeric URL identity are preserved; other company-specific URL components and
 contact details receive deterministic tokens. Other companies' product names
@@ -102,7 +108,7 @@ Re-anonymize the frozen postings and saved parser responses:
 uv run python -m evals.sanitize
 ```
 
-The sanitizer reads employer names and source URLs from the local database in
+The sanitizer reads employer names, source URLs, and descriptions from the local database in
 a read-only transaction, keeping frozen job requirements intact. Parser
 originals come from retained history; current test code is preserved while
 matching literals are sanitized. Original assertions and posting deduplication

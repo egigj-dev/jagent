@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 from evals.anonymize import company_token, employer_identifiers, redact, redact_record, token
 from evals.data import ROOT, job_text, load, save
+from evals.privacy import remaining_identifiers
 from jagent.briefing.evidence import text_version
 from jagent.db import connect
 
@@ -48,10 +49,10 @@ def sanitize_postings():
             raise ValueError("Database port is reserved")
         connection.execute("SET TRANSACTION READ ONLY")
         rows = connection.execute(
-            "SELECT id, company, url, source_id FROM postings WHERE id = ANY(%s)",
+            "SELECT id, company, url, source_id, description FROM postings WHERE id = ANY(%s)",
             ([int(path.stem) for path in paths],),
         ).fetchall()
-    sources = {str(row[0]): dict(zip(("id", "company", "url", "source_id"), row)) for row in rows}
+    sources = {str(row[0]): dict(zip(("id", "company", "url", "source_id", "description"), row)) for row in rows}
     manifest_path = ROOT / "redactions.fixture"
     manifest = load(manifest_path)
     entries = {entry["file"]: entry for entry in manifest if not entry["scope"]}
@@ -63,6 +64,9 @@ def sanitize_postings():
         posting = load(path)
         company = source["company"] or posting["company"]
         identifiers = employer_identifiers(source, source["company"])
+        entry = entries[str(path.relative_to(REPO))]
+        extras = entry.get("extra_identifiers", [])
+        identifiers += list(remaining_identifiers(json.dumps(source, ensure_ascii=False), extras))
         cleaned, digests = redact_record(posting, company, identifiers)
         if cleaned != posting:
             changed.append(path.stem)
@@ -86,6 +90,8 @@ def sanitize_postings():
             merged = {item["sha256"]: item for item in entry["identifiers"]}
             merged.update({item["sha256"]: item for item in digests})
             entry["identifiers"] = list(merged.values())
+            if extras:
+                entry["extra_identifiers"] = extras
     save(manifest_path, manifest, "Employer audit; original identifier digests include legal-name, compact and source-slug variants.")
     print("Anonymized frozen postings; text changed:", ", ".join(changed) or "none")
 
@@ -93,7 +99,9 @@ def sanitize_postings():
 def sanitize():
     sanitize_postings()
     manifest_path = ROOT / "redactions.fixture"
-    manifest = [entry for entry in load(manifest_path) if not entry["file"].startswith("tests/")]
+    previous = load(manifest_path)
+    manifest = [entry for entry in previous if not entry["file"].startswith("tests/")]
+    entries = {(entry["file"], tuple(entry["scope"])): entry for entry in previous}
     replacements = []
     for path in sorted((REPO / "tests" / "fixtures").iterdir()):
         if path.suffix not in {".json", ".html", ".xml"}:
@@ -102,8 +110,11 @@ def sanitize():
         original = subprocess.check_output(["git", "show", f"{BASELINE}:{relative}"], text=True)
 
         def clean(record, company, scope):
-            changed, identifiers = redact_record(record, company)
-            manifest.append({"file": relative, "scope": scope, "identifiers": identifiers})
+            extras = entries.get((relative, tuple(scope)), {}).get("extra_identifiers", [])
+            names = list(remaining_identifiers(json.dumps(record, ensure_ascii=False), extras))
+            changed, identifiers = redact_record(record, company, names)
+            manifest.append({"file": relative, "scope": scope, "identifiers": identifiers,
+                             **({"extra_identifiers": extras} if extras else {})})
             replacements.extend(pairs(record, changed))
             replacements.append((company.strip(), company_token(company)))
             return changed

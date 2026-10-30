@@ -1,8 +1,8 @@
-# Recorded baseline response; model, usage, cost and latency describe one request.
+# Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.
 {
   "posting_id": 56182,
   "model": "deepseek/deepseek-v4.1-flash",
-  "job_snapshot_id": "5b4abb43a921",
+  "job_snapshot_id": "a31713023505",
   "profile_version": "00d1c6840fff",
   "recorded_at": "2026-10-27T22:54:47.512863+00:00",
   "content": "{\"seniority\": \"senior\", \"required_languages\": [\"English\"], \"employment_types\": null, \"salary\": null, \"evidence\": {\"seniority\": \"5+ years of professional experience\", \"required_languages\": \"High proficiency in English is required.\", \"employment_types\": null, \"salary\": null}, \"explanation\": \"The candidate's Python/SQL, Docker/AWS, Git/Linux, and basic security/access-control exposure provide some technical grounding for explaining data-driven investigations, but the profile is oriented toward ML/NLP experiments and coursework rather than the required 5+ years of crypto/financial-institution compliance, investigative, or customer-facing work. Matched skills are limited to technical tooling and data concepts; missing are blockchain analytics, virtual-currency compliance, financial-crime investigation, product demos/training, customer-success account management, and Polish, while English is explicitly required.\"}",
@@ -43,5 +43,6 @@
     "output_per_million": 0.72,
     "checked_at": "2026-10-27",
     "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
-  }
+  },
+  "recorded_job_snapshot_id": "5b4abb43a921"
 }

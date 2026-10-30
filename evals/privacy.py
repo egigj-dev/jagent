@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 from bs4 import BeautifulSoup
 
-from evals.anonymize import ADDRESS, EMAIL, PHONE, URL, safe_url
+from evals.anonymize import ADDRESS, EMAIL, PHONE, URL, normalize_apostrophes, safe_url
 from evals.data import ROOT, load
 
 REPO = Path(__file__).resolve().parents[1]
@@ -33,6 +33,7 @@ def posting_scope(path, scope):
 
 
 def remaining_identifiers(text, identifiers):
+    text = normalize_apostrophes(text)
     by_length = {}
     found = set()
     for item in identifiers:
@@ -66,6 +67,35 @@ def remaining_identifiers(text, identifiers):
             if value not in found and hashlib.sha256(compact[start:end].encode()).hexdigest() in digests:
                 found.add(value)
                 yield value
+    # Fold candidate spans rather than the source so Unicode expansion preserves boundaries.
+    folded = {item["casefold_sha256"] for item in identifiers if "casefold_sha256" in item}
+    compact_folded = {item["compact_casefold_sha256"] for item in identifiers
+                      if "compact_casefold_sha256" in item}
+    lengths = {item["casefold_length"] for item in identifiers if "casefold_length" in item}
+    compact_lengths = {item["compact_casefold_length"] for item in identifiers
+                       if "compact_casefold_length" in item}
+    for start in starts:
+        for length in lengths:
+            for end in range(start + 1, min(len(text), start + length) + 1):
+                value = text[start:end]
+                if len(value.casefold()) != length or (end < len(text) and re.match(r"\w", text[end])):
+                    continue
+                if value not in found and hashlib.sha256(value.casefold().encode()).hexdigest() in folded:
+                    found.add(value)
+                    yield value
+    for start, position in enumerate(positions):
+        if position and re.match(r"\w", text[position - 1]):
+            continue
+        for length in compact_lengths:
+            for end in range(start + 1, min(len(positions), start + length) + 1):
+                candidate = compact[start:end].casefold()
+                last = positions[end - 1] + 1
+                if len(candidate) != length or (last < len(text) and re.match(r"\w", text[last])):
+                    continue
+                value = text[position:last]
+                if value not in found and hashlib.sha256(candidate.encode()).hexdigest() in compact_folded:
+                    found.add(value)
+                    yield value
 
 
 def audit():
