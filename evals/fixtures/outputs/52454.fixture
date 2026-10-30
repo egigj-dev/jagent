@@ -1,0 +1,48 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 52454,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "ad18562e4834",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:29:57.292224+00:00",
+  "content": "{\"seniority\":\"senior\",\"required_languages\":[\"English\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"seniority\":\"5+ years of professional experience\",\"required_languages\":\"Strong English communication skills.\",\"employment_types\":\"based on a 40-hour work week\"},\"explanation\":\"The profile matches the posting's Python, Docker, basic ML/NLP, API, and cloud-practice foundations, but it does not demonstrate the required 5+ years or production AI engineering depth. Major gaps include Microsoft Azure, Kubernetes/AKS, Generative AI/LLMs/Azure OpenAI, RAG/vector databases, CI/CD, and MLOps/LLMOps.\"}",
+  "analysis": {
+    "seniority": "senior",
+    "required_languages": [
+      "English"
+    ],
+    "employment_types": [
+      "full_time"
+    ],
+    "salary": null,
+    "evidence": {
+      "seniority": "5+ years of professional experience",
+      "required_languages": "Strong English communication skills.",
+      "employment_types": "based on a 40-hour work week"
+    },
+    "explanation": "The profile matches the posting's Python, Docker, basic ML/NLP, API, and cloud-practice foundations, but it does not demonstrate the required 5+ years or production AI engineering depth. Major gaps include Microsoft Azure, Kubernetes/AKS, Generative AI/LLMs/Azure OpenAI, RAG/vector databases, CI/CD, and MLOps/LLMOps."
+  },
+  "error": null,
+  "total_tokens": 3543,
+  "latency_seconds": 19.820833,
+  "usage": {
+    "completion_tokens": 2124,
+    "prompt_tokens": 1419,
+    "total_tokens": 3543,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1978
+    }
+  },
+  "cost_usd": 0.0017847,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

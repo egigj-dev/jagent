@@ -1,0 +1,46 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 56653,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "d3f3e8cd6de7",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:30:44.197523+00:00",
+  "content": "{\n  \"seniority\": \"senior\",\n  \"required_languages\": [\"German\", \"English\"],\n  \"employment_types\": null,\n  \"salary\": null,\n  \"evidence\": {\n    \"seniority\": \"senior individual contributor role\",\n    \"required_languages\": \"in German and in English\"\n  },\n  \"explanation\": \"The profile's Python/ML and basic AI platform experience (scikit-learn, PyTorch, Docker, AWS) partially matches the role's AI expertise and technical troubleshooting needs. However, it lacks the required instructional design/L&D, live enterprise facilitation, German C2/English C1, and Microsoft Copilot/M365/Power Platform experience, making the fit weak for this senior role.\"\n}",
+  "analysis": {
+    "seniority": "senior",
+    "required_languages": [
+      "German",
+      "English"
+    ],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "senior individual contributor role",
+      "required_languages": "in German and in English"
+    },
+    "explanation": "The profile's Python/ML and basic AI platform experience (scikit-learn, PyTorch, Docker, AWS) partially matches the role's AI expertise and technical troubleshooting needs. However, it lacks the required instructional design/L&D, live enterprise facilitation, German C2/English C1, and Microsoft Copilot/M365/Power Platform experience, making the fit weak for this senior role."
+  },
+  "error": null,
+  "total_tokens": 4774,
+  "latency_seconds": 28.88441,
+  "usage": {
+    "completion_tokens": 3585,
+    "prompt_tokens": 1189,
+    "total_tokens": 4774,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3429
+    }
+  },
+  "cost_usd": 0.0027952199999999997,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

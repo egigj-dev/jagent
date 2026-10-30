@@ -1,0 +1,18 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 2861,
+  "source": "himalayas",
+  "source_id": "https://himalayas.app/companies/company-e51e50dc0959/jobs/company-b96aa68792b7",
+  "title": "Technical Architect",
+  "company": "Company 782c75056cd6",
+  "description": "<p>Job: Technical Architect (Cloud infrastructure, Data platforms and AI capabilities )</p><h3>Location: North Dublin, </h3><h3>Rate: TBC</h3><h3>Type: Contract</h3><h3>Term: 12 months+</h3><p>We are Looking for a Principal Architect (Multi-domain) to be embedded with our client who operates within the aviation sector. You will be working across their full technology stack to design and deliver scalable cloud, data and AI solutions. You will partner closely with the customer's technical and business stakeholders to architect enterprise-grade systems that address complex challenges across multiple domains within their airline operations. </p><p>We are considering people on a fully remote basis as long as they live in Ireland or UK. </p><p>We are looking for people with the below experience:</p><ul>\n<li>8+ years of experience as a solutions architect or principal architect with demonstrated expertise across multiple technology domains</li>\n<li>Deep knowledge of cloud platforms (AWS, Azure or GCP) and their application in enterprise aviation or transportation contexts</li>\n<li>Strong background in data architecture and AI/ML solution design with proven track record of delivery</li>\n<li>Excellent communication skills with ability to articulate complex technical concepts to both technical and non-technical stakeholders</li>\n<li>Experience working embedded with customer organisations or in customer-facing technical leadership roles</li>\n</ul><p>You will be responsible for the following:</p><ul>\n<li>Lead the design and architecture of multi-domain solutions spanning cloud infrastructure, data platforms and AI capabilities tailored to the customer's aviation operations</li>\n<li>Work with the customer's engineering and product teams to translate business requirements into robust technical architectures and implementation strategies</li>\n<li>Provide technical leadership and mentorship to the customer's development teams, ensuring adherence to architectural principles and best practices</li>\n<li>Drive technology decisions and recommendations across the full stack, balancing scalability, performance, security and cost considerations</li>\n<li>Engage with the customer's stakeholders to understand evolving business needs and continuously refine architectural approaches</li>\n<li>Oversee the integration of cloud, data and AI components to create cohesive platforms that enhance airline operations</li>\n</ul><p>This is an exciting role that will have you play a pivotal role in a major transformation of technology within the business and sector. If you would be interested, please submit your CV to the link provided for immediate consideration.  </p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+  "locations": [
+    "Ireland"
+  ],
+  "url": "https://himalayas.app/companies/company-e51e50dc0959/jobs/company-b96aa68792b7",
+  "similarity": 0.563844103839452,
+  "percentile": 97.20642143850336,
+  "queued": true,
+  "posting_date": "2026-10-03T22:16:34+00:00",
+  "selection": "borderline"
+}

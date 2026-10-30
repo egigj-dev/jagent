@@ -1,5 +1,0 @@
-# Human labels; claims maps zero-based indices to supported or unsupported, null means unlabeled.
-{
-  "claims": {"0": "supported", "1": "supported"},
-  "missed_requirements": []
-}

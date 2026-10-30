@@ -1,0 +1,52 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 50295,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "7199d88acf1d",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:29:18.295486+00:00",
+  "content": "{\n  \"seniority\": \"senior\",\n  \"required_languages\": [\"English\"],\n  \"employment_types\": null,\n  \"salary\": {\n    \"min\": 130600,\n    \"max\": 236200,\n    \"currency\": \"USD\",\n    \"period\": null\n  },\n  \"evidence\": {\n    \"seniority\": \"5+ years of experience in data science, machine learning or technical analytics roles.\",\n    \"required_languages\": \"Fluency in English.\",\n    \"salary\": \"we offer a salary between $130,600 - $236,200 USD\",\n    \"employment_types\": null\n  },\n  \"explanation\": \"The profile matches parts of the posting through Python, SQL, scikit-learn, pandas/NumPy, PyTorch, PostgreSQL, and basic ML/statistics experience, but it lacks the required 5+ years in data science, deep data visualization expertise, causal inference, A/B testing, and operational ML deployment at scale. The candidate would need to demonstrate stronger stakeholder communication, product-minded analytics ownership, and ideally French as a plus to fully fit this senior remote role.\"\n}",
+  "analysis": {
+    "seniority": "senior",
+    "required_languages": [
+      "English"
+    ],
+    "employment_types": null,
+    "salary": {
+      "min": 130600.0,
+      "max": 236200.0,
+      "currency": "USD",
+      "period": null
+    },
+    "evidence": {
+      "seniority": "5+ years of experience in data science, machine learning or technical analytics roles.",
+      "required_languages": "Fluency in English.",
+      "salary": "we offer a salary between $130,600 - $236,200 USD",
+      "employment_types": null
+    },
+    "explanation": "The profile matches parts of the posting through Python, SQL, scikit-learn, pandas/NumPy, PyTorch, PostgreSQL, and basic ML/statistics experience, but it lacks the required 5+ years in data science, deep data visualization expertise, causal inference, A/B testing, and operational ML deployment at scale. The candidate would need to demonstrate stronger stakeholder communication, product-minded analytics ownership, and ideally French as a plus to fully fit this senior remote role."
+  },
+  "error": null,
+  "total_tokens": 4148,
+  "latency_seconds": 17.62726,
+  "usage": {
+    "completion_tokens": 2420,
+    "prompt_tokens": 1728,
+    "total_tokens": 4148,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 2183
+    }
+  },
+  "cost_usd": 0.0020534399999999997,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

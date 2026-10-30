@@ -1,11 +1,13 @@
 # Freeze a read-only database sample; selection.sql fixes sampling and synthetic sections mirror heading structure only.
 from datetime import UTC, datetime
+import json
 from pathlib import Path
 
 from psycopg.rows import dict_row
 
 from evals.anonymize import redact_record
 from evals.data import ROOT, load, save
+from evals.privacy import remaining_identifiers
 from jagent.db import connect
 from jagent.matching import QUEUE_MIN_PERCENTILE, QUEUE_MIN_SIMILARITY
 from jagent.profile import split_sections
@@ -37,6 +39,8 @@ def freeze():
             rows = cursor.execute(query, params).fetchall()
         if len(rows) != 20 or len({row["id"] for row in rows}) != 20:
             raise ValueError("Sampling requires twenty distinct postings")
+        if sum(row["selection"] == "borderline" for row in rows) != 7:
+            raise ValueError("Sampling requires seven borderline and thirteen upper postings")
         headings = [name for name, _ in split_sections(profile)]
         if len(headings) != len(SYNTHETIC_SECTIONS):
             raise ValueError("Synthetic section count differs from the source profile")
@@ -52,14 +56,28 @@ def freeze():
         """, params).fetchone()
     manifest_path = ROOT / "redactions.fixture"
     manifest = load(manifest_path) if manifest_path.exists() else []
-    manifest = [entry for entry in manifest if not entry["file"].startswith("evals/fixtures/postings/")]
+    entries = {entry["file"]: entry for entry in manifest if not entry["scope"]}
+    selected_ids = {row["id"] for row in rows}
+    stale_ids = {posting["id"] for path in (ROOT / "postings").glob("*.fixture")
+                 if not (posting := load(path)).get("adversarial") and posting["id"] not in selected_ids}
+    for directory in ("postings", "outputs", "labels"):
+        for posting_id in stale_ids:
+            (ROOT / directory / f"{posting_id}.fixture").unlink(missing_ok=True)
+    manifest = [entry for entry in manifest
+                if not (entry["file"].startswith("evals/fixtures/postings/")
+                         and int(Path(entry["file"]).stem) in (selected_ids | stale_ids))
+                and not (entry["file"].startswith("evals/fixtures/outputs/")
+                         and int(Path(entry["file"]).stem) in stale_ids)]
     for row in rows:
+        filename = f"evals/fixtures/postings/{row['id']}.fixture"
+        extras = entries.get(filename, {}).get("extra_identifiers", [])
+        names = list(remaining_identifiers(json.dumps(row, default=str, ensure_ascii=False), extras))
         row["posting_date"] = row["posting_date"].astimezone(UTC).isoformat()
-        row, identifiers = redact_record(row, row["company"])
+        row, identifiers = redact_record(row, row["company"], names)
         save(ROOT / "postings" / f"{row['id']}.fixture", row,
              "Anonymized posting; id preserves sample identity and selection records its stratum.")
         manifest.append({"file": f"evals/fixtures/postings/{row['id']}.fixture", "scope": [],
-                         "identifiers": identifiers})
+                         "identifiers": identifiers, **({"extra_identifiers": extras} if extras else {})})
         label_path = ROOT / "labels" / f"{row['id']}.fixture"
         if not label_path.exists():
             save(label_path, {"claims": {}, "missed_requirements": None},
@@ -68,10 +86,14 @@ def freeze():
         "parameters": params, "selected_ids": [row["id"] for row in rows],
         "recent_scored_count": distribution[0],
         "score_percentiles": dict(zip(("p10", "p25", "p50", "p75", "p90", "p97"), distribution[1])),
-        "near_cutoff_count": sum(row["selection"] == "near_cutoff" for row in rows),
+        "borderline_count": sum(row["selection"] == "borderline" for row in rows),
+        "upper_count": sum(row["selection"] == "upper" for row in rows),
+        "selected_percentiles": {str(row["id"]): row["percentile"] for row in rows},
     }, "Selection provenance; parameters freeze SQL inputs and score_percentiles describe recent matches.")
     save(manifest_path, manifest, "Employer audit; identifier digests and lengths permit offline per-posting checks without publishing originals.")
-    print(f"Frozen {len(rows)} postings; {sum(row['selection'] == 'near_cutoff' for row in rows)} near cutoff")
+    print(f"Frozen {len(rows)} queued postings; 7 borderline and 13 upper")
+    for row in rows:
+        print(f"{row['id']} | {row['percentile']:.6f} | {row['selection']}")
     print("Score distribution:", dict(zip(("p10", "p25", "p50", "p75", "p90", "p97"), distribution[1])))
     print(f"Cutoff: percentile >= {QUEUE_MIN_PERCENTILE}, similarity >= {QUEUE_MIN_SIMILARITY}")
 

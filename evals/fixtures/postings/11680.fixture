@@ -1,0 +1,18 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 11680,
+  "source": "himalayas",
+  "source_id": "https://himalayas.app/companies/company-6f73ab061fa0/jobs/company-7fa7dd9e476d",
+  "title": "ML Engineer",
+  "company": "Company 60d55e8269d4",
+  "description": "<h3>Company</h3><p>Company 60d55e8269d4 builds the Company 60d55e8269d4 Intelligence Platform (Company 60d55e8269d4), a secure, Kubernetes-native data intelligence system deployed as SaaS or self-hosted/on-prem (including air-gapped missions). We fuse data processing, ML, and intuitive UX for defense, law-enforcement, and enterprise teams.</p><h3>Role</h3><p>Productionize the NLP/audio/document models that power Company 60d55e8269d4’s insight experiences. You’ll own model packaging, deployment, monitoring, and evaluation—partnering with Research and product squads to deliver trustworthy enrichment worldwide.</p><h3>What you’ll do</h3><ul>\n<li>Package and deploy models (ASR, translation, OCR, NER, summarization) using Triton/KServe on Kubernetes.</li>\n<li>Build evaluation pipelines (WER, BLEU, F1, latency, cost) and automate release gating.</li>\n<li>Operate streaming + batch inference via Kafka, Temporal, and backfill tooling.</li>\n<li>Monitor drift/quality with Prometheus, Grafana, Evidently; optimize inference cost and performance.</li>\n<li>Collaborate with TypeScript teams on payload schemas, contracts, and human-in-the-loop feedback loops.</li>\n</ul><h3>About you</h3><ul>\n<li>4–8+ years ML engineering/MLOps, shipping models to production.</li>\n<li>Strong Python, PyTorch/Transformers, and experience with Triton/KServe or similar.</li>\n<li>Comfortable with Kubernetes, GitOps, CI/CD, and GPU workload operations.</li>\n<li>Knowledge of evaluation metrics, monitoring, and annotation workflows.</li>\n<li>Eligible to work in Germany; export-control screening required for certain programs.</li>\n</ul><h3>Nice-to-haves</h3><ul>\n<li>Temporal, Beam/Flink, or Ray Serve experience; ONNX/TensorRT optimization.</li>\n<li>German language (B1+) and familiarity with defense or public safety datasets.</li>\n<li>WhisperX, DeepStream/GStreamer, or vector search integrations.</li>\n</ul><h3>What we offer</h3><ul>\n<li>Modern MLOps stack: Triton, Temporal, Kafka, MLflow/Weights & Biases, Evidently, Kubernetes.</li>\n<li>Remote-first in Germany with regular Berlin meetups, 30 days vacation, equipment & learning budget.</li>\n</ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+  "locations": [
+    "Germany"
+  ],
+  "url": "https://himalayas.app/companies/company-6f73ab061fa0/jobs/company-7fa7dd9e476d",
+  "similarity": 0.6355265902674151,
+  "percentile": 99.51965617494628,
+  "queued": true,
+  "posting_date": "2026-10-02T18:25:53+00:00",
+  "selection": "upper"
+}

@@ -147,3 +147,71 @@ runpy.run_module("evals.compare", run_name="__main__")
     assert "Seeded checks | Flagged / total" in result.stdout
     assert "Seeded faults | 5 / 5" in result.stdout
     assert "Valid controls wrongly flagged | 0 / 3" in result.stdout
+
+
+def test_frozen_selection_contains_only_queued_stratified_postings():
+    selection = load(ROOT / "selection.fixture")
+    selected = selection["selected_ids"]
+    assert len(selected) == len(set(selected)) == 20
+    assert selection["borderline_count"] == 7 and selection["upper_count"] == 13
+    counts = {"borderline": 0, "upper": 0}
+    for posting_id in selected:
+        posting = load(ROOT / "postings" / f"{posting_id}.fixture")
+        assert posting["queued"] is True
+        percentile = posting["percentile"]
+        assert percentile == selection["selected_percentiles"][str(posting_id)]
+        band = "borderline" if 97 <= percentile < 98 else "upper"
+        assert 97 <= percentile <= 100 and posting["selection"] == band
+        counts[band] += 1
+    assert counts == {"borderline": 7, "upper": 13}
+    adversarial = {str(posting["id"]) for path in (ROOT / "postings").glob("*.fixture")
+                   if (posting := load(path)).get("adversarial")}
+    assert adversarial == {"900001", "900002", "900003"}
+    expected = {str(posting_id) for posting_id in selected} | adversarial
+    for directory in ("postings", "outputs", "labels"):
+        assert {path.stem for path in (ROOT / directory).glob("*.fixture")} == expected
+    for entry in load(ROOT / "redactions.fixture"):
+        if entry["file"].startswith("evals/fixtures/"):
+            assert Path(entry["file"]).stem in expected
+
+
+def test_queued_selection_spreads_each_band_and_excludes_other_matches():
+    import os
+    from psycopg.rows import dict_row
+    from jagent.db import connect
+
+    if os.environ.get("JAGENT_TEST_POSTGRES") != "1":
+        pytest.skip("Set JAGENT_TEST_POSTGRES=1 to test sampling in isolated temporary tables")
+    with connect() as connection:
+        connection.execute("""
+            CREATE TEMP TABLE postings (
+                id int, source text, source_id text, title text, company text,
+                description text, locations text[], url text,
+                posted_at timestamptz, first_seen timestamptz);
+            CREATE TEMP TABLE matches (
+                posting_id int, profile_id int, similarity double precision,
+                percentile double precision, queued bool);
+            INSERT INTO postings
+                SELECT id, 'sample', id::text, 'Engineer', 'Invented Example',
+                       'Python required.', ARRAY['Remote'], '',
+                       '2026-10-20'::timestamptz, '2026-10-20'::timestamptz
+                FROM generate_series(1, 46) AS sample(id);
+            INSERT INTO matches
+                SELECT id, 10, 0.7,
+                       CASE WHEN id <= 15 THEN 97 + (id - 1) / 15.0
+                            ELSE 98 + (id - 16) / 12.0 END, true
+                FROM generate_series(1, 40) AS sample(id);
+            INSERT INTO matches VALUES
+                (41, 10, 0.7, 99, false), (42, 11, 0.7, 99, true),
+                (43, 10, 0.7, 99, true), (44, 10, 0.7, 99, true),
+                (45, 10, 0.7, 96, true), (46, 10, 0.4, 99, true);
+            UPDATE postings SET posted_at='2026-10-28' WHERE id=43;
+            UPDATE postings SET posted_at='2026-09-01' WHERE id=44;
+        """)
+        with connection.cursor(row_factory=dict_row) as cursor:
+            rows = cursor.execute((ROOT.parent / "selection.sql").read_text(), {
+                "profile_id": 10, "as_of": "2026-10-27T22:50:27+00:00",
+                "min_percentile": 97, "min_similarity": 0.55,
+            }).fetchall()
+    assert [row["id"] for row in rows if row["selection"] == "borderline"] == [1, 3, 6, 8, 10, 13, 15]
+    assert [row["id"] for row in rows if row["selection"] == "upper"] == list(range(16, 41, 2))

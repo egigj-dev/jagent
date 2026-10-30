@@ -1,0 +1,45 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 48600,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "2193adc7341d",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:29:06.080683+00:00",
+  "content": "{\"seniority\": \"mid\", \"required_languages\": [\"English\"], \"employment_types\": null, \"salary\": null, \"evidence\": {\"seniority\": \"Middle Data Engineer\", \"required_languages\": \"Fluent spoken English\"}, \"explanation\": \"The profile shows Python, SQL/PostgreSQL, Docker, AWS, and basic ML/data science project work, which matches the posting’s Python and SQL foundations, but it lacks the required Kafka, PySpark/Spark on Databricks, Airflow, stream processing, and 3+ years of data engineering experience. Overall fit is weak for this middle data engineering role because the production data pipeline and orchestration skills are missing.\"}",
+  "analysis": {
+    "seniority": "mid",
+    "required_languages": [
+      "English"
+    ],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "Middle Data Engineer",
+      "required_languages": "Fluent spoken English"
+    },
+    "explanation": "The profile shows Python, SQL/PostgreSQL, Docker, AWS, and basic ML/data science project work, which matches the posting’s Python and SQL foundations, but it lacks the required Kafka, PySpark/Spark on Databricks, Airflow, stream processing, and 3+ years of data engineering experience. Overall fit is weak for this middle data engineering role because the production data pipeline and orchestration skills are missing."
+  },
+  "error": null,
+  "total_tokens": 2410,
+  "latency_seconds": 10.709399,
+  "usage": {
+    "completion_tokens": 1134,
+    "prompt_tokens": 1276,
+    "total_tokens": 2410,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 989
+    }
+  },
+  "cost_usd": 0.0010461600000000002,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

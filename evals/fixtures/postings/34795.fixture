@@ -14,5 +14,5 @@
   "percentile": 100.0,
   "queued": true,
   "posting_date": "2026-09-30T20:30:45+00:00",
-  "selection": "spread"
+  "selection": "upper"
 }

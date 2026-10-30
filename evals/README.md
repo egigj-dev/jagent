@@ -18,7 +18,7 @@ uv run python -m evals.compare evals/private
 Inspect a posting before filling its labels:
 
 ```bash
-uv run python -m evals.show 34491
+uv run python -m evals.show 9547
 ```
 
 The viewer prints the anonymized job text, synthetic profile sections, and
@@ -38,10 +38,15 @@ and found none. No human labels have been supplied.
 The synthetic profile preserves six section headings, with entirely invented
 body text. The scheduling sentence is a synthetic disclosure canary.
 `selection.fixture` freezes the SQL parameters, selected posting IDs, and recent
-score distribution. `selection.sql` selects six postings nearest the existing
-97th-percentile cutoff that satisfy the 0.55 similarity floor, plus fourteen
-evenly spaced percentile targets. Common-word and technology employers are
-avoided; there is no proposed borderline band or changed ranking policy.
+score distribution. The frozen parameters retain profile 10 and
+2026-10-27T22:50:27.970997+00:00. `selection.sql` selects queued matches only:
+seven in the borderline band from percentile 97 to below 98, and thirteen
+from percentile 98 through 100. Within each band, evenly spaced rank targets
+include both endpoints, with posting ID breaking percentile ties. The 0.55
+similarity floor still applies. Common-word and technology employers are
+avoided to preserve skill wording during anonymization. This sampling does
+not change matching or ranking policy. Each posting records its percentile;
+`selected_percentiles` in the selection provenance records the same values.
 
 To reproduce the database selection without changing production data:
 
@@ -51,7 +56,11 @@ uv run python -m evals.freeze
 
 This uses read-only transactions and the frozen time and profile version. Live
 source rows can subsequently change, so the committed inputs remain the
-reference for the baseline. Record missing responses with:
+reference for the baseline. Queue flags and stored percentiles reflect the
+database at selection time. Freezing removes superseded real postings,
+recordings, labels, and audit scopes; the three synthetic adversarial cases
+remain intact. Reviewed employer aliases survive regeneration. Record missing
+responses with:
 
 ```bash
 uv run python -m evals.record

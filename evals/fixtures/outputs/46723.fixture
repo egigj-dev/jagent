@@ -1,0 +1,45 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 46723,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "2b4fbbf501ae",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:28:22.216869+00:00",
+  "content": "{\"seniority\":\"mid\",\"required_languages\":[],\"employment_types\":null,\"salary\":null,\"evidence\":{\"seniority\":\"3+ years of software engineering in an AI, machine learning, or computer vision product environment.\",\"required_languages\":null,\"employment_types\":null,\"salary\":null},\"explanation\":\"The profile shows Python, Docker, AWS, PostgreSQL, PyTorch, and basic ML/CV project work, matching some of the required Python, containerized service, and computer vision plus areas. It is missing the 3+ years of production AI/ML software engineering, ownership of production APIs, and hands-on GPU inference optimization (profiling, memory, batching, cold start) that the posting emphasizes.\"}",
+  "analysis": {
+    "seniority": "mid",
+    "required_languages": [],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "3+ years of software engineering in an AI, machine learning, or computer vision product environment.",
+      "required_languages": null,
+      "employment_types": null,
+      "salary": null
+    },
+    "explanation": "The profile shows Python, Docker, AWS, PostgreSQL, PyTorch, and basic ML/CV project work, matching some of the required Python, containerized service, and computer vision plus areas. It is missing the 3+ years of production AI/ML software engineering, ownership of production APIs, and hands-on GPU inference optimization (profiling, memory, batching, cold start) that the posting emphasizes."
+  },
+  "error": null,
+  "total_tokens": 4156,
+  "latency_seconds": 23.951819,
+  "usage": {
+    "completion_tokens": 3265,
+    "prompt_tokens": 891,
+    "total_tokens": 4156,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3112
+    }
+  },
+  "cost_usd": 0.00251118,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

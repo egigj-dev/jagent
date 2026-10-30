@@ -1,0 +1,48 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 10082,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "5f4876b51260",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:25:04.074588+00:00",
+  "content": "{\"seniority\":\"mid\",\"required_languages\":[\"German\",\"English\"],\"employment_types\":null,\"salary\":null,\"evidence\":{\"seniority\":\"Mindestens 3 Jahre Erfahrung im Data Engineering oder Cloud Engineering\",\"required_languages\":\"Fließende Deutsch- und Englischkenntnisse\",\"employment_types\":null,\"salary\":null},\"explanation\":\"The profile shows some matching AI/ML fundamentals in Python, scikit-learn, PyTorch, Docker, AWS, and PostgreSQL, but it lacks the posting’s required production Data/Cloud Engineering depth, Infrastructure-as-Code, Kubernetes, workflow orchestration, RAG/vector database/AI cloud service experience, and German fluency. Overall this is a partial fit for a mid-level AI Data Engineer role, with missing evidence of enterprise architecture, MLOps, and technical project responsibility.\"}",
+  "analysis": {
+    "seniority": "mid",
+    "required_languages": [
+      "German",
+      "English"
+    ],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "Mindestens 3 Jahre Erfahrung im Data Engineering oder Cloud Engineering",
+      "required_languages": "Fließende Deutsch- und Englischkenntnisse",
+      "employment_types": null,
+      "salary": null
+    },
+    "explanation": "The profile shows some matching AI/ML fundamentals in Python, scikit-learn, PyTorch, Docker, AWS, and PostgreSQL, but it lacks the posting’s required production Data/Cloud Engineering depth, Infrastructure-as-Code, Kubernetes, workflow orchestration, RAG/vector database/AI cloud service experience, and German fluency. Overall this is a partial fit for a mid-level AI Data Engineer role, with missing evidence of enterprise architecture, MLOps, and technical project responsibility."
+  },
+  "error": null,
+  "total_tokens": 3898,
+  "latency_seconds": 15.819041,
+  "usage": {
+    "completion_tokens": 2107,
+    "prompt_tokens": 1791,
+    "total_tokens": 3898,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1931
+    }
+  },
+  "cost_usd": 0.00183942,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

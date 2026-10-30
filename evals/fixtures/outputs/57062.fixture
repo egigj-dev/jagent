@@ -1,0 +1,42 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 57062,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "875c90c12f6b",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:31:14.582918+00:00",
+  "content": "{\n  \"seniority\": \"mid\",\n  \"required_languages\": null,\n  \"employment_types\": null,\n  \"salary\": null,\n  \"evidence\": {\n    \"seniority\": \"4+ years of hands-on experience in Data Science, Quantitative Analytics, Risk Modeling, or a similar role\"\n  },\n  \"explanation\": \"The profile matches the posting's Python, pandas, NumPy, scikit-learn, R, and basic regression/modeling requirements, but it is much more junior and lacks the 4+ years of quantitative analytics or risk modeling experience the role requires. Missing areas include credit/financial risk, NPV, FX/liquidity modeling, uncertainty quantification, forecasting, and an M.S. or Ph.D. in a quantitative field.\"\n}",
+  "analysis": {
+    "seniority": "mid",
+    "required_languages": null,
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "4+ years of hands-on experience in Data Science, Quantitative Analytics, Risk Modeling, or a similar role"
+    },
+    "explanation": "The profile matches the posting's Python, pandas, NumPy, scikit-learn, R, and basic regression/modeling requirements, but it is much more junior and lacks the 4+ years of quantitative analytics or risk modeling experience the role requires. Missing areas include credit/financial risk, NPV, FX/liquidity modeling, uncertainty quantification, forecasting, and an M.S. or Ph.D. in a quantitative field."
+  },
+  "error": null,
+  "total_tokens": 4337,
+  "latency_seconds": 27.30045,
+  "usage": {
+    "completion_tokens": 3246,
+    "prompt_tokens": 1091,
+    "total_tokens": 4337,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 3085
+    }
+  },
+  "cost_usd": 0.0025335,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

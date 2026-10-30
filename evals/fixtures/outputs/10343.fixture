@@ -1,0 +1,52 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 10343,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "3f026bf616d2",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:25:21.396179+00:00",
+  "content": "{\n  \"seniority\": \"mid\",\n  \"required_languages\": [\"English\"],\n  \"employment_types\": null,\n  \"salary\": {\n    \"min\": 27785,\n    \"max\": 43450,\n    \"currency\": \"EUR\",\n    \"period\": \"year\"\n  },\n  \"evidence\": {\n    \"seniority\": \"3+ years of working experience in Artificial Intelligence, Machine Learning, or related software engineering roles\",\n    \"required_languages\": \"Fluency in English, both spoken and written\",\n    \"employment_types\": null,\n    \"salary\": \"The salary range for this position is 27 785,00€ - 43 450,00€ gross per year.\"\n  },\n  \"explanation\": \"The posting seeks a mid-level AI engineer with .NET/C#, Azure OpenAI, RAG, agentic tooling, and production AI deployment, while the profile shows Python-based ML/NLP projects, scikit-learn, PyTorch, SQL/PostgreSQL, Docker, Git, and Linux but no .NET/C# or Azure AI experience. The strongest matches are foundational ML, Python, SQL, Docker, Git, and Linux, but the profile lacks the required 3+ years of professional AI engineering, .NET backend API work, Azure OpenAI/RAG pipelines, and speech-to-text deployment experience.\"\n}",
+  "analysis": {
+    "seniority": "mid",
+    "required_languages": [
+      "English"
+    ],
+    "employment_types": null,
+    "salary": {
+      "min": 27785.0,
+      "max": 43450.0,
+      "currency": "EUR",
+      "period": "year"
+    },
+    "evidence": {
+      "seniority": "3+ years of working experience in Artificial Intelligence, Machine Learning, or related software engineering roles",
+      "required_languages": "Fluency in English, both spoken and written",
+      "employment_types": null,
+      "salary": "The salary range for this position is 27 785,00€ - 43 450,00€ gross per year."
+    },
+    "explanation": "The posting seeks a mid-level AI engineer with .NET/C#, Azure OpenAI, RAG, agentic tooling, and production AI deployment, while the profile shows Python-based ML/NLP projects, scikit-learn, PyTorch, SQL/PostgreSQL, Docker, Git, and Linux but no .NET/C# or Azure AI experience. The strongest matches are foundational ML, Python, SQL, Docker, Git, and Linux, but the profile lacks the required 3+ years of professional AI engineering, .NET backend API work, Azure OpenAI/RAG pipelines, and speech-to-text deployment experience."
+  },
+  "error": null,
+  "total_tokens": 3652,
+  "latency_seconds": 16.505548,
+  "usage": {
+    "completion_tokens": 2437,
+    "prompt_tokens": 1215,
+    "total_tokens": 3652,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 2156
+    }
+  },
+  "cost_usd": 0.00197334,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

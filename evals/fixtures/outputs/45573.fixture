@@ -1,0 +1,44 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 45573,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "6a6de5e56334",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:28:07.022501+00:00",
+  "content": "{\n  \"seniority\": \"unknown\",\n  \"required_languages\": [],\n  \"employment_types\": [\"contract\"],\n  \"salary\": null,\n  \"evidence\": {\n    \"employment_types\": \"Role Type: Contract\"\n  },\n  \"explanation\": \"The profile matches the posting’s Python, pandas, machine learning, statistics, and data analysis requirements through projects using scikit-learn, regression models, and a PyTorch image classifier. It lacks direct evidence of experimentation, expert-level prompt/dataset creation, and professional data modelling, which the posting emphasizes.\"\n}",
+  "analysis": {
+    "seniority": "unknown",
+    "required_languages": [],
+    "employment_types": [
+      "contract"
+    ],
+    "salary": null,
+    "evidence": {
+      "employment_types": "Role Type: Contract"
+    },
+    "explanation": "The profile matches the posting’s Python, pandas, machine learning, statistics, and data analysis requirements through projects using scikit-learn, regression models, and a PyTorch image classifier. It lacks direct evidence of experimentation, expert-level prompt/dataset creation, and professional data modelling, which the posting emphasizes."
+  },
+  "error": null,
+  "total_tokens": 2336,
+  "latency_seconds": 13.696614,
+  "usage": {
+    "completion_tokens": 1655,
+    "prompt_tokens": 681,
+    "total_tokens": 2336,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1536
+    }
+  },
+  "cost_usd": 0.0013141799999999999,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

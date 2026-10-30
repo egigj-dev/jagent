@@ -1,0 +1,23 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 45573,
+  "source": "himalayas",
+  "source_id": "https://himalayas.app/companies/company-df5470bcfb9c/jobs/company-a428a79fef04",
+  "title": "Data Scientist, Remote - Contract",
+  "company": "Company a5764833737b",
+  "description": "<p><strong>Role Title:</strong> Data Scientist</p><p><strong>Role Type: </strong>Contract</p><p><strong>Location: </strong>Remote</p><h3>Required Skills</h3><ul>\n<li><h3>Python</h3></li>\n<li><h3>Machine Learning</h3></li>\n<li><h3>Statistics</h3></li>\n<li><h3>Data Analysis</h3></li>\n<li><h3>Experimentation</h3></li>\n<li><h3>Pandas</h3></li>\n<li><h3>Data Modelling</h3></li>\n</ul><p>You'll bring rigor to how AI models handle statistics, machine learning, experimentation, and quantitative reasoning.</p><h3>Scope of Work</h3><ul>\n<li><p>Evaluate AI model outputs on data science, statistics, ML, and quantitative problems</p></li>\n<li><p>Create expert-level prompts, datasets, and reference solutions</p></li>\n<li><p>Identify flawed methodology, statistical errors, and weak quantitative reasoning</p></li>\n<li><p>Provide structured feedback that improves model capability</p></li>\n</ul><h3>Preferred Qualifications</h3><ul>\n<li><p>At least one year of experience working at a top company (tech, finance, or research), with at least part of this experience within the past 7 years</p></li>\n<li><p>Undergraduate degree from a top-ranked university</p></li>\n<li><h3>Based in an English-speaking country</h3></li>\n<li><p>Clear written communication of technical and statistical concepts</p></li>\n</ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+  "locations": [
+    "Australia",
+    "Canada",
+    "Ireland",
+    "New Zealand",
+    "United Kingdom",
+    "United States"
+  ],
+  "url": "https://himalayas.app/companies/company-df5470bcfb9c/jobs/company-a428a79fef04",
+  "similarity": 0.5691683511535318,
+  "percentile": 97.49715585893061,
+  "queued": true,
+  "posting_date": "2026-10-05T17:52:14+00:00",
+  "selection": "borderline"
+}

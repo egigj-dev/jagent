@@ -1,0 +1,42 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 51827,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "6c8623d9e9fe",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:29:37.512034+00:00",
+  "content": "{\"seniority\":\"senior\",\"required_languages\":[],\"employment_types\":null,\"salary\":null,\"evidence\":{\"seniority\":\"MSc or equivalent with 5+ years\\u2019 industry experience in Computer Science, Data Engineering, Machine Learning, or a related field.\"},\"explanation\":\"The profile shows some aligned foundations in Python, PostgreSQL, Docker, AWS, and basic ML/MLOps practice, which partially matches the posting's Python, database, containerization, and cloud-infrastructure requirements. However, it lacks the posting's required 5+ years industry experience and hands-on production experience with Terraform/IaC, Kubernetes, ML platforms, streaming brokers, CI/CD, observability, data governance, and the mandatory AIVD security screening.\"}",
+  "analysis": {
+    "seniority": "senior",
+    "required_languages": [],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "seniority": "MSc or equivalent with 5+ years’ industry experience in Computer Science, Data Engineering, Machine Learning, or a related field."
+    },
+    "explanation": "The profile shows some aligned foundations in Python, PostgreSQL, Docker, AWS, and basic ML/MLOps practice, which partially matches the posting's Python, database, containerization, and cloud-infrastructure requirements. However, it lacks the posting's required 5+ years industry experience and hands-on production experience with Terraform/IaC, Kubernetes, ML platforms, streaming brokers, CI/CD, observability, data governance, and the mandatory AIVD security screening."
+  },
+  "error": null,
+  "total_tokens": 3909,
+  "latency_seconds": 18.363853,
+  "usage": {
+    "completion_tokens": 2551,
+    "prompt_tokens": 1358,
+    "total_tokens": 3909,
+    "prompt_tokens_details": {
+      "cached_tokens": 256
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 2392
+    }
+  },
+  "cost_usd": 0.00208116,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

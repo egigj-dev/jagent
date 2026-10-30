@@ -1,0 +1,45 @@
+# Recorded baseline response; model, usage, cost and latency describe one request.
+{
+  "posting_id": 47517,
+  "model": "deepseek/deepseek-v4.1-flash",
+  "job_snapshot_id": "2161f827bade",
+  "profile_version": "00d1c6840fff",
+  "recorded_at": "2026-10-30T16:28:47.671565+00:00",
+  "content": "{\"seniority\":\"unknown\",\"required_languages\":[\"German\",\"English\"],\"employment_types\":null,\"salary\":null,\"evidence\":{\"required_languages\":\"Excellent German and English; other languages are a plus.\"},\"explanation\":\"The profile matches the posting's AI/ML engineering side through Python, scikit-learn, PyTorch, Docker, AWS, PostgreSQL, and NLP/LLM exposure, but it lacks the required legal foundation, commercial-contract experience, German-language proficiency, and sales/demo/customer-facing skills. Overall, the candidate could support hands-on AI prompting and evaluation work, but would be missing the core legal counsel and revenue-enablement requirements.\"}",
+  "analysis": {
+    "seniority": "unknown",
+    "required_languages": [
+      "German",
+      "English"
+    ],
+    "employment_types": null,
+    "salary": null,
+    "evidence": {
+      "required_languages": "Excellent German and English; other languages are a plus."
+    },
+    "explanation": "The profile matches the posting's AI/ML engineering side through Python, scikit-learn, PyTorch, Docker, AWS, PostgreSQL, and NLP/LLM exposure, but it lacks the required legal foundation, commercial-contract experience, German-language proficiency, and sales/demo/customer-facing skills. Overall, the candidate could support hands-on AI prompting and evaluation work, but would be missing the core legal counsel and revenue-enablement requirements."
+  },
+  "error": null,
+  "total_tokens": 3884,
+  "latency_seconds": 16.909315,
+  "usage": {
+    "completion_tokens": 2090,
+    "prompt_tokens": 1794,
+    "total_tokens": 3884,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 1950
+    }
+  },
+  "cost_usd": 0.0018277200000000001,
+  "cost_basis": {
+    "kind": "published rate estimate",
+    "model": "deepseek/deepseek-v4.1-flash",
+    "input_per_million": 0.18,
+    "output_per_million": 0.72,
+    "checked_at": "2026-10-27",
+    "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
+  }
+}

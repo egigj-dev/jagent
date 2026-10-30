@@ -1,0 +1,18 @@
+# Anonymized posting; id preserves sample identity and selection records its stratum.
+{
+  "id": 46723,
+  "source": "arbeitnow",
+  "source_id": "ml-inference-engineer-london-228460",
+  "title": "ML Inference Engineer",
+  "company": "Company 5caa432ea5cc",
+  "description": "<p style=\"min-height:1.5em\">Company 5caa432ea5cc is pioneering the next generation of World Models, pushing the boundaries of generative AI, computer vision, and the simulation of reality. We are moving beyond 2D pixels to build models that natively understand the physics and geometry of our world. Our mission is to redefine how industries, from robotics and AR/VR to gaming and cinema, generate and interact with physically-grounded 3D environments.</p><p style=\"min-height:1.5em\">We’re seeking a Research Engineer to own the backend that serves our world models. You will build and run the inference systems behind our product and API, turning frontier research models into fast, reliable, and scalable services. This is a hands-on role for someone who has already owned production APIs in an AI system and can work closely with researchers to bring new models to users.</p><p style=\"min-height:1.5em\"><strong>Responsibilities</strong></p><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Own the inference services and APIs that power our product, from request to generated output.</p></li><li><p style=\"min-height:1.5em\">Optimize serving performance, reliability, and cost at scale. Maximize GPU utilization and minimize device memory footprint.</p></li><li><p style=\"min-height:1.5em\">Apply latest techniques for improving inference performance.</p></li><li><p style=\"min-height:1.5em\">Deploy research models as production services, including customer-specific configurations.</p></li><li><p style=\"min-height:1.5em\">Work with research and product colleagues to bring new models to users.</p></li></ul><p style=\"min-height:1.5em\"><strong>Key qualifications</strong></p><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">3+ years of software engineering in an AI, machine learning, or computer vision product environment.</p></li><li><p style=\"min-height:1.5em\">Experience designing and owning production APIs.</p></li><li><p style=\"min-height:1.5em\">Strong Python, and experience shipping containerized services on GPU inference platforms.</p></li><li><p style=\"min-height:1.5em\">Hands-on GPU inference performance work: profiling, memory, batching, and cold start.</p></li><li><p style=\"min-height:1.5em\">Familiarity with 3D or computer vision data is a strong plus.</p></li></ul><p style=\"min-height:1.5em\">At Company 5caa432ea5cc, we are committed to creating a diverse and inclusive workplace. We welcome applications from people of all backgrounds, experiences, and perspectives. We are an equal opportunity employer and ensure all candidates are treated fairly throughout the recruitment process.</p><p>Find more <a href=\"https://company-9fb29a433cb2.example.com/company-78e0c2a75343\">English Speaking Jobs in United Kingdom</a> on Arbeitnow</a>",
+  "locations": [
+    "London"
+  ],
+  "url": "https://company-9fb29a433cb2.example.com/jobs/companies/company-5caa432ea5cc/company-683970101837",
+  "similarity": 0.5785370143758888,
+  "percentile": 98.00278093793452,
+  "queued": true,
+  "posting_date": "2026-10-05T21:40:05+00:00",
+  "selection": "upper"
+}
