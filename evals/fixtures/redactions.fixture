@@ -605,6 +605,20 @@
         "casefold_length": 6,
         "compact_casefold_sha256": "2e1af44b18f15a1f3b888f192bf68e49fe1553e1c928d3bbe5ce394f965f0f1d",
         "compact_casefold_length": 6
+      },
+      {
+        "sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "length": 3,
+        "compact_sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "compact_length": 3
+      }
+    ],
+    "extra_identifiers": [
+      {
+        "sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "length": 3,
+        "compact_sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "compact_length": 3
       }
     ]
   },
@@ -1445,6 +1459,20 @@
         "casefold_length": 6,
         "compact_casefold_sha256": "2e1af44b18f15a1f3b888f192bf68e49fe1553e1c928d3bbe5ce394f965f0f1d",
         "compact_casefold_length": 6
+      },
+      {
+        "sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "length": 3,
+        "compact_sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "compact_length": 3
+      }
+    ],
+    "extra_identifiers": [
+      {
+        "sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "length": 3,
+        "compact_sha256": "b4b1c6332691597ec3439e786646c73b9efd75acdd565fe952440e8e4522a3e0",
+        "compact_length": 3
       }
     ]
   },

@@ -145,13 +145,14 @@ def test_employer_possessive_with_misdecoded_apostrophe(apostrophe):
     assert result['description'] == f'{company_token(record["company"])}’s team uses Python.'
 
 
-def test_scoped_extra_identifier_is_reported_before_redaction(tmp_path, monkeypatch, capsys):
+@pytest.mark.parametrize('alias', ['Alternate Brand', 'ECP'])
+def test_scoped_extra_identifier_is_reported_before_redaction(tmp_path, monkeypatch, capsys, alias):
     root = tmp_path / 'evals' / 'fixtures'
     monkeypatch.setattr(privacy, 'REPO', tmp_path)
     monkeypatch.setattr(privacy, 'ROOT', root)
     filename = 'evals/fixtures/postings/1.fixture'
-    record = {'company': 'Invented Recruiting', 'description': 'Alternate Brand hires Python developers.'}
-    extras = ['Alternate Brand']
+    record = {'company': 'Invented Recruiting', 'description': f'{alias} hires Python developers.'}
+    extras = [alias]
     identifiers = identifier_hashes(employer_identifiers(record, record['company']) + extras)
     save(tmp_path / filename, record, 'Employer example; description contains a client brand.')
     save(root / 'redactions.fixture', [{'file': filename, 'scope': [], 'identifiers': identifiers,
@@ -159,8 +160,18 @@ def test_scoped_extra_identifier_is_reported_before_redaction(tmp_path, monkeypa
          'Scoped employer digests; extra_identifiers covers a reviewed brand.')
     (tmp_path / 'evals' / 'allowed_terms.txt').write_text('# No exceptions.\n')
     assert not audit()
-    assert 'Alternate Brand' in capsys.readouterr().out
+    assert alias in capsys.readouterr().out
     cleaned, _ = redact_record(record, record['company'], extras)
     save(tmp_path / filename, cleaned, 'Employer example; description uses a placeholder.')
     assert audit()
     assert capsys.readouterr().out == ''
+
+
+def test_platform_abbreviation_redaction_is_scoped_and_preserves_word_boundaries():
+    record = {'company': 'Invented Example', 'description': 'ECP, ECPX and Python are required.'}
+    cleaned, identifiers = redact_record(record, record['company'], ['ECP'])
+    assert cleaned['description'] == f'{company_token(record["company"])}, ECPX and Python are required.'
+    assert not list(remaining_identifiers(cleaned['description'], identifiers))
+    unrelated = {**record, 'company': 'Another Example'}
+    retained, _ = redact_record(unrelated, unrelated['company'])
+    assert retained['description'] == unrelated['description']

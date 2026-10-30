@@ -1,11 +1,11 @@
-# Recorded baseline response; model, usage, cost and latency describe one request.
+# Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.
 {
   "posting_id": 16698,
   "model": "deepseek/deepseek-v4.1-flash",
-  "job_snapshot_id": "913b3c263251",
+  "job_snapshot_id": "80fee8708c3c",
   "profile_version": "00d1c6840fff",
   "recorded_at": "2026-10-30T16:26:57.731268+00:00",
-  "content": "{\n  \"seniority\": \"mid\",\n  \"required_languages\": [\"English\", \"French\"],\n  \"employment_types\": null,\n  \"salary\": {\n    \"min\": null,\n    \"max\": null,\n    \"currency\": null,\n    \"period\": null\n  },\n  \"evidence\": {\n    \"seniority\": \"Software Engineer (Conversational AI Application Developer), Mid\",\n    \"required_languages\": \"English and French Speaker\",\n    \"salary\": \"Fixed compensation\"\n  },\n  \"explanation\": \"The profile shows relevant ML/NLP experience with Python, scikit-learn, and Git, which partially matches the AI/NLU side of the conversational AI role. However, it lacks the required JavaScript/Node.js, RESTful APIs/JSON, OCP/conversational AI platform experience, and Jira, while French/English proficiency is not evidenced.\"\n}",
+  "content": "{\n  \"seniority\": \"mid\",\n  \"required_languages\": [\"English\", \"French\"],\n  \"employment_types\": null,\n  \"salary\": {\n    \"min\": null,\n    \"max\": null,\n    \"currency\": null,\n    \"period\": null\n  },\n  \"evidence\": {\n    \"seniority\": \"Software Engineer (Conversational AI Application Developer), Mid\",\n    \"required_languages\": \"English and French Speaker\",\n    \"salary\": \"Fixed compensation\"\n  },\n  \"explanation\": \"The profile shows relevant ML/NLP experience with Python, scikit-learn, and Git, which partially matches the AI/NLU side of the conversational AI role. However, it lacks the required JavaScript/Node.js, RESTful APIs/JSON, Company 2e1af44b18f1/conversational AI platform experience, and Jira, while French/English proficiency is not evidenced.\"\n}",
   "analysis": {
     "seniority": "mid",
     "required_languages": [
@@ -24,7 +24,7 @@
       "required_languages": "English and French Speaker",
       "salary": "Fixed compensation"
     },
-    "explanation": "The profile shows relevant ML/NLP experience with Python, scikit-learn, and Git, which partially matches the AI/NLU side of the conversational AI role. However, it lacks the required JavaScript/Node.js, RESTful APIs/JSON, OCP/conversational AI platform experience, and Jira, while French/English proficiency is not evidenced."
+    "explanation": "The profile shows relevant ML/NLP experience with Python, scikit-learn, and Git, which partially matches the AI/NLU side of the conversational AI role. However, it lacks the required JavaScript/Node.js, RESTful APIs/JSON, Company 2e1af44b18f1/conversational AI platform experience, and Jira, while French/English proficiency is not evidenced."
   },
   "error": null,
   "total_tokens": 4667,
@@ -48,5 +48,6 @@
     "output_per_million": 0.72,
     "checked_at": "2026-10-27",
     "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
-  }
+  },
+  "recorded_job_snapshot_id": "913b3c263251"
 }
