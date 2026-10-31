@@ -1,46 +1,44 @@
-# Anonymized baseline response; recorded_job_snapshot_id preserves the original input hash when present.
+# Recorded baseline response; model, usage, cost and latency describe one request.
 {
   "posting_id": 16698,
   "model": "deepseek/deepseek-v4.1-flash",
   "job_snapshot_id": "80fee8708c3c",
   "profile_version": "00d1c6840fff",
-  "recorded_at": "2026-10-30T16:26:57.731268+00:00",
-  "content": "{\n  \"seniority\": \"mid\",\n  \"required_languages\": [\"English\", \"French\"],\n  \"employment_types\": null,\n  \"salary\": {\n    \"min\": null,\n    \"max\": null,\n    \"currency\": null,\n    \"period\": null\n  },\n  \"evidence\": {\n    \"seniority\": \"Software Engineer (Conversational AI Application Developer), Mid\",\n    \"required_languages\": \"English and French Speaker\",\n    \"salary\": \"Fixed compensation\"\n  },\n  \"explanation\": \"The profile shows relevant ML/NLP experience with Python, scikit-learn, and Git, which partially matches the AI/NLU side of the conversational AI role. However, it lacks the required JavaScript/Node.js, RESTful APIs/JSON, Company 2e1af44b18f1/conversational AI platform experience, and Jira, while French/English proficiency is not evidenced.\"\n}",
+  "recorded_at": "2026-10-31T00:47:53.395220+00:00",
+  "content": "{\"seniority\":\"mid\",\"required_languages\":[\"English\",\"French\"],\"employment_types\":[\"full_time\"],\"salary\":null,\"evidence\":{\"seniority\":\"The Software Engineer (Conversational AI Application Developer), Mid develops\",\"required_languages\":\"English and French Speaker\",\"employment_types\":\"Long-term employment with the working days vacation\",\"salary\":null},\"explanation\":\"The profile matches the posting's software engineering and NLP foundations through Python/ML/NLP work, REST/API and SQL integration, Git, Docker/AWS, and debugging experience, but it lacks the required JavaScript/Node.js, Jira, and hands-on conversational AI platform/NLU components. It also does not evidence the required English and French language proficiency or enterprise CCaaS/Genesys/Avaya/NICE experience listed as nice-to-have.\"}",
   "analysis": {
     "seniority": "mid",
     "required_languages": [
       "English",
       "French"
     ],
-    "employment_types": null,
-    "salary": {
-      "min": null,
-      "max": null,
-      "currency": null,
-      "period": null
-    },
+    "employment_types": [
+      "full_time"
+    ],
+    "salary": null,
     "evidence": {
-      "seniority": "Software Engineer (Conversational AI Application Developer), Mid",
+      "seniority": "The Software Engineer (Conversational AI Application Developer), Mid develops",
       "required_languages": "English and French Speaker",
-      "salary": "Fixed compensation"
+      "employment_types": "Long-term employment with the working days vacation",
+      "salary": null
     },
-    "explanation": "The profile shows relevant ML/NLP experience with Python, scikit-learn, and Git, which partially matches the AI/NLU side of the conversational AI role. However, it lacks the required JavaScript/Node.js, RESTful APIs/JSON, Company 2e1af44b18f1/conversational AI platform experience, and Jira, while French/English proficiency is not evidenced."
+    "explanation": "The profile matches the posting's software engineering and NLP foundations through Python/ML/NLP work, REST/API and SQL integration, Git, Docker/AWS, and debugging experience, but it lacks the required JavaScript/Node.js, Jira, and hands-on conversational AI platform/NLU components. It also does not evidence the required English and French language proficiency or enterprise CCaaS/Genesys/Avaya/NICE experience listed as nice-to-have."
   },
   "error": null,
-  "total_tokens": 4667,
-  "latency_seconds": 23.16545,
+  "total_tokens": 4589,
+  "latency_seconds": 26.383411,
   "usage": {
-    "completion_tokens": 3397,
-    "prompt_tokens": 1270,
-    "total_tokens": 4667,
+    "completion_tokens": 3283,
+    "prompt_tokens": 1306,
+    "total_tokens": 4589,
     "prompt_tokens_details": {
       "cached_tokens": 0
     },
     "completion_tokens_details": {
-      "reasoning_tokens": 3213
+      "reasoning_tokens": 3113
     }
   },
-  "cost_usd": 0.0026744399999999997,
+  "cost_usd": 0.00259884,
   "cost_basis": {
     "kind": "published rate estimate",
     "model": "deepseek/deepseek-v4.1-flash",
@@ -48,6 +46,5 @@
     "output_per_million": 0.72,
     "checked_at": "2026-10-27",
     "source": "https://www.tokenrouter.com/models/deepseek/deepseek-v4.1-flash/"
-  },
-  "recorded_job_snapshot_id": "913b3c263251"
+  }
 }
