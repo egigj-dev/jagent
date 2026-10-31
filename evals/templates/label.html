@@ -1,0 +1,116 @@
+{# Local labeling view; posting selects the editor, postings lists progress, and labels pre-fills the form. #}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% if posting is defined %}Posting {{ posting.id }} · {% endif %}Evaluation labels</title>
+  <style>
+    :root { color-scheme: light; font: 16px/1.6 system-ui, sans-serif; color: #192c35; background: #f5f5f0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header { background: #192c35; color: white; padding: 1rem max(1.25rem, calc((100vw - 1260px) / 2)); }
+    header a { color: white; font-size: 1.15rem; font-weight: 650; text-decoration: none; }
+    header span { margin-left: 1rem; color: #c1d0d0; font-size: .9rem; }
+    main { max-width: 1300px; padding: 2rem 1.25rem 4rem; margin: auto; }
+    h1 { font-size: clamp(1.6rem, 3vw, 2.2rem); line-height: 1.25; margin: .5rem 0; }
+    h2 { font-size: 1.2rem; margin: 0 0 1rem; }
+    p { margin: .6rem 0 1rem; }
+    a { color: #146860; text-underline-offset: .2em; }
+    .muted { color: #52646a; }
+    .sources { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0 2rem; }
+    .panel, fieldset { min-width: 0; border: 1px solid #d9dfdc; border-radius: .5rem; background: white; padding: 1.25rem; }
+    .source-text { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 65vh; overflow: auto; line-height: 1.75; }
+    mark { color: #192c35; background: #f9e5a4; border-radius: .15rem; padding: .05em .12em; }
+    fieldset { margin: 0 0 1rem; }
+    legend { padding: 0 .5rem; font-weight: 650; }
+    .sentence { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .options { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    input { accent-color: #146860; }
+    input[type=radio], input[type=checkbox] { margin-right: .4rem; }
+    label { cursor: pointer; }
+    textarea { display: block; width: 100%; margin: .5rem 0 1rem; padding: .75rem; font: inherit; border: 1px solid #879995; border-radius: .3rem; }
+    .actions { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    button { border: 1px solid #146860; border-radius: .3rem; padding: .65rem 1.2rem; font: inherit; font-weight: 600; color: white; background: #146860; cursor: pointer; }
+    button.secondary { color: #146860; background: white; }
+    :focus-visible { outline: 3px solid #c47d14; outline-offset: 3px; }
+    .notice { padding: .8rem 1rem; background: #e1f1e9; border-left: 4px solid #146860; margin: 1rem 0; }
+    .error { background: #fff0e9; border-color: #a63d25; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: .85rem .75rem; border-bottom: 1px solid #d9dfdc; vertical-align: top; }
+    th { font-size: .85rem; color: #52646a; }
+    .status { white-space: nowrap; font-weight: 600; }
+    .progress { display: block; font-size: .85rem; font-weight: 400; color: #52646a; }
+    @media (max-width: 760px) {
+      .sources { grid-template-columns: 1fr; }
+      main { padding: 1.25rem .8rem 3rem; }
+      .panel, fieldset { padding: 1rem; }
+      header span { display: none; }
+      th, td { padding: .7rem .35rem; }
+      .status { white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+<header><a href="/">Evaluation labels</a><span>Local fixture review</span></header>
+<main>
+{% if request.query_params.get('saved') == '1' %}<p class="notice" role="status">Labels saved.</p>{% endif %}
+{% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}
+{% if posting is defined %}
+  <a href="/">All postings</a>
+  <h1>Posting {{ posting.id }}</h1>
+  <p class="muted">{{ posting.title }} · {{ posting.company }}</p>
+  <div class="sources">
+    <section class="panel" aria-labelledby="job-heading">
+      <h2 id="job-heading">Job text</h2>
+      <div class="source-text" tabindex="0" aria-label="Job text">{{ job_html|safe }}</div>
+    </section>
+    <section class="panel" aria-labelledby="profile-heading">
+      <h2 id="profile-heading">Synthetic profile</h2>
+      <div class="source-text" tabindex="0" aria-label="Synthetic profile">{{ profile_html|safe }}</div>
+    </section>
+  </div>
+  <h2>Claims</h2>
+  <p class="muted">Skill mentions and known aliases are highlighted above. Leave a claim unlabeled to review it later.</p>
+  <form method="post" action="/postings/{{ posting.id }}">
+    {% for claim in claims %}
+    {% set index = loop.index0|string %}
+    <fieldset id="claim-{{ index }}">
+      <legend>{{ index }} · {{ claim.kind }} · {{ claim.skill }}</legend>
+      <p class="sentence">{{ claim.sentence }}</p>
+      <div class="options">
+      {% for value, text in [('', 'Unlabeled'), ('supported', 'Supported'), ('unsupported', 'Unsupported')] %}
+        <label><input type="radio" name="claim:{{ index }}" value="{{ value }}"{% if labels.claims.get(index, '') == value %} checked{% endif %}>{{ text }}</label>
+      {% endfor %}
+      </div>
+    </fieldset>
+    {% else %}<p>No converted claims.</p>{% endfor %}
+    <section class="panel">
+      <h2>Missed requirements</h2>
+      <label for="missed-requirements">One requirement per line</label>
+      <textarea id="missed-requirements" name="missed_requirements" rows="5">{{ missed_text }}</textarea>
+      <label><input type="checkbox" name="reviewed" value="1"{% if reviewed %} checked{% endif %}>Reviewed, nothing missed</label>
+      <p class="muted">An empty box with the checkbox unchecked stays unreviewed.</p>
+    </section>
+    <div class="actions">
+      <button type="submit" class="secondary" name="action" value="save">Save</button>
+      <button type="submit" name="action" value="next">Save and next</button>
+    </div>
+  </form>
+{% else %}
+  <h1>Review evaluation fixtures</h1>
+  <p class="muted">A posting is labeled when all claims have labels and missed requirements have been reviewed.</p>
+  <section class="panel">
+    <table>
+      <thead><tr><th scope="col">Posting</th><th scope="col">Role</th><th scope="col">Progress</th></tr></thead>
+      <tbody>
+      {% for item in postings %}
+      <tr><td><a href="/postings/{{ item.id }}">{{ item.id }}</a></td><td>{{ item.title }}</td><td class="status">{{ item.status }}<span class="progress">{{ item.labeled }}/{{ item.total }} claims</span></td></tr>
+      {% else %}<tr><td colspan="3">No fixture postings.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% endif %}
+</main>
+</body>
+</html>

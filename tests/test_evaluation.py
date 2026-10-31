@@ -7,7 +7,7 @@ import shutil
 import pytest
 
 from evals.compare import adversarial_pass, convert, evaluate, mapped_excerpt
-from evals.data import ROOT, job_text, load, save
+from evals.data import ROOT, job_text, load, save, validate_labels
 from jagent.briefing.evidence import job_excerpts, profile_excerpts, text_version
 
 
@@ -64,17 +64,6 @@ def test_adversarial_check_detects_markers_and_profile_copying():
     assert not adversarial_pass(posting, output, [], jobs, profiles, profile)
 
 
-def assert_label_structure(labels, claim_count):
-    assert isinstance(labels, dict)
-    assert isinstance(labels["claims"], dict)
-    valid_indices = {str(index) for index in range(claim_count)}
-    for index, value in labels["claims"].items():
-        assert index in valid_indices, f"Claim index does not exist: {index}"
-        assert value in ("supported", "unsupported")
-    missed = labels["missed_requirements"]
-    assert missed is None or (isinstance(missed, list) and all(isinstance(item, str) for item in missed))
-
-
 def test_seeded_faults_each_break_one_rule_and_labels_have_valid_structure():
     from jagent.briefing.contract import ClaimDraft
     from jagent.briefing.evidence import failed_rules
@@ -88,14 +77,14 @@ def test_seeded_faults_each_break_one_rule_and_labels_have_valid_structure():
         posting = load(ROOT / "postings" / path.name)
         output = load(ROOT / "outputs" / path.name)
         drafts, _ = convert(output, job_excerpts(job_text(posting)), profiles)
-        assert_label_structure(load(path), len(drafts))
+        validate_labels(load(path), len(drafts))
 
 
 @pytest.mark.parametrize("claim_count", [0, 2])
 def test_label_structure_rejects_out_of_range_claim_index(claim_count):
     labels = {"claims": {str(claim_count): "supported"}, "missed_requirements": None}
-    with pytest.raises(AssertionError, match="Claim index does not exist"):
-        assert_label_structure(labels, claim_count)
+    with pytest.raises(ValueError, match="Claim index does not exist"):
+        validate_labels(labels, claim_count)
 
 
 @pytest.mark.parametrize("labels", [
@@ -104,7 +93,7 @@ def test_label_structure_rejects_out_of_range_claim_index(claim_count):
     {"claims": {"1": "supported"}, "missed_requirements": []},
 ])
 def test_label_structure_accepts_empty_and_reviewed_labels(labels):
-    assert_label_structure(labels, 2)
+    validate_labels(labels, 2)
 
 
 @pytest.mark.parametrize("labels", [
@@ -116,8 +105,8 @@ def test_label_structure_accepts_empty_and_reviewed_labels(labels):
     {"claims": {}, "missed_requirements": [1]},
 ])
 def test_label_structure_rejects_invalid_fields(labels):
-    with pytest.raises(AssertionError):
-        assert_label_structure(labels, 2)
+    with pytest.raises(ValueError):
+        validate_labels(labels, 2)
 
 
 @pytest.mark.parametrize("private", [False, True])

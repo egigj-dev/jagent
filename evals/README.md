@@ -26,6 +26,20 @@ converted claims with their zero-based label indices, kinds, skills, and first
 source sentences from the recorded explanation. It reads fixtures only and
 makes no model or database calls.
 
+Label fixtures in a separate local page:
+
+```bash
+uv run python -m evals.label
+```
+
+Open http://127.0.0.1:8001. The index shows review progress. Each posting
+shows highlighted job and synthetic profile text, numbered claims, and their
+source sentences. Save keeps the current posting; Save and next advances in
+posting ID order. Missed requirements use one line each. Check "Reviewed,
+nothing missed" to save an empty list; leaving both controls empty preserves
+an unreviewed null. Existing labels pre-fill the form. Saves use the same
+structure validation as fixture tests and write only the posting's label file.
+
 Each `.fixture` file starts with a descriptive comment, followed by JSON.
 `postings/` contains twenty database postings and three synthetic adversarial
 cases; `outputs/` contains the captured response, parsed analysis, model, UTC
