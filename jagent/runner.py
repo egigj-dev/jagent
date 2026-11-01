@@ -69,6 +69,7 @@ def save_postings(connection, postings, seen_at, inserted_postings=None):
                         locations = %(locations)s,
                         remote = CASE WHEN %(remote)s::boolean IS NULL THEN remote
                                       ELSE COALESCE(remote, false) OR %(remote)s END,
+                        expires_at = %(expires_at)s,
                         last_seen = %(seen_at)s
                     WHERE id = %(id)s
                     """,
@@ -80,6 +81,7 @@ def save_postings(connection, postings, seen_at, inserted_postings=None):
                         ),
                         "locations": combined_values(locations, posting.locations),
                         "remote": posting.remote,
+                        "expires_at": posting.expires_at,
                         "seen_at": seen_at,
                     },
                 )

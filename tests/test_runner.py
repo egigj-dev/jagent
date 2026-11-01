@@ -1,6 +1,6 @@
 # Runner isolation test; recorded holds audit rows from failed and successful sources.
 from contextlib import nullcontext
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 import os
 from pathlib import Path
 from unittest.mock import Mock
@@ -8,6 +8,7 @@ from unittest.mock import Mock
 import pytest
 
 from jagent import runner
+from jagent.filters import passes_filters
 from jagent.models import Posting
 from jagent.db import connect
 
@@ -109,6 +110,45 @@ def test_duplicate_with_null_remote_in_postgres(existing_remote):
             existing_remote, [duplicate.url], ["London", "Berlin"],
             first_seen, last_seen,
         )]
+
+
+@pytest.mark.parametrize("source", sorted(runner.SOURCES) + [
+    "ats:greenhouse:example", "ats:lever:example", "ats:ashby:example",
+    "ats:smartrecruiters:example",
+])
+def test_reimport_refreshes_deadline_and_restores_matching_eligibility(source):
+    if os.environ.get("JAGENT_TEST_POSTGRES") != "1":
+        pytest.skip("Set JAGENT_TEST_POSTGRES=1 to test reimports in a temporary table")
+    with connect() as connection:
+        schema = (Path(__file__).resolve().parent.parent / "schema.sql").read_text()
+        start = schema.index("CREATE TABLE IF NOT EXISTS postings (")
+        statement = schema[start:schema.index(";", start) + 1]
+        connection.execute(statement.replace("CREATE TABLE IF NOT EXISTS", "CREATE TEMP TABLE"))
+        now = datetime.now(UTC)
+        first_seen = now - timedelta(days=40)
+        posting = Posting(
+            source=source, source_id="1", company="Example", title="Engineer",
+            locations=["Albania"], expires_at=now - timedelta(days=12),
+        )
+        filters = {"countries": ["albania"], "remote_regions": [],
+                   "remote_excluded": [], "exclude_title_keywords": []}
+        assert runner.save_postings(connection, [posting], first_seen) == 1
+        expires_at, = connection.execute("SELECT expires_at FROM postings").fetchone()
+        assert not passes_filters(
+            {**posting.model_dump(), "expires_at": expires_at, "first_seen": first_seen},
+            filters, now,
+        )
+
+        refreshed = posting.model_copy(update={"expires_at": now + timedelta(days=19)})
+        assert runner.save_postings(connection, [refreshed], now) == 0
+        assert connection.execute(
+            "SELECT expires_at, first_seen, last_seen FROM postings"
+        ).fetchall() == [(refreshed.expires_at, first_seen, now)]
+        expires_at, = connection.execute("SELECT expires_at FROM postings").fetchone()
+        assert passes_filters(
+            {**posting.model_dump(), "expires_at": expires_at, "first_seen": first_seen},
+            filters, now,
+        )
 
 
 def test_source_failure_preserves_successful_postings(monkeypatch):
