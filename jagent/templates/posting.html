@@ -1,6 +1,7 @@
 <!-- Posting details; p contains the job, matching score, analysis and external links. -->
 <div class="posting-heading">
   <p class="company">{{ p.company or 'Company not stated' }} <span class="badge source-badge">{{ p.source }}</span></p>
+  {% if p.local_only %}<span class="badge">Local</span>{% endif %}
   <h2>{{ p.title or 'Untitled posting' }}</h2>
   <p class="location">{{ (p.locations or [])|join(' · ') or 'Location not stated' }}</p>
 </div>

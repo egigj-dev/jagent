@@ -7,9 +7,11 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 import httpx
+from psycopg.types.json import Jsonb
 
 from jagent import cli, embeddings, matching
 from jagent.db import connect
+from jagent.filters import LOCAL_FILTER_DEFAULTS
 
 
 def test_posting_text_strips_html_then_limits_description():
@@ -181,6 +183,43 @@ def test_queue_thresholds_require_both_percentile_and_similarity(ranking_db):
     ranking_db.execute("UPDATE postings SET embedding='[0.8,0.6]' WHERE id=2")
     assert matching.score_postings(ranking_db, [1,2,3], 1, "fake", datetime.now(UTC)) == (3,1)
     assert ranking_db.execute("SELECT queued FROM matches WHERE posting_id=2").fetchone() == (False,)
+
+
+@pytest.mark.parametrize("title,locations,expired,expected", [
+    ("Jr. Python Software Engineer - Backend", ["Tiranë", "Albania"], False, True),
+    ("Sales Python Developer", ["Albania"], False, False),
+    ("Python Developer", ["Germany"], False, False),
+    ("Editor", ["Albania"], False, False),
+    ("IT Support", ["Shqipëri"], False, True),
+    ("Python Developer", ["Albania"], True, False),
+])
+def test_local_rule_queues_eligible_postings_without_score_threshold(
+    ranking_db, title, locations, expired, expected,
+):
+    now = datetime.now(UTC)
+    filters = {
+        "countries": ["albania", "shqiperi", "germany"], "remote_regions": [],
+        "remote_excluded": [], "exclude_title_keywords": ["sales"],
+    } | LOCAL_FILTER_DEFAULTS
+    ranking_db.execute("UPDATE profile SET filters=%s", (Jsonb(filters),))
+    ranking_db.execute("UPDATE profile_sections SET embedding='[1,0]',embedding_model='fake'")
+    ranking_db.execute("DELETE FROM postings")
+    ranking_db.execute(
+        "INSERT INTO postings (id,title,company,locations,remote,description,first_seen,"
+        "expires_at,embedding,embedding_model) "
+        "VALUES (49511,%s,'Example',%s,false,'description',%s,%s,'[-1,0]','fake')",
+        (title, locations, now, now - timedelta(days=1) if expired else now + timedelta(days=19)),
+    )
+    result = matching.match(Mock(side_effect=AssertionError("Cached vectors must be reused")),
+                            {"EMBEDDINGS_MODEL": "fake"})
+    row = ranking_db.execute(
+        "SELECT similarity,percentile,queued FROM matches WHERE posting_id=49511"
+    ).fetchone()
+    assert result["queued"] == int(expected)
+    if expired or title.startswith("Sales"):
+        assert row is None
+    else:
+        assert row == (-1.0, 0.0, expected)
 
 
 def test_dedupe_index_is_non_unique_and_idempotent(ranking_db):

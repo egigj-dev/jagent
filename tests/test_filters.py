@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from jagent.filters import is_active, matches, passing_postings
+from jagent.filters import LOCAL_FILTER_DEFAULTS, is_active, local_posting, matches, passing_postings
 
 NOW = datetime(2026, 10, 6, 12, tzinfo=UTC)
 FILTERS = {
@@ -77,3 +77,26 @@ def test_activity(updates, expected):
 def test_all_filters(updates, expected):
     candidate = posting(**updates)
     assert passing_postings([candidate], FILTERS, NOW) == ([candidate] if expected else [])
+
+
+@pytest.mark.parametrize("title,locations,expected", [
+    ("Jr. Python Software Engineer - Backend", ["Tiranë"], True),
+    ("PROGRAMUES", ["SHQIPËRI"], True),
+    ("IT Support", ["Albania"], True),
+    ("Editor", ["Albania"], False),
+    ("Retail Manager", ["Tirana"], False),
+    ("Sales Python Developer", ["Albania"], False),
+    ("Python Developer", ["Germany"], False),
+    ("Python Developer", ["Albanian-speaking, Germany"], False),
+    ("Python Developer", None, False),
+    (None, ["Albania"], False),
+])
+def test_local_location_and_title_matching(title, locations, expected):
+    filters = FILTERS | LOCAL_FILTER_DEFAULTS
+    assert local_posting(posting(title=title, locations=locations), filters) is expected
+
+
+def test_empty_local_preferences_disable_the_rule():
+    candidate = posting(title="Python Developer", locations=["Albania"])
+    assert not local_posting(candidate, FILTERS)
+    assert not local_posting(candidate, FILTERS | LOCAL_FILTER_DEFAULTS | {"local_title_keywords": []})

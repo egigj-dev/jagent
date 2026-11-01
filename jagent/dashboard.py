@@ -12,13 +12,14 @@ from psycopg.types.json import Jsonb
 
 from jagent.db import connect
 from jagent.embeddings import embedding_settings
-from jagent.filters import passing_postings
+from jagent.filters import LOCAL_FILTER_DEFAULTS, local_posting, passes_filters, passing_postings
 from jagent.health import check_health, duapune_freshness, latest_source_runs
-from jagent.matching import score_postings
+from jagent.matching import QUEUE_MIN_PERCENTILE, QUEUE_MIN_SIMILARITY, score_postings
 from jagent.profile import active_profile, split_sections
 
 ROOT = Path(__file__).resolve().parent
-FILTER_KEYS = ("countries", "remote_regions", "remote_excluded", "exclude_title_keywords")
+FILTER_KEYS = ("countries", "remote_regions", "remote_excluded", "exclude_title_keywords",
+               "local_locations", "local_title_keywords")
 REASONS = ("too_senior", "language", "location", "contract", "salary", "irrelevant", "other")
 VIEW_KEYS = ("hide_senior", "hide_languages", "hide_contract")
 SEARCH_KEYS = ("q", "source", "seniority", "employment", "remote", "saved")
@@ -59,8 +60,8 @@ def visible(posting, views):
 def postings_for_page(connection, applied=False, sort="default"):
     with connection.cursor(row_factory=dict_row) as cursor:
         return cursor.execute("""
-            SELECT p.id,p.title,p.company,p.source,p.locations,p.remote,p.posted_at,p.expires_at,p.url,p.other_urls,
-                   m.similarity,m.matched_section,m.explanation,a.posting_id AS analyzed,
+            SELECT p.id,p.title,p.company,p.source,p.locations,p.remote,p.posted_at,p.expires_at,p.first_seen,p.url,p.other_urls,
+                   m.similarity,m.percentile,m.matched_section,m.explanation,a.posting_id AS analyzed,
                    a.seniority,a.required_languages,a.employment_types,a.salary,
                    r.action,r.reason,r.note,r.decided_at
             FROM postings p
@@ -85,6 +86,13 @@ def queue_context(params):
         matched = bool(profile and connection.execute(
             "SELECT 1 FROM matches WHERE profile_id=%s LIMIT 1", (profile[0],),
         ).fetchone())
+    now = datetime.now(UTC)
+    for row in rows:
+        row["local_only"] = bool(
+            profile and passes_filters(row, profile[2], now) and local_posting(row, profile[2])
+            and not ((row["percentile"] or 0) >= QUEUE_MIN_PERCENTILE
+                     and (row["similarity"] or 0) >= QUEUE_MIN_SIMILARITY)
+        )
     filtered = [row for row in rows if visible(row, views) and matches_view(row, selected)]
     if sort in ("company", "title"):
         filtered.sort(key=lambda row: ((row.get(sort) or "").casefold(), row["id"]))
@@ -146,8 +154,10 @@ def save_filters(connection, filters):
             FROM postings WHERE embedding_model=%s AND embedding IS NOT NULL
         """, (model,)).fetchall()
     now = datetime.now(UTC)
-    ids = [p["id"] for p in passing_postings(postings, filters, now)]
-    _, queued = score_postings(connection, ids, new_id, model, now)
+    passing = passing_postings(postings, filters, now)
+    ids = [p["id"] for p in passing]
+    local_ids = [p["id"] for p in passing if local_posting(p, filters)]
+    _, queued = score_postings(connection, ids, new_id, model, now, local_ids)
     connection.execute("""
         UPDATE matches new SET explanation=(
             SELECT old.explanation FROM matches old JOIN profile p ON p.id=old.profile_id
@@ -212,7 +222,7 @@ def filters_page(request: Request):
     if profile is None:
         return RedirectResponse("/profile", status_code=303)
     return templates.TemplateResponse(request=request, name="filters.html", context={
-        "page": "Filters", "filters": profile[2], "filter_keys": FILTER_KEYS,
+        "page": "Filters", "filters": LOCAL_FILTER_DEFAULTS | profile[2], "filter_keys": FILTER_KEYS,
     })
 
 
@@ -229,9 +239,10 @@ async def filters_save(request: Request):
 def profile_page(request: Request):
     with connect() as connection:
         profile = active_profile(connection)
+    defaults = {key: [] for key in FILTER_KEYS} | LOCAL_FILTER_DEFAULTS
     return templates.TemplateResponse(request=request, name="profile.html", context={
         "page": "Profile", "profile_text": profile[1] if profile else "",
-        "filters": profile[2] if profile else {key: [] for key in FILTER_KEYS},
+        "filters": defaults | (profile[2] if profile else {}),
         "filter_keys": FILTER_KEYS, "saved": request.query_params.get("saved") == "1",
     })
 

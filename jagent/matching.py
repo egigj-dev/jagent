@@ -9,7 +9,7 @@ from psycopg.rows import dict_row
 
 from jagent.db import connect
 from jagent.embeddings import embed, embedding_settings, vector_text
-from jagent.filters import passing_postings
+from jagent.filters import local_posting, passing_postings
 from jagent.profile import active_profile
 
 EMBEDDING_BATCH_SIZE = 100
@@ -67,7 +67,7 @@ def embed_batches(connection, table, rows, model, embed_fn):
     return embedded, tokens, skipped
 
 
-def score_postings(connection, passing_ids, profile_id, model, now):
+def score_postings(connection, passing_ids, profile_id, model, now, local_ids=()):
     rows = connection.execute(
         """
         WITH scored AS (
@@ -100,7 +100,8 @@ def score_postings(connection, passing_ids, profile_id, model, now):
         INSERT INTO matches
             (posting_id, profile_id, similarity, matched_section, percentile, queued)
         SELECT posting_id, %(profile_id)s, similarity, matched_section, percentile,
-               percentile >= %(min_percentile)s AND similarity >= %(min_similarity)s
+               (percentile >= %(min_percentile)s AND similarity >= %(min_similarity)s)
+               OR posting_id = ANY(%(local_ids)s)
         FROM ranked
         ON CONFLICT (posting_id, profile_id) DO UPDATE
         SET similarity = EXCLUDED.similarity, matched_section = EXCLUDED.matched_section,
@@ -108,7 +109,8 @@ def score_postings(connection, passing_ids, profile_id, model, now):
         RETURNING posting_id, queued
         """,
         {"ids": passing_ids, "profile_id": profile_id, "model": model, "now": now,
-         "min_percentile": QUEUE_MIN_PERCENTILE, "min_similarity": QUEUE_MIN_SIMILARITY},
+         "min_percentile": QUEUE_MIN_PERCENTILE, "min_similarity": QUEUE_MIN_SIMILARITY,
+         "local_ids": list(local_ids)},
     ).fetchall()
     return len(rows), sum(queued for _, queued in rows)
 
@@ -154,7 +156,8 @@ def match(embed_fn=None, settings=None):
             "UPDATE matches SET queued = false WHERE profile_id = %s",
             (profile_id,),
         )
-        scored, queued = score_postings(connection, passing_ids, profile_id, model, now)
+        local_ids = [p["id"] for p in passing if local_posting(p, filters)]
+        scored, queued = score_postings(connection, passing_ids, profile_id, model, now, local_ids)
         top = connection.execute(
             """
             SELECT m.similarity, m.matched_section, p.company, p.title

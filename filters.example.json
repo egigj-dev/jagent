@@ -2,5 +2,7 @@
   "countries": ["Germany"],
   "remote_regions": ["Europe", "Worldwide"],
   "remote_excluded": ["US only"],
-  "exclude_title_keywords": ["unpaid"]
+  "exclude_title_keywords": ["unpaid"],
+  "local_locations": ["albania", "shqiperi", "tirana", "tirane"],
+  "local_title_keywords": ["python", "developer", "programues", "software", "backend", "devops", "data", "ai", "ml", "machine learning", "cyber", "cybersecurity", "it"]
 }

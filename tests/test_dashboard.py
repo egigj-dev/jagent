@@ -6,10 +6,12 @@ from pathlib import Path
 from unittest.mock import Mock
 
 from fastapi.testclient import TestClient
+from psycopg.types.json import Jsonb
 import pytest
 
 from jagent import cli, dashboard, health
 from jagent.db import connect
+from jagent.filters import LOCAL_FILTER_DEFAULTS
 
 
 @pytest.fixture(autouse=True)
@@ -120,6 +122,46 @@ def test_filters_new_version_copies_embeddings_and_updates_queue(client,dashboar
     assert 'id="posting-1"' in response.text
     assert dashboard_db.execute('SELECT count(*) FROM matches WHERE profile_id=3 AND queued').fetchone()==(1,)
     assert dashboard_db.execute('SELECT explanation FROM matches WHERE profile_id=3 AND posting_id=1').fetchone()==('Python fits. Cloud is missing.',)
+
+
+def test_local_preferences_save_and_badge_only_for_local_queue(client, dashboard_db):
+    dashboard_db.execute("UPDATE postings SET title='Python Developer' WHERE id IN (1,2)")
+    dashboard_db.execute("UPDATE postings SET embedding='[-1,0]' WHERE id=2")
+    page = client.get('/filters').text
+    assert 'name="local_locations"' in page and 'name="local_title_keywords"' in page
+    assert 'albania, shqiperi, tirana, tirane' in page
+    response = client.post('/filters', data={
+        'countries': 'albania', 'local_locations': ' Albania , , Tiranë ',
+        'local_title_keywords': ' Python , developer ',
+    })
+    assert response.status_code == 200
+    filters, = dashboard_db.execute('SELECT filters FROM profile WHERE id=2').fetchone()
+    assert filters['local_locations'] == ['Albania', 'Tiranë']
+    assert filters['local_title_keywords'] == ['Python', 'developer']
+    assert dashboard_db.execute(
+        'SELECT queued FROM matches WHERE profile_id=2 AND posting_id=2'
+    ).fetchone() == (True,)
+    assert response.text.count('>Local</span>') == 1
+    html = response.text.split('id="posting-2"', 1)[1].split('</article>', 1)[0]
+    assert '>Local</span>' in html
+    assert '>Local</span>' not in response.text.split('id="posting-1"', 1)[1].split('</article>', 1)[0]
+    profile_page = client.get('/profile').text
+    assert 'name="local_locations" value="Albania, Tiranë"' in profile_page
+    response = client.post('/filters', data={'countries': 'albania',
+                                           'local_locations': '', 'local_title_keywords': ''})
+    assert '>Local</span>' not in response.text
+    assert 'id="posting-2"' not in response.text
+
+
+def test_local_badge_rechecks_current_preferences(client, dashboard_db):
+    filters, = dashboard_db.execute('SELECT filters FROM profile WHERE id=1').fetchone()
+    dashboard_db.execute('UPDATE profile SET filters=%s WHERE id=1',
+                         (Jsonb(filters | LOCAL_FILTER_DEFAULTS),))
+    dashboard_db.execute("UPDATE postings SET title='Python Developer' WHERE id=1")
+    dashboard_db.execute('UPDATE matches SET percentile=62 WHERE posting_id=1')
+    assert client.get('/').text.count('>Local</span>') == 1
+    dashboard_db.execute("UPDATE profile SET filters=jsonb_set(filters, '{local_locations}', '[]')")
+    assert '>Local</span>' not in client.get('/').text
 
 
 def test_html_escapes_posting_text(client,dashboard_db):

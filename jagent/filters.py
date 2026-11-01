@@ -12,6 +12,14 @@ from psycopg.rows import dict_row
 from jagent.db import connect
 from jagent.profile import active_profile
 
+LOCAL_FILTER_DEFAULTS = {
+    "local_locations": ["albania", "shqiperi", "tirana", "tirane"],
+    "local_title_keywords": [
+        "python", "developer", "programues", "software", "backend", "devops", "data",
+        "ai", "ml", "machine learning", "cyber", "cybersecurity", "it",
+    ],
+}
+
 
 def matches(text, term):
     def normalize(value):
@@ -49,6 +57,16 @@ def passes_filters(posting, filters, now):
 def passing_postings(postings, filters, now=None):
     now = now or datetime.now(UTC)
     return [posting for posting in postings if passes_filters(posting, filters, now)]
+
+
+def local_posting(posting, filters):
+    title = posting["title"] or ""
+    return (
+        any(matches(location, term) for location in (posting["locations"] or [])
+            for term in filters.get("local_locations", []))
+        and any(matches(title, term) for term in filters.get("local_title_keywords", []))
+        and not any(matches(title, term) for term in filters["exclude_title_keywords"])
+    )
 
 
 def filter_report():
