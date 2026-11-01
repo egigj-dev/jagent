@@ -87,7 +87,11 @@ def test_all_filters(updates, expected):
     ("Retail Manager", ["Tirana"], False),
     ("Sales Python Developer", ["Albania"], False),
     ("Python Developer", ["Germany"], False),
+    ("Python Developer", ["Albania", "Croatia", "Poland"], False),
+    ("Python Developer", ["Tirane", "Albania"], True),
+    ("Python Developer", ["Albania", ""], False),
     ("Python Developer", ["Albanian-speaking, Germany"], False),
+    ("Python Developer", [], False),
     ("Python Developer", None, False),
     (None, ["Albania"], False),
 ])

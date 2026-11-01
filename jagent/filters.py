@@ -61,9 +61,11 @@ def passing_postings(postings, filters, now=None):
 
 def local_posting(posting, filters):
     title = posting["title"] or ""
+    locations = posting["locations"] or []
     return (
-        any(matches(location, term) for location in (posting["locations"] or [])
-            for term in filters.get("local_locations", []))
+        bool(locations)
+        and all(any(matches(location, term) for term in filters.get("local_locations", []))
+                for location in locations)
         and any(matches(title, term) for term in filters.get("local_title_keywords", []))
         and not any(matches(title, term) for term in filters["exclude_title_keywords"])
     )

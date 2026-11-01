@@ -189,6 +189,8 @@ def test_queue_thresholds_require_both_percentile_and_similarity(ranking_db):
     ("Jr. Python Software Engineer - Backend", ["Tiranë", "Albania"], False, True),
     ("Sales Python Developer", ["Albania"], False, False),
     ("Python Developer", ["Germany"], False, False),
+    ("Python Developer", ["Albania", "Croatia", "Poland"], False, False),
+    ("Python Developer", ["Tirane", "Albania"], False, True),
     ("Editor", ["Albania"], False, False),
     ("IT Support", ["Shqipëri"], False, True),
     ("Python Developer", ["Albania"], True, False),
