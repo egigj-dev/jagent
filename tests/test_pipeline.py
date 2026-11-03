@@ -134,3 +134,27 @@ def test_health_exception_and_tolerated_processing_failures_are_distinct(audit_d
     monkeypatch.setattr(pipeline, 'check_health', Mock(side_effect=RuntimeError('Unavailable')))
     assert pipeline.daily() == 1
     assert health.latest_pipeline_run()['stages']['health']['outcome'] == 'failed'
+
+
+def test_healthy_collection_with_no_new_inserts_is_success(audit_db, monkeypatch):
+    from datetime import UTC, datetime
+    from jagent.models import Posting
+    schema = (Path(__file__).resolve().parents[1] / 'schema.sql').read_text()
+    start = schema.index('CREATE TABLE IF NOT EXISTS postings (')
+    audit_db.execute(schema[start:schema.index(';', start) + 1].replace(
+        'CREATE TABLE IF NOT EXISTS', 'CREATE TEMP TABLE'))
+    postings = [Posting(source='existing-a', source_id='one', company='Example A', title='Engineer'),
+                Posting(source='existing-b', source_id='two', company='Example B', title='Engineer')]
+    assert runner.save_postings(audit_db, postings, datetime.now(UTC)) == 2
+    monkeypatch.setattr(runner, 'SOURCES', {'existing-a': lambda: [postings[0]],
+                                         'existing-b': lambda: [postings[1]]})
+    monkeypatch.setattr(runner, 'ats_companies', lambda: [])
+    monkeypatch.setattr(pipeline, 'match', lambda: {'batches_skipped': 0, 'batches_attempted': 0})
+    monkeypatch.setattr(pipeline, 'analyze', lambda: {'failures': 0, 'analyzed': 0})
+    monkeypatch.setattr(pipeline, 'check_health', lambda: [])
+    assert pipeline.daily() == 0
+    assert audit_db.execute('SELECT sum(fetched),sum(new) FROM source_runs').fetchone() == (2, 0)
+    assert audit_db.execute("SELECT count(*) FROM source_runs WHERE status='ok'").fetchone() == (2,)
+    result = health.latest_pipeline_run()
+    assert result['outcome'] == 'success'
+    assert result['stages']['collection']['usable_sources'] == 2

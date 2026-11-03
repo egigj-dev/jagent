@@ -1,6 +1,6 @@
 {# Opportunity index and intelligence panels; postings share IDs and persisted review state. #}
 <section id="queue-content" aria-label="Job opportunities">
-  <div class="queue-summary"><p><strong>{{ postings|length }}</strong> shown <span class="muted">/ {{ total }} in queue</span></p><div class="queue-tools"><a class="clear-filters" href="/">Reset view</a><details class="keyboard-hint"><summary>Keyboard shortcuts</summary><p><kbd>↑</kbd> <kbd>↓</kbd> select · <kbd>Enter</kbd> inspect · <kbd>/</kbd> search · <kbd>Esc</kbd> back</p></details></div></div>
+  <div class="queue-summary"><p><strong>{{ postings|length }}</strong> shown <span class="muted">/ {{ total }} {{ 'saved' if selected.saved == '1' else 'in queue' }}</span></p><div class="queue-tools"><a class="clear-filters" href="/">Reset view</a><details class="keyboard-hint"><summary>Keyboard shortcuts</summary><p><kbd>↑</kbd> <kbd>↓</kbd> select · <kbd>Enter</kbd> inspect · <kbd>/</kbd> search · <kbd>Esc</kbd> back</p></details></div></div>
   {% if postings %}
   <div class="opportunity-workspace">
     <div class="opportunity-index" aria-label="Opportunity index"><div class="panel-label"><span>Opportunity index</span></div>

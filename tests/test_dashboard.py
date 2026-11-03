@@ -465,6 +465,7 @@ def test_inactive_saved_and_applied_history_remains_accessible(client, dashboard
     assert 'id="index-3"' in default.text and '<strong>1</strong> shown' in default.text
     saved = client.get('/?saved=1')
     assert saved.status_code == 200 and 'id="posting-1"' in saved.text
+    assert '/ 1 saved</span>' in saved.text and '/ 1 in queue</span>' not in saved.text
     assert 'Saved · inactive' in saved.text and 'recorded deadline has passed' in saved.text
     assert 'availability on the original site is not verified' in saved.text
     assert 'Keep this role' in saved.text

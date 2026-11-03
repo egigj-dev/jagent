@@ -1,11 +1,12 @@
 # Browser acceptance checks; base_url targets an isolated fixture server and artifacts holds review screenshots.
 from pathlib import Path
+import os
 import sys
 
 from playwright.sync_api import sync_playwright, expect
 
 base_url = sys.argv[1]
-artifacts = Path('/tmp/jagent-milestone-a-review/browser')
+artifacts = Path(os.environ.get('JAGENT_BROWSER_ARTIFACTS', '/tmp/jagent-milestone-a-review/browser'))
 artifacts.mkdir(parents=True, exist_ok=True)
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
@@ -63,6 +64,21 @@ with sync_playwright() as playwright:
     page.get_by_role('button', name='Apply filters').click()
     expect(page.locator('.index-row')).to_have_count(1)
     page.goto(base_url)
+    # Historical saved roles remain reviewable even when excluded from the active index.
+    response = page.request.post(base_url + '/reviews/4', form={'action': 'later', 'note': 'Archived context'})
+    assert response.ok
+    page.goto(base_url + '/?saved=1')
+    expect(page.locator('.index-row')).to_have_count(1)
+    page.locator('#index-4').click()
+    expect(page.locator('#posting-4')).to_contain_text('recorded deadline has passed')
+    expect(page.locator('#posting-4')).to_contain_text('availability on the original site is not verified')
+    expect(page.locator('#note-4')).to_have_value('Archived context')
+    page.screenshot(path=str(artifacts / 'saved-inactive-desktop.png'), full_page=True)
+    page.locator('#reason-4').select_option('other')
+    page.get_by_role('button', name='Skip', exact=True).click()
+    expect(page.locator('#index-4')).to_have_count(0)
+    page.goto(base_url)
+    print('PASS: inactive Saved history stays accessible and reviewable while the active index excludes it')
     for width in (1440, 1024, 768, 390, 320):
         page.set_viewport_size({'width': width, 'height': 900})
         page.goto(base_url)

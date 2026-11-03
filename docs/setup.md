@@ -97,3 +97,7 @@ pgvector/PostgreSQL 16 service with database `jagent_test`.
 Local tests remain opt-in for database access;
 `uv run pytest` runs without that gate. Filter tests use explicit search terms
 and do not read personal configuration.
+
+For the verified Atlas × Terminal + Milestone A release, follow the explicit
+[deployment and rollback plan](deployment-milestone-a.md); do not update the live
+development checkout or invoke the general deduplication backfill for this upgrade.
