@@ -1,7 +1,8 @@
 # Dashboard tests; temporary tables isolate reviews/profile versions and fake API calls forbid network use.
 from contextlib import nullcontext
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 import os
+import json
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -15,8 +16,12 @@ from jagent.filters import LOCAL_FILTER_DEFAULTS
 
 
 @pytest.fixture(autouse=True)
-def source_health(monkeypatch):
+def source_health(monkeypatch, tmp_path):
     monkeypatch.setattr(dashboard, "check_health", lambda: [])
+    monkeypatch.setattr(dashboard, "duapune_freshness", lambda: "Fresh: fixture")
+    import_path = tmp_path / "duapune.json"
+    import_path.write_text(json.dumps({"collected_at": datetime.now(UTC).isoformat()}))
+    monkeypatch.setattr(health.duapune, "IMPORT_PATH", import_path)
 
 
 @pytest.fixture
@@ -25,7 +30,7 @@ def dashboard_db(monkeypatch):
         pytest.skip("Set JAGENT_TEST_POSTGRES=1 to test dashboard in temporary tables")
     with connect() as connection:
         schema = (Path(__file__).resolve().parent.parent / "schema.sql").read_text()
-        for name in ("postings", "profile", "profile_sections", "matches", "posting_analysis", "reviews"):
+        for name in ("postings", "profile", "profile_sections", "matches", "posting_analysis", "reviews", "pipeline_runs"):
             start = schema.index(f"CREATE TABLE IF NOT EXISTS {name} (")
             statement = schema[start:schema.index(";", start)+1]
             connection.execute(statement.replace("CREATE TABLE IF NOT EXISTS", "CREATE TEMP TABLE"))
@@ -56,6 +61,7 @@ def dashboard_db(monkeypatch):
         """)
         connection.commit()
         monkeypatch.setattr(dashboard,"connect",lambda: nullcontext(connection))
+        monkeypatch.setattr(health,"connect",lambda: nullcontext(connection))
         monkeypatch.setattr(dashboard,"embedding_settings",lambda: {"EMBEDDINGS_MODEL":"fake"})
         # All saves must use cached vectors, never any HTTP API.
         monkeypatch.setattr("httpx.post",Mock(side_effect=AssertionError("No API calls")))
@@ -189,13 +195,13 @@ def test_days_left_with_fixed_today(deadline, expected):
 
 
 def test_duapune_card_days_left_and_closing_soon(client, dashboard_db, monkeypatch):
-    today = datetime(2026, 10, 14, tzinfo=UTC).date()
+    today = datetime.now(UTC).date()
     monkeypatch.setitem(dashboard.templates.env.filters, 'days_left',
                         lambda expiry: dashboard.days_left(expiry, today))
     dashboard_db.execute("""
-        UPDATE postings SET source='duapune', expires_at='2026-10-17 21:59:00+00' WHERE id=1;
-        UPDATE postings SET expires_at='2026-10-16 21:59:00+00' WHERE id=3;
-    """)
+        UPDATE postings SET expires_at=CASE id WHEN 1 THEN %s ELSE %s END,
+            source=CASE id WHEN 1 THEN 'duapune' ELSE source END WHERE id IN (1,3);
+    """, (datetime.now(UTC) + timedelta(days=3), datetime.now(UTC) + timedelta(days=2)))
     default = client.get('/?views=1').text
     assert default.index('id="posting-1"') < default.index('id="posting-3"')
     assert 'deadline-urgent">3 days left' in default
@@ -230,6 +236,7 @@ def test_queue_shows_source_health_banner(monkeypatch, htmx, problems):
     monkeypatch.setattr(dashboard, 'check_health', health_check)
     monkeypatch.setattr(dashboard, 'connect', lambda: nullcontext(None))
     monkeypatch.setattr(dashboard, 'postings_for_page', lambda *args, **kwargs: [])
+    monkeypatch.setattr(dashboard, 'latest_pipeline_run', lambda: None)
     monkeypatch.setattr(dashboard, 'active_profile', lambda connection: None)
     with TestClient(dashboard.app) as client:
         response = client.get('/', headers={'HX-Request': 'true'} if htmx else {})
@@ -308,9 +315,9 @@ def test_queue_search_filters_and_review_preserves_state(client, dashboard_db):
 @pytest.mark.parametrize('sort,expected', [('company', [3,2,1]), ('title', [2,1,3]), ('newest', [2,3,1])])
 def test_additional_sort_orders(client, dashboard_db, sort, expected):
     dashboard_db.execute("""
-        UPDATE postings SET company='Zulu',title='Beta',posted_at='2026-10-01' WHERE id=1;
-        UPDATE postings SET company='Middle',title='Alpha',posted_at='2026-10-03' WHERE id=2;
-        UPDATE postings SET company='Acme',title='Gamma',posted_at='2026-10-02' WHERE id=3;
+        UPDATE postings SET company='Zulu',title='Beta',posted_at=now()-interval '3 days' WHERE id=1;
+        UPDATE postings SET company='Middle',title='Alpha',posted_at=now()-interval '1 day' WHERE id=2;
+        UPDATE postings SET company='Acme',title='Gamma',posted_at=now()-interval '2 days' WHERE id=3;
     """)
     html = client.get('/?sort=' + sort).text
     positions = [html.index(f'id="posting-{id}"') for id in expected]
@@ -379,6 +386,14 @@ def test_workspace_browser(client, dashboard_db, monkeypatch):
             ELSE 'Python Software Engineer — Data Integrations' END,
           company = CASE id WHEN 2 THEN 'European Research & Engineering Collective' ELSE 'Acme Engineering' END;
     """)
+    dashboard_db.execute("""
+        INSERT INTO postings(id,source,source_id,title,company,locations,first_seen,expires_at,url)
+        VALUES(4,'sample','expired','Expired role','Acme','{Albania}',now(),now()-interval '1 day','https://example.com/job');
+        INSERT INTO matches(posting_id,profile_id,similarity,percentile,queued)
+        VALUES(4,1,0.6,100,true);
+        INSERT INTO pipeline_runs(started_at,finished_at,outcome,stages)
+        VALUES(now(),now(),'degraded','{"collection":{"outcome":"degraded","message":"One source timed out"}}');
+    """)
     monkeypatch.setattr(dashboard, 'latest_source_runs', lambda: [])
     monkeypatch.setattr(dashboard, 'duapune_freshness', lambda: 'Missing (test fixture)')
     with socket.socket() as listener:
@@ -415,3 +430,62 @@ def test_browser_profile_line_endings_keep_cached_matches(client, dashboard_db):
     assert response.status_code == 200
     assert dashboard_db.execute('SELECT count(*) FROM profile').fetchone() == (1,)
     assert dashboard_db.execute('SELECT count(*) FROM matches WHERE profile_id=1').fetchone() == (3,)
+
+
+@pytest.mark.parametrize('expiry_delta,posted_delta,first_delta,expected', [
+    (-1, None, 0, False), (1, -60 * 86400, 0, True), (0, None, 0, False),
+    (None, -29 * 86400, 0, True), (None, -31 * 86400, 0, False),
+    (None, -30 * 86400, 0, True), (None, -30 * 86400 - 1, 0, False),
+    (None, 1, 0, False), (None, None, -29 * 86400, True),
+    (None, None, -31 * 86400, False), (None, None, None, False),
+])
+def test_queue_rechecks_canonical_activity_and_counts(dashboard_db, expiry_delta, posted_delta,
+                                                     first_delta, expected):
+    now = datetime(2026, 11, 3, 12, tzinfo=UTC)
+    at = lambda delta: None if delta is None else now + timedelta(seconds=delta)
+    dashboard_db.execute('UPDATE postings SET expires_at=%s,posted_at=%s,first_seen=%s WHERE id=1',
+                         (at(expiry_delta), at(posted_delta), at(first_delta)))
+    dashboard_db.execute('UPDATE postings SET first_seen=%s WHERE id IN (2,3)', (now,))
+    context = dashboard.queue_context({}, now=now)
+    ids = [posting['id'] for posting in context['postings']]
+    assert (1 in ids) == expected
+    assert context['total'] == len(ids) == (3 if expected else 2)
+    # Reads never delete or rewrite stored matching/review history.
+    assert dashboard_db.execute('SELECT queued FROM matches WHERE posting_id=1').fetchone() == (True,)
+    assert dashboard_db.execute('SELECT count(*) FROM postings').fetchone() == (3,)
+
+
+def test_inactive_saved_and_applied_history_remains_accessible(client, dashboard_db):
+    client.post('/reviews/1', data={'action': 'later', 'note': 'Keep this role'})
+    client.post('/reviews/2', data={'action': 'apply', 'note': 'Application sent'})
+    dashboard_db.execute("UPDATE postings SET expires_at=now()-interval '1 day' WHERE id IN (1,2)")
+    dashboard_db.execute('UPDATE matches SET queued=false WHERE posting_id=1')
+    default = client.get('/')
+    assert 'id="index-1"' not in default.text and 'id="index-2"' not in default.text
+    assert 'id="index-3"' in default.text and '<strong>1</strong> shown' in default.text
+    saved = client.get('/?saved=1')
+    assert saved.status_code == 200 and 'id="posting-1"' in saved.text
+    assert 'Saved · inactive' in saved.text and 'recorded deadline has passed' in saved.text
+    assert 'availability on the original site is not verified' in saved.text
+    assert 'Keep this role' in saved.text
+    assert 'Application sent' in client.get('/applied').text
+    assert dashboard_db.execute('SELECT count(*) FROM reviews').fetchone() == (2,)
+    # Explicit decisions on a historical saved posting continue to persist and return correct fragments.
+    changed = client.post('/reviews/1', data={'action': 'later', 'saved': '1', 'note': 'Updated history'},
+                          headers={'HX-Request': 'true'})
+    assert changed.status_code == 200 and 'Updated history' in changed.text
+    assert 'id="posting-1"' in changed.text
+
+
+def test_degraded_pipeline_remains_visible_in_dashboard_and_fragments(client, dashboard_db, monkeypatch):
+    monkeypatch.setattr(dashboard, "latest_source_runs", lambda: [])
+    dashboard_db.execute("""
+        INSERT INTO pipeline_runs(started_at,finished_at,outcome,stages)
+        VALUES(now(),now(),'degraded','{"collection":{"outcome":"degraded","message":"1 source timed out"}}')
+    """)
+    for headers in ({}, {'HX-Request': 'true'}):
+        html = client.get('/', headers=headers).text
+        assert 'Latest daily pipeline: degraded' in html
+    html = client.get('/health').text
+    assert 'degraded' in html and '1 source timed out' in html
+    assert 'Last successful import' in html and 'received timestamp is not recorded' in html

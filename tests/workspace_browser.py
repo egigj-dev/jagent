@@ -5,7 +5,7 @@ import sys
 from playwright.sync_api import sync_playwright, expect
 
 base_url = sys.argv[1]
-artifacts = Path('/tmp/jagent-ui-refinement/fixtures')
+artifacts = Path('/tmp/jagent-milestone-a-review/browser')
 artifacts.mkdir(parents=True, exist_ok=True)
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
@@ -35,6 +35,8 @@ with sync_playwright() as playwright:
 
     page.goto(base_url)
     expect(page.locator('.index-row')).to_have_count(3)
+    expect(page.locator('#index-4')).to_have_count(0)
+    expect(page.locator('#health-banner')).to_contain_text('Latest daily pipeline: degraded')
     expect(page.locator('.opportunity-detail:visible')).to_have_count(1)
     expect(page.locator('#index-1')).to_have_attribute('aria-current', 'true')
     page.locator('#index-1').focus()
@@ -134,6 +136,8 @@ with sync_playwright() as playwright:
     expect(page.locator('.application-note')).to_have_text('Prepare CV')
     for route in ('/applied', '/profile', '/filters', '/health'):
         page.goto(base_url + route)
+        if route == '/health':
+            expect(page.get_by_role('region', name='Latest pipeline outcome')).to_contain_text('One source timed out')
         for width in (1440, 1024, 768, 390, 320):
             page.set_viewport_size({'width': width, 'height': 900})
             check_layout(width)

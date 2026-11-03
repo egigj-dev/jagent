@@ -96,3 +96,12 @@ CREATE TABLE IF NOT EXISTS reviews (
     decided_at timestamptz NOT NULL DEFAULT now(),
     CHECK (action <> 'skip' OR reason IS NOT NULL)
 );
+
+-- Daily run verdicts; stages preserves source coverage and critical-stage outcomes without replacing source_runs.
+CREATE TABLE IF NOT EXISTS pipeline_runs (
+    id serial PRIMARY KEY,
+    started_at timestamptz NOT NULL,
+    finished_at timestamptz,
+    outcome text CHECK (outcome IN ('success', 'degraded', 'failed')),
+    stages jsonb NOT NULL DEFAULT '{}'
+);

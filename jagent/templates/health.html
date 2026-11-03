@@ -2,10 +2,20 @@
 {% extends "base.html" %}
 {% block content %}
 {% include "health_banner.html" %}
+<section class="panel" aria-label="Latest pipeline outcome">
+  <h2>Latest daily pipeline</h2>
+  {% if pipeline_run %}
+  <p><strong>{{ pipeline_run.outcome or 'Unfinished — running or interrupted' }}</strong> · Started {{ pipeline_run.started_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}{% if pipeline_run.finished_at %} · Finished {{ pipeline_run.finished_at.strftime('%Y-%m-%d %H:%M:%S UTC') }}{% endif %}</p>
+  {% for name, stage in pipeline_run.stages.items() %}<p><strong>{{ name|capitalize }}: {{ stage.outcome }}</strong> — {{ stage.message }}</p>{% endfor %}
+  {% else %}<p>No daily pipeline outcomes recorded. Source results below remain available.</p>{% endif %}
+</section>
 <div class="health-layout">
 <section class="panel">
   <h2>Duapune import</h2>
   <p>{{ duapune_import }}</p>
+  <p>Last successful import: {{ import_details.imported_at.strftime('%Y-%m-%d %H:%M:%S UTC') if import_details.imported_at else 'Not recorded' }}</p>
+  <p>File modified: {{ import_details.modified_at.strftime('%Y-%m-%d %H:%M:%S UTC') if import_details.modified_at else 'Unavailable' }}</p>
+  <p class="field-hint">The received timestamp is not recorded. File modification time does not prove when a transfer succeeded.</p>
 </section>
 <section class="panel source-runs">
   <h2>Latest source runs</h2>

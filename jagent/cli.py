@@ -4,26 +4,25 @@ from pathlib import Path
 
 from jagent.db import connect
 from jagent.analysis import analyze
-from jagent.health import WARNING_ONLY_SOURCES, check_health
+from jagent.health import WARNING_ONLY_SOURCES, check_health, duapune_freshness, operational_problems
 from jagent.filters import filter_report
 from jagent.profile import set_profile
 from jagent.matching import match
+from jagent.pipeline import daily, processing_outcome
 from jagent.runner import SOURCES, backfill_dedupe, run
-
-
-MAX_FAILURE_RATE = 0.10
 
 
 def retry_exit_code(failures, attempted):
     if not failures:
         return 0
     print(f"warning: {failures} retried next run")
-    return int(failures == attempted or failures / attempted > MAX_FAILURE_RATE)
+    return int(processing_outcome(failures, attempted) == "failed")
 
 
 def main():
     parser = argparse.ArgumentParser(prog="jagent")
     commands = parser.add_subparsers(dest="command", required=True)
+    commands.add_parser("daily", help="Run the pipeline: success=0, degraded=2, failed=1")
     commands.add_parser("init-db", help="Create the database tables if absent")
     commands.add_parser("health", help="Check the latest source runs for problems")
     commands.add_parser("filter-report", help="Report active postings passing profile filters")
@@ -38,6 +37,8 @@ def main():
     run_parser = commands.add_parser("run", help="Fetch and store job postings")
     run_parser.add_argument("--source", choices=sorted(SOURCES))
     args = parser.parse_args()
+    if args.command == "daily":
+        return daily()
     if args.command == "serve":
         import uvicorn
         uvicorn.run("jagent.dashboard:app", host="127.0.0.1", port=8000)
@@ -64,10 +65,10 @@ def main():
         filter_report()
         return 0
     if args.command == "health":
-        problems = check_health()
+        problems = operational_problems(check_health(), None, duapune_freshness())
         failed = False
         for problem in problems:
-            if problem.partition(":")[0] in WARNING_ONLY_SOURCES:
+            if problem.partition(":")[0] in WARNING_ONLY_SOURCES or problem.startswith("Duapune import:"):
                 print(f"warning: {problem}")
             else:
                 print(problem)

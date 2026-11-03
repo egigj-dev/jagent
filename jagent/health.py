@@ -1,5 +1,5 @@
 # Source health checks; full feeds use yield rules, incremental feeds use errors, non-ATS runs must be fresh.
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 import json
 
 from psycopg.rows import dict_row
@@ -74,16 +74,54 @@ def latest_source_runs():
             """).fetchall()
 
 
-def duapune_freshness():
+def duapune_freshness(now=None):
+    now = now or datetime.now(UTC)
     try:
         data = json.loads(duapune.IMPORT_PATH.read_text())
-        collected_at = datetime.fromisoformat(data["collected_at"])
-        if collected_at.tzinfo is None:
-            return "Invalid: collected_at must include a timezone"
+        collected_at = duapune.collected_time(data, now)
     except FileNotFoundError:
         return "Missing"
+    except OSError:
+        return "Unreadable import file"
     except (ValueError, KeyError, TypeError):
         return "Invalid import timestamp or JSON"
     collected_at = collected_at.astimezone(UTC)
-    status = "Stale" if datetime.now(UTC) - collected_at > timedelta(hours=36) else "Fresh"
+    status = "Stale" if now - collected_at > duapune.MAX_IMPORT_AGE else "Fresh"
     return f"{status}: collected at {collected_at:%Y-%m-%d %H:%M:%S} UTC"
+
+
+def latest_pipeline_run():
+    with connect() as connection:
+        # Older deployments remain readable before the new, additive table is initialized.
+        if connection.execute("SELECT to_regclass('pipeline_runs')").fetchone()[0] is None:
+            return None
+        with connection.cursor(row_factory=dict_row) as cursor:
+            return cursor.execute(
+                "SELECT started_at,finished_at,outcome,stages FROM pipeline_runs ORDER BY id DESC LIMIT 1"
+            ).fetchone()
+
+
+def operational_problems(source_problems, pipeline_run, freshness):
+    problems = list(source_problems)
+    if pipeline_run and pipeline_run["outcome"] != "success":
+        outcome = pipeline_run["outcome"] or "unfinished (running or interrupted)"
+        problems.append(f"Latest daily pipeline: {outcome}; see Source health for stage details.")
+    if not freshness.startswith("Fresh:"):
+        problems.append(f"Duapune import: {freshness}")
+    return problems
+
+
+def duapune_diagnostics():
+    try:
+        modified_at = datetime.fromtimestamp(duapune.IMPORT_PATH.stat().st_mtime, UTC)
+    except OSError:
+        modified_at = None
+    with connect() as connection:
+        if connection.execute("SELECT to_regclass('source_runs')").fetchone()[0] is None:
+            imported_at = None
+        else:
+            imported_at = connection.execute(
+                "SELECT max(finished_at) FROM source_runs WHERE source='duapune' AND status='ok'"
+            ).fetchone()[0]
+    return {"freshness": duapune_freshness(), "modified_at": modified_at,
+            "imported_at": imported_at}

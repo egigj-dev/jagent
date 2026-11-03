@@ -9,7 +9,7 @@
       <a class="index-row" id="index-{{ p.id }}" href="#posting-{{ p.id }}" data-posting="{{ p.id }}">
         <span class="index-top"><span class="index-company">{{ p.company or 'Company not stated' }}</span><span class="index-score">{% if p.similarity is not none %}{{ '%.0f'|format(p.similarity * 100) }}<small>/100</small>{% else %}—{% endif %}</span></span>
         <strong class="index-title">{{ p.title or 'Untitled posting' }}</strong>
-        <span class="index-bottom"><span class="index-location">{{ (p.locations or [])|join(' · ') or 'Location not stated' }}{% if p.remote %} · Remote{% endif %}</span><span class="index-state">{{ 'Saved' if p.action == 'later' else 'To review' }}</span></span>
+        <span class="index-bottom"><span class="index-location">{{ (p.locations or [])|join(' · ') or 'Location not stated' }}{% if p.remote %} · Remote{% endif %}</span><span class="index-state">{{ 'Saved · inactive' if p.inactive else ('Saved' if p.action == 'later' else 'To review') }}</span></span>
         <span class="sr-only">Profile similarity{% if p.similarity is not none %}: {{ '%.0f'|format(p.similarity * 100) }} out of 100{% endif %}</span>
       </a>
       {% endfor %}

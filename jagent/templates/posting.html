@@ -1,4 +1,5 @@
 {# Intelligence brief; p provides stored explanation, matched section and original requirement evidence. #}
+{% if page == 'Queue' and p.inactive %}<p class="health-banner">{% if p.expires_at %}The recorded deadline has passed.{% else %}This saved role is outside the posting activity window.{% endif %} Kept in Saved for your records; availability on the original site is not verified.</p>{% endif %}
 <div class="posting-heading">
   <p class="company">{{ p.company or 'Company not stated' }} <span class="badge source-badge">{{ p.source|replace('_',' ') }}</span></p>
   {% if p.local_only %}<span class="badge">Local</span>{% endif %}
@@ -6,7 +7,7 @@
   <p class="location">{{ (p.locations or [])|join(' · ') or 'Location not stated' }}{% if p.remote %} · Remote{% endif %}</p>
 </div>
 {% set remaining = p.expires_at|days_left %}
-{% if remaining is not none %}<p class="badge{% if remaining <= 3 %} deadline-urgent{% endif %}">{{ remaining }} days left</p>{% endif %}
+{% if remaining is not none %}<p class="badge{% if remaining <= 3 %} deadline-urgent{% endif %}">{{ 'Recorded deadline passed' if p.inactive and p.expires_at else ('Closes today' if remaining == 0 else remaining|string ~ ' days left') }}</p>{% endif %}
 <div class="links">
   {% for url in [p.url] + (p.other_urls or []) %}{% if url and (url.startswith('https://') or url.startswith('http://')) %}
   <a href="{{ url }}" target="_blank" rel="noopener noreferrer">{{ 'View job posting' if loop.first else 'Other listing ' ~ loop.index }} <span aria-hidden="true">↗</span><span class="sr-only"> (opens in a new tab)</span></a>

@@ -66,8 +66,11 @@ sudo systemctl enable --now jagent.timer jagent-web.service
 ```
 
 The pipeline runs at 07:00 Europe/Tirane and catches missed runs after reboot.
-It runs `run`, `match`, `analyze`, then `health`, continuing after failures and
-returning failure if any step fails. Logs use UTC. Check service logs with
+It runs `jagent daily`, which attempts collection, matching, analysis and health checks
+while preserving source isolation. Outcomes are success (exit 0), degraded (exit 2,
+accepted by systemd), or failed (exit 1). Logs and stored stage times use UTC.
+See [Milestone A](milestone-a.md) for coverage policy, the additive schema upgrade,
+and deployment precautions. Check service logs with
 `sudo journalctl -u jagent.service -u jagent-web.service -n 100 --no-pager`
 and the schedule with `sudo systemctl list-timers jagent.timer --all`.
 Run immediately with `sudo systemctl start jagent.service`.
@@ -86,7 +89,8 @@ do not make health exit with failure. Other source health failures still do.
 Workday has no adapter and is not called by the runner. Company boards currently
 support Greenhouse, Lever, Ashby and SmartRecruiters; these run after the named
 sources. The dashboard's **Health** page at `/health` shows the latest run for each
-source and the freshness of the Duapune import.
+source, the recorded daily outcome and stage details, and the freshness and last
+successful import time of the Duapune file. A transfer-receipt timestamp is not recorded.
 
 CI runs the complete suite with `JAGENT_TEST_POSTGRES=1` against a temporary
 pgvector/PostgreSQL 16 service with database `jagent_test`.

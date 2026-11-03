@@ -31,7 +31,7 @@ flowchart LR
     subgraph server[Server]
         timer["jagent.timer<br/>07:00 Europe/Tirane"]
         dailyService[jagent.service]
-        daily[deploy/daily.sh]
+        daily["deploy/daily.sh → CLI daily"]
         cli["CLI commands<br/>run, match, analyze, health<br/>init-db, profile set, filter-report, serve"]
         runner[runner.py and source adapters]
         matching[matching.py and embeddings.py]
@@ -70,6 +70,7 @@ flowchart LR
 
 The runner fetches eleven named sources, then boards registered in `ats_companies`; new postings can discover more ATS slugs.
 Duapune reads a local JSON file and rejects missing imports, timezone-free collection times, or imports older than 36 hours.
+Daily outcomes and stage summaries are stored in `pipeline_runs`; source-level errors remain in `source_runs`.
 The timer starts the daily oneshot service; the separate web service runs the dashboard continuously and restarts on failure.
 Database connections force UTC; Docker publishes Postgres on loopback port 5434, and `serve` binds loopback port 8000.
 
@@ -135,6 +136,13 @@ erDiagram
         text note
         timestamptz decided_at
     }
+    pipeline_runs {
+        serial id PK
+        timestamptz started_at
+        timestamptz finished_at
+        text outcome "success, degraded, failed; null until finished"
+        jsonb stages
+    }
     profile |o..o{ profile_sections : has
     profile |o..o{ matches : ranks
     postings |o..o{ matches : receives
@@ -142,7 +150,7 @@ erDiagram
     postings ||..o| reviews : has
 ```
 
-All eight tables are shown with their keys and three to five selected non-key columns; the small `ats_companies` table has only three columns total.
+All nine tables are shown with their keys and three to five selected non-key columns; the small `ats_companies` table has only three columns total.
 `matches` and `ats_companies` have composite UNIQUE constraints, not primary keys; `postings` also uniquely identifies `(source, source_id)`.
 Nullable foreign keys use optional parent cardinality; analysis and reviews share the posting ID as their primary and foreign key.
 `source_runs.source` and `ats_companies` have no foreign-key relationship to postings; the greatest `profile.id` is the active version.
@@ -153,7 +161,7 @@ Nullable foreign keys use optional parent cardinality; analysis and reviews shar
 sequenceDiagram
     participant Timer as jagent.timer
     participant Service as jagent.service
-    participant Daily as deploy/daily.sh
+    participant Daily as CLI daily / pipeline.py
     participant Run as CLI run / runner
     participant Sources as API, RSS, HTML, laptop import, ATS
     participant DB as Postgres
@@ -163,8 +171,8 @@ sequenceDiagram
     participant Health as CLI health
 
     Timer->>Service: 07:00 Europe/Tirane, catch missed activation
-    Service->>Daily: ExecStart daily.sh
-    Daily->>Run: uv run jagent run
+    Service->>Daily: daily.sh execs uv run jagent daily
+    Daily->>Run: run()
     loop Eleven named sources, sequentially
         Run->>Sources: fetch()
         Sources-->>Run: Parsed postings or exception
@@ -183,8 +191,8 @@ sequenceDiagram
         Sources-->>Run: Parsed postings or exception
         Run->>DB: Save postings and discoveries, record ok, or record error
     end
-    Run-->>Daily: Exit 1 if any source failed, otherwise 0
-    Daily->>Match: uv run jagent match, even if run failed
+    Run-->>Daily: Per-source results and coverage
+    Daily->>Match: match(), even if collection failed
     Match->>DB: Load active profile, sections and postings
     loop Missing or different-model section vectors, batches up to 100
         Match->>Router: POST /v1/embeddings, up to two attempts
@@ -199,8 +207,8 @@ sequenceDiagram
     end
     Match->>DB: Clear active-profile queue flags, cosine score best section
     Match->>DB: Upsert percentiles and queue flags, commit
-    Match-->>Daily: Exit status using failed batch fraction
-    Daily->>Analyze: uv run jagent analyze, even if match failed
+    Match-->>Daily: Completed and skipped batch counts
+    Daily->>Analyze: analyze(), even if matching failed
     Analyze->>DB: Load active profile and queued postings with missing/different analysis model
     loop Each selected posting in similarity order
         Analyze->>Router: POST /v1/chat/completions with whole profile and job
@@ -210,15 +218,18 @@ sequenceDiagram
             Analyze->>DB: Upsert posting_analysis and match explanation, commit
         end
     end
-    Analyze-->>Daily: Exit status using failed posting fraction
-    Daily->>Health: uv run jagent health, even if analyze failed
+    Analyze-->>Daily: Completed and failed posting counts
+    Daily->>Health: Source checks and import freshness, even if analysis failed
     Health->>DB: Latest runs per source and seven-day median fetched
     DB-->>Health: Status, yield and freshness
-    Health-->>Daily: Print problems, exit 1 if any, otherwise 0
-    Daily-->>Service: Exit 1 if any command failed, otherwise 0
+    Health-->>Daily: Diagnostic problems
+    Daily->>DB: Store outcome and stage summaries
+    Daily-->>Service: success=0, degraded=2 (accepted), failed=1
 ```
 
-`daily.sh` logs each command in UTC and attempts all four commands even when an earlier command fails.
+`daily.sh` delegates to `jagent daily`, which logs UTC stage times and attempts independent stages after a failure.
+Collection needs at least one successful, nonempty feed; source outages otherwise degrade the run.
+Critical-stage failures or no usable feed fail the run. See [Milestone A](milestone-a.md).
 Each source is isolated; a failed source records an error run while later sources continue, including registered ATS boards.
 Matching reuses vectors by model, scores the best compatible profile section, and queues similarity ≥ 0.55 with percentile ≥ 97.
 Analysis reuses results by model; matching and analysis fail the CLI when all attempts fail or failures exceed 10%, while health flags source errors, stale non-ATS runs, and low full-feed yield.
@@ -280,4 +291,4 @@ These are logical stages across `postings`, `matches`, `posting_analysis`, and `
 Filters reject excluded terms, then accept remote postings without locations or require allowed countries/remote regions; activity uses the explicit deadline before the 30-day fallback.
 Ranking uses the recent 30-day scored cohort for percentiles; failed embedding/analysis work can retry on later runs, and existing vectors/results are reused by model.
 Reviews require no analysis; apply moves to Applied, skip requires a reason and leaves the queue, and later stays queued subject to dashboard view filters (seniority, languages, contract).
-Expiry is evaluated during filtering, not by a background state transition; the dashboard relies on stored queue flags, and Applied retains reviews even after expiry.
+Expiry is evaluated during filtering, not by a background state transition; the dashboard rechecks the same activity predicate on each request. Applied and explicit Saved history remain accessible after inactivity.

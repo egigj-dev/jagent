@@ -6,6 +6,8 @@ After=docker.service
 
 [Service]
 Type=oneshot
+# Degraded runs remain observable through ExecMainStatus=2 and the dashboard.
+SuccessExitStatus=2
 User=@USER@
 WorkingDirectory=@PROJECT_DIR@
 ExecStart=@PROJECT_DIR@/deploy/daily.sh

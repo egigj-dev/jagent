@@ -10,6 +10,7 @@ from jagent.models import Posting
 
 IMPORT_PATH = Path(__file__).resolve().parents[2] / "imports" / "duapune.json"
 TIRANE = ZoneInfo("Europe/Tirane")
+MAX_IMPORT_AGE = timedelta(hours=36)
 
 
 def parse_response(data: dict) -> list[Posting]:
@@ -30,15 +31,24 @@ def parse_response(data: dict) -> list[Posting]:
     return postings
 
 
+def collected_time(data, now=None):
+    collected_at = datetime.fromisoformat(data["collected_at"])
+    if collected_at.tzinfo is None:
+        raise ValueError("Duapune collected_at must include a timezone")
+    collected_at = collected_at.astimezone(UTC)
+    if collected_at > (now or datetime.now(UTC)):
+        raise ValueError("Duapune collected_at is in the future")
+    return collected_at
+
+
 def fetch() -> list[Posting]:
     try:
         data = json.loads(IMPORT_PATH.read_text())
     except FileNotFoundError as error:
         raise ValueError(f"Duapune import missing: {IMPORT_PATH}") from error
-    collected_at = datetime.fromisoformat(data["collected_at"])
-    if collected_at.tzinfo is None:
-        raise ValueError("Duapune collected_at must include a timezone")
-    if datetime.now(UTC) - collected_at > timedelta(hours=36):
+    now = datetime.now(UTC)
+    collected_at = collected_time(data, now)
+    if now - collected_at > MAX_IMPORT_AGE:
         raise ValueError(
             f"Duapune import is more than 36 hours old (collected_at={collected_at.isoformat()}); "
             f"refresh {IMPORT_PATH} from the laptop"

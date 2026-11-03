@@ -1,7 +1,6 @@
-# Daily script tests; SCRIPT is sourced with a fake absolute uv function and calls records step order.
+# Daily entry-point tests; fake uv records invocation and preserves the classifier exit code for systemd.
 import os
 from pathlib import Path
-import re
 import subprocess
 
 import pytest
@@ -9,30 +8,15 @@ import pytest
 SCRIPT = Path(__file__).resolve().parents[1] / "deploy" / "daily.sh"
 
 
-@pytest.mark.parametrize("failed", ["", "run", "match", "analyze", "health", "all"])
-def test_daily_continues_and_reports_failure(tmp_path, failed):
+@pytest.mark.parametrize("exit_code", [0, 1, 2])
+def test_daily_preserves_pipeline_exit(tmp_path, exit_code):
+    uv = tmp_path / ".local/bin/uv"
+    uv.parent.mkdir(parents=True)
+    uv.write_text('#!/bin/sh\n# Test executable; CALLS records arguments and UV_EXIT selects its result.\nprintf "%s\\n" "$*" > "$CALLS"\nexit "$UV_EXIT"\n')
+    uv.chmod(0o755)
     calls = tmp_path / "calls"
-    # Bash allows an absolute path as a function name, intercepting the actual script's uv call.
-    wrapper = '''
-function @UV@() {
-    printf '%s\\n' "$*" >> "$CALLS"
-    if [[ "$3" == "$FAILED_STEP" || "$FAILED_STEP" == all ]]; then
-        return 7
-    fi
-    return 0
-}
-source "$1"
-'''.replace("@UV@", str(Path.home() / ".local/bin/uv"))
-    result = subprocess.run(
-        ["bash", "-c", wrapper, "bash", str(SCRIPT)],
-        env={**os.environ, "CALLS": str(calls), "FAILED_STEP": failed},
-        capture_output=True, text=True,
-    )
-    assert result.returncode == (1 if failed else 0), result.stderr
-    assert calls.read_text().splitlines() == [
-        "run jagent run", "run jagent match", "run jagent analyze", "run jagent health",
-    ]
-    lines = result.stdout.splitlines()
-    assert len(lines) == 4
-    for line, step in zip(lines, ["run", "match", "analyze", "health"], strict=True):
-        assert re.fullmatch(r"\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\] jagent " + step, line)
+    result = subprocess.run(["bash", str(SCRIPT)], capture_output=True, text=True,
+                            env={**os.environ, "HOME": str(tmp_path), "CALLS": str(calls),
+                                 "UV_EXIT": str(exit_code)})
+    assert result.returncode == exit_code, result.stderr
+    assert calls.read_text() == "run jagent daily\n"

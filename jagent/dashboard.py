@@ -12,8 +12,9 @@ from psycopg.types.json import Jsonb
 
 from jagent.db import connect
 from jagent.embeddings import embedding_settings
-from jagent.filters import LOCAL_FILTER_DEFAULTS, local_posting, passes_filters, passing_postings
-from jagent.health import check_health, duapune_freshness, latest_source_runs
+from jagent.filters import LOCAL_FILTER_DEFAULTS, is_active, local_posting, passes_filters, passing_postings
+from jagent.health import (check_health, duapune_diagnostics, duapune_freshness,
+                           latest_pipeline_run, latest_source_runs, operational_problems)
 from jagent.matching import QUEUE_MIN_PERCENTILE, QUEUE_MIN_SIMILARITY, score_postings
 from jagent.profile import active_profile, split_sections
 
@@ -57,9 +58,10 @@ def visible(posting, views):
     return True
 
 
-def postings_for_page(connection, applied=False, sort="default"):
+def postings_for_page(connection, applied=False, sort="default", saved=False, now=None):
+    now = now or datetime.now(UTC)
     with connection.cursor(row_factory=dict_row) as cursor:
-        return cursor.execute("""
+        rows = cursor.execute("""
             SELECT p.id,p.title,p.company,p.source,p.locations,p.remote,p.posted_at,p.expires_at,p.first_seen,p.url,p.other_urls,
                    m.similarity,m.percentile,m.matched_section,m.explanation,a.posting_id AS analyzed,
                    a.seniority,a.required_languages,a.employment_types,a.salary,a.evidence,
@@ -71,31 +73,36 @@ def postings_for_page(connection, applied=False, sort="default"):
             LEFT JOIN matches m ON m.posting_id=p.id AND m.profile_id=(SELECT max(id) FROM profile)
             LEFT JOIN posting_analysis a ON a.posting_id=p.id
             LEFT JOIN reviews r ON r.posting_id=p.id
-            WHERE (%s AND r.action='apply') OR
-                  (NOT %s AND m.queued AND (r.action IS NULL OR r.action='later'))
+            WHERE (%s AND r.action='apply') OR (%s AND r.action='later') OR
+                  (NOT %s AND NOT %s AND m.queued AND (r.action IS NULL OR r.action='later'))
             ORDER BY CASE WHEN %s THEN p.expires_at END ASC NULLS LAST,
                      CASE WHEN %s THEN r.decided_at END DESC,
                      (r.action='later')::int ASC NULLS FIRST,m.similarity DESC,p.id
-        """, (applied, applied, sort == "closing_soon", applied)).fetchall()
+        """, (applied, saved, applied, saved, sort == "closing_soon", applied)).fetchall()
+    for row in rows:
+        row["inactive"] = not is_active(row, now)
+    return rows
 
 
-def queue_context(params):
+def queue_context(params, now=None):
+    now = now or datetime.now(UTC)
     views = view_options(params)
     sort = params.get("sort") if params.get("sort") in SORTS else "default"
     selected = {key: params.get(key, "").strip()[:200] for key in SEARCH_KEYS}
     with connect() as connection:
-        rows = postings_for_page(connection, sort=sort)
+        rows = postings_for_page(connection, sort=sort, saved=selected["saved"] == "1", now=now)
         profile = active_profile(connection)
         matched = bool(profile and connection.execute(
             "SELECT 1 FROM matches WHERE profile_id=%s LIMIT 1", (profile[0],),
         ).fetchone())
-    now = datetime.now(UTC)
     for row in rows:
         row["local_only"] = bool(
             profile and passes_filters(row, profile[2], now) and local_posting(row, profile[2])
             and not ((row["percentile"] or 0) >= QUEUE_MIN_PERCENTILE
                      and (row["similarity"] or 0) >= QUEUE_MIN_SIMILARITY)
         )
+    rows = [row for row in rows if not row["inactive"] or selected["saved"] == "1"]
+    pipeline_run = latest_pipeline_run()
     filtered = [row for row in rows if visible(row, views) and matches_view(row, selected)]
     if sort in ("company", "title"):
         filtered.sort(key=lambda row: ((row.get(sort) or "").casefold(), row["id"]))
@@ -104,7 +111,8 @@ def queue_context(params):
     return {"postings": filtered, "views": views, "selected": selected, "sorts": SORTS,
             "sources": sorted({row["source"] for row in rows if row["source"]}),
             "has_profile": profile is not None, "has_matches": matched,
-            "health_problems": check_health(),
+            "health_problems": operational_problems(check_health(), pipeline_run, duapune_freshness()),
+            "pipeline_run": pipeline_run,
             "saved_count": sum(row["action"] == "later" for row in rows),
             "sort": sort, "total": len(rows), "reasons": REASONS, "page": "Queue"}
 
@@ -201,12 +209,16 @@ async def review(request: Request, posting_id: int):
 @app.get("/health")
 def health_page(request: Request):
     runs = latest_source_runs()
+    pipeline_run = latest_pipeline_run()
+    import_details = duapune_diagnostics()
     for run in runs:
         if run["finished_at"]:
             run["finished_at"] = run["finished_at"].astimezone(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
     return templates.TemplateResponse(request=request, name="health.html", context={
-        "page": "Health", "runs": runs, "health_problems": check_health(),
-        "duapune_import": duapune_freshness(),
+        "page": "Health", "runs": runs,
+        "health_problems": operational_problems(check_health(), pipeline_run, import_details["freshness"]),
+        "pipeline_run": pipeline_run, "import_details": import_details,
+        "duapune_import": import_details["freshness"],
     })
 
 

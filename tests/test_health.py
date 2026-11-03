@@ -28,6 +28,7 @@ def test_health_rules(monkeypatch, status, fetched, median, error, expected):
 
 @pytest.mark.parametrize("problems,exit_code", [([], 0), (["sample: fetched=0"], 1)])
 def test_health_cli(monkeypatch, capsys, problems, exit_code):
+    monkeypatch.setattr(cli, "duapune_freshness", lambda: "Fresh: fixture")
     monkeypatch.setattr("sys.argv", ["jagent", "health"])
     monkeypatch.setattr(cli, "check_health", lambda: problems)
     assert cli.main() == exit_code
@@ -37,6 +38,7 @@ def test_health_cli(monkeypatch, capsys, problems, exit_code):
 @pytest.mark.parametrize("error", ["Import older than 36 hours", "Import file missing"])
 @pytest.mark.parametrize("server_failed", [False, True])
 def test_import_warning_does_not_hide_server_failure(monkeypatch, capsys, error, server_failed):
+    monkeypatch.setattr(cli, "duapune_freshness", lambda: "Fresh: fixture")
     connection = Mock()
     rows = [("duapune", "error", 0, error, 0, True)]
     if server_failed:
@@ -111,3 +113,33 @@ def test_invalid_duapune_import_freshness(monkeypatch, tmp_path, contents):
     path.write_text(contents)
     monkeypatch.setattr(health.duapune, "IMPORT_PATH", path)
     assert health.duapune_freshness().startswith("Invalid")
+
+
+@pytest.mark.parametrize('age,expected', [(36 * 3600, 'Fresh'), (36 * 3600 + 1, 'Stale'), (-1, 'Invalid')])
+def test_import_age_boundaries_share_adapter_policy(monkeypatch, tmp_path, age, expected):
+    now = datetime(2026, 11, 3, 12, tzinfo=UTC)
+    path = tmp_path / 'import.json'
+    path.write_text(json.dumps({'collected_at': (now - timedelta(seconds=age)).isoformat()}))
+    monkeypatch.setattr(health.duapune, 'IMPORT_PATH', path)
+    assert health.duapune_freshness(now).startswith(expected)
+
+
+def test_stale_import_is_visible_even_when_last_source_run_succeeded(monkeypatch, tmp_path):
+    path = tmp_path / 'import.json'
+    path.write_text(json.dumps({'collected_at': (datetime.now(UTC) - timedelta(hours=37)).isoformat()}))
+    monkeypatch.setattr(health.duapune, 'IMPORT_PATH', path)
+    problems = health.operational_problems([], None, health.duapune_freshness())
+    assert len(problems) == 1 and problems[0].startswith('Duapune import: Stale:')
+
+
+def test_health_cli_warns_about_import_age_before_next_collection(monkeypatch, capsys):
+    monkeypatch.setattr('sys.argv', ['jagent', 'health'])
+    monkeypatch.setattr(cli, 'check_health', lambda: [])
+    monkeypatch.setattr(cli, 'duapune_freshness', lambda: 'Stale: collected at 2026-11-02 04:31:22 UTC')
+    assert cli.main() == 0
+    assert capsys.readouterr().out == 'warning: Duapune import: Stale: collected at 2026-11-02 04:31:22 UTC\n'
+
+
+def test_unreadable_import_is_not_misreported_as_invalid_timestamp(monkeypatch):
+    monkeypatch.setattr(health.duapune, 'IMPORT_PATH', Mock(read_text=Mock(side_effect=PermissionError)))
+    assert health.duapune_freshness() == 'Unreadable import file'
