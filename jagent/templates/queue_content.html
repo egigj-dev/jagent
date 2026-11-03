@@ -1,37 +1,50 @@
-<!-- Queue fragment; postings are visible cards and total counts cards before view toggles. -->
-<section id="queue-content" aria-live="polite" aria-label="Job opportunities">
-  <div class="queue-summary"><p>{{ postings|length }} shown · {{ total }} in queue</p><span class="muted">Apply on the job website, then mark it here</span></div>
-  {% for p in postings %}
-  <article class="card" id="posting-{{ p.id }}">
-    {% include "posting.html" %}
-    {% if p.action == 'later' %}<p class="badge saved-badge">Saved for later</p>{% endif %}
-    <form class="review-form" aria-label="Review {{ p.title or 'posting' }}" method="post" action="/reviews/{{ p.id }}" hx-post="/reviews/{{ p.id }}" hx-target="#queue-content" hx-swap="outerHTML" hx-include="#view-controls">
-      <input type="hidden" name="sort" value="{{ sort }}">
-      <input type="hidden" name="views" value="1">
-      {% for key, value in selected.items() %}{% if value %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
-      {% for key, enabled in views.items() %}{% if enabled %}<input type="hidden" name="{{ key }}" value="1">{% endif %}{% endfor %}
-      <div class="review-fields"><div>
-      <label for="reason-{{ p.id }}">Reason for Skip <span class="field-hint">Required only when skipping</span></label>
-      <select name="reason" id="reason-{{ p.id }}" onchange="this.setCustomValidity('')">
-        <option value="">Choose a reason</option>
-        {% for reason in reasons %}<option value="{{ reason }}">{{ reason|replace('_',' ') }}</option>{% endfor %}
-      </select>
-      </div><div>
-      <label for="note-{{ p.id }}">Optional note</label>
-      <textarea name="note" id="note-{{ p.id }}" rows="2" placeholder="What stands out? Anything to follow up on?">{{ p.note or '' }}</textarea>
-      </div></div>
-      <div class="actions">
-        <button name="action" value="apply" onclick="this.form.elements.reason.setCustomValidity('')">Mark as applied</button>
-        <button class="secondary" name="action" value="skip" onclick="const reason=this.form.elements.reason; if(!reason.value){reason.setCustomValidity('Choose a reason for Skip');reason.reportValidity();return false;}reason.setCustomValidity('');">Skip</button>
-        <button class="secondary" name="action" value="later" onclick="this.form.elements.reason.setCustomValidity('')">Save for later</button>
-      </div>
-    </form>
-  </article>
+{# Opportunity index and intelligence panels; postings share IDs and persisted review state. #}
+<section id="queue-content" aria-label="Job opportunities">
+  <div class="queue-summary"><p><strong>{{ postings|length }}</strong> shown <span class="muted">/ {{ total }} in queue</span></p><div class="queue-tools"><a class="clear-filters" href="/">Reset view</a><details class="keyboard-hint"><summary>Keyboard shortcuts</summary><p><kbd>↑</kbd> <kbd>↓</kbd> select · <kbd>Enter</kbd> inspect · <kbd>/</kbd> search · <kbd>Esc</kbd> back</p></details></div></div>
+  {% if postings %}
+  <div class="opportunity-workspace">
+    <div class="opportunity-index" aria-label="Opportunity index"><div class="panel-label"><span>Opportunity index</span></div>
+      <div class="index-rows">
+      {% for p in postings %}
+      <a class="index-row" id="index-{{ p.id }}" href="#posting-{{ p.id }}" data-posting="{{ p.id }}">
+        <span class="index-top"><span class="index-company">{{ p.company or 'Company not stated' }}</span><span class="index-score">{% if p.similarity is not none %}{{ '%.0f'|format(p.similarity * 100) }}<small>/100</small>{% else %}—{% endif %}</span></span>
+        <strong class="index-title">{{ p.title or 'Untitled posting' }}</strong>
+        <span class="index-bottom"><span class="index-location">{{ (p.locations or [])|join(' · ') or 'Location not stated' }}{% if p.remote %} · Remote{% endif %}</span><span class="index-state">{{ 'Saved' if p.action == 'later' else 'To review' }}</span></span>
+        <span class="sr-only">Profile similarity{% if p.similarity is not none %}: {{ '%.0f'|format(p.similarity * 100) }} out of 100{% endif %}</span>
+      </a>
+      {% endfor %}
+      </div><div class="index-footnote">Profile similarity, not hiring probability.</div>
+    </div>
+    <div class="intelligence-panel" aria-label="Opportunity intelligence">
+      <div class="panel-label"><span>Intelligence</span></div>
+      {% for p in postings %}
+      <article class="opportunity-detail" id="posting-{{ p.id }}" tabindex="-1" aria-label="{{ p.title or 'Untitled posting' }}">
+        <button class="back-to-index secondary" type="button">← Opportunity index</button>
+        {% include "posting.html" %}
+        {% if p.action == 'later' %}<p class="badge saved-badge">Saved for later</p>{% endif %}
+        <form id="review-{{ p.id }}" class="review-form" aria-label="Review {{ p.title or 'posting' }}" method="post" action="/reviews/{{ p.id }}">
+          <input type="hidden" name="sort" value="{{ sort }}"><input type="hidden" name="views" value="1">
+          {% for key, value in selected.items() %}{% if value %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endif %}{% endfor %}
+          {% for key, enabled in views.items() %}{% if enabled %}<input type="hidden" name="{{ key }}" value="1">{% endif %}{% endfor %}
+          <div class="section-label"><span>Decision & notes</span></div>
+          <p class="field-hint">Apply on the original site; record it here.</p>
+          <div class="review-fields"><div><label for="reason-{{ p.id }}">Skip reason <span class="field-hint">Required for Skip</span></label><select name="reason" id="reason-{{ p.id }}" onchange="this.setCustomValidity('')"><option value="">Choose a reason</option>{% for reason in reasons %}<option value="{{ reason }}">{{ reason|replace('_',' ') }}</option>{% endfor %}</select></div>
+          <div><label for="note-{{ p.id }}">Your notes</label><textarea name="note" id="note-{{ p.id }}" rows="2" placeholder="Questions, context, next steps…">{{ p.note or '' }}</textarea></div></div>
+          <div class="actions">
+            <button class="secondary" name="action" value="later" onclick="this.form.elements.reason.setCustomValidity('')">{{ 'Update saved role' if p.action == 'later' else 'Save for later' }}</button>
+            <button class="quiet" name="action" value="skip" onclick="const reason=this.form.elements.reason; if(!reason.value){reason.setCustomValidity('Choose a reason for Skip');reason.reportValidity();return false;}reason.setCustomValidity('');">Skip</button>
+            <button name="action" value="apply" onclick="this.form.elements.reason.setCustomValidity('')">Mark as applied ↗</button>
+          </div>
+        </form>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
   {% else %}<div class="empty-state">
     {% if not has_profile %}<span class="empty-symbol" aria-hidden="true">1</span><h2>Your next move starts with you.</h2><p class="muted">Add your background and preferred locations. Jagent will use them to shortlist opportunities for you.</p><a class="button-link" href="/profile">Create your profile →</a>
     {% elif not has_matches %}<span class="empty-symbol" aria-hidden="true">↻</span><h2>Your profile is ready for matching.</h2><p class="muted">Matches are prepared during the scheduled daily run. Check back after it finishes, or review your profile and preferences.</p><a href="/profile">Review your profile →</a>
     {% elif total %}<span class="empty-symbol" aria-hidden="true">⌕</span><h2>No roles match these filters.</h2><p class="muted">Try a broader search or clear the filters to see your full shortlist.</p><a href="/">Clear filters →</a>
     {% else %}<span class="empty-symbol" aria-hidden="true">✓</span><h2>You’re all caught up.</h2><p class="muted">New matches appear after the daily run. You can also adjust your job preferences to broaden your search.</p><a href="/filters">Review job preferences →</a>{% endif %}
-  </div>{% endfor %}
+  </div>{% endif %}
 </section>
 {% include "health_banner.html" %}

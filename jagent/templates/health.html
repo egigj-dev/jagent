@@ -2,11 +2,12 @@
 {% extends "base.html" %}
 {% block content %}
 {% include "health_banner.html" %}
+<div class="health-layout">
 <section class="panel">
   <h2>Duapune import</h2>
   <p>{{ duapune_import }}</p>
 </section>
-<section class="panel">
+<section class="panel source-runs">
   <h2>Latest source runs</h2>
   {% for run in runs %}
   <article>
@@ -14,8 +15,9 @@
     <p>Status: {{ 'Failed' if run.status == 'error' else run.status }}</p>
     <p>Finished: {{ run.finished_at or 'Unfinished' }}</p>
     <p>Postings yielded: {{ run.fetched }}</p>
-    {% if run.status == 'error' and run.error %}<p>{{ run.error }}</p>{% endif %}
+    {% if run.status == 'error' and run.error %}<p class="source-error">{{ run.error }}</p>{% endif %}
   </article>
   {% else %}<p>No source runs recorded.</p>{% endfor %}
 </section>
+</div>
 {% endblock %}

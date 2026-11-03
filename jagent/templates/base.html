@@ -1,27 +1,35 @@
-<!-- Dashboard shell; page selects the heading and active navigation link. -->
+<!-- Workspace shell; page selects navigation, all screens share tokens and local interactions. -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page }} · jagent</title>
-  <link rel="stylesheet" href="/static/dashboard.css">
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.11/dist/htmx.min.js" integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous" defer></script>
+  <meta name="theme-color" content="#202C31">
+  <title>{{ 'Opportunities' if page == 'Queue' else ('Preferences' if page == 'Filters' else page) }} · jagent</title>
+  <link rel="stylesheet" href="/static/dashboard.css?v=atlas-refinement-1">
+  <script src="/static/workspace.js?v=atlas-refinement-1" defer></script>
 </head>
-<body>
+<body data-page="{{ page|lower }}">
   <a class="skip-link" href="#main-content">Skip to content</a>
-  <header><a class="brand" href="/">jagent<span class="brand-dot" aria-hidden="true">.</span></a><nav aria-label="Main navigation">
-    {% for label, url in [('Queue','/'),('Profile','/profile'),('Filters','/filters'),('Applied','/applied'),('Health','/health')] %}
-    <a href="{{ url }}" {% if page == label %}aria-current="page"{% endif %}>{{ 'Opportunities' if label == 'Queue' else ('Preferences' if label == 'Filters' else label) }}</a>
-    {% endfor %}
-  </nav></header>
-  <main id="main-content">
+  <header class="sidebar">
+    <a class="brand" href="/" aria-label="jagent home"><span class="brand-mark" aria-hidden="true">j<span>↗</span></span>jagent<span class="brand-dot">.</span></a>
+    <nav aria-label="Main navigation">
+      {% for label, url in [('Queue','/'),('Applied','/applied'),('Profile','/profile'),('Filters','/filters')] %}
+      <a href="{{ url }}" {% if page == label %}aria-current="page"{% endif %}>{{ 'Opportunities' if label == 'Queue' else ('Preferences' if label == 'Filters' else label) }}</a>
+      {% endfor %}
+      <div class="nav-system"><a href="/health" {% if page == 'Health' %}aria-current="page"{% endif %}><span class="status-dot" aria-hidden="true"></span>Source health</a></div>
+    </nav>
+
+  </header>
+  <main id="main-content" tabindex="-1">
     <div class="page-heading">
-      <p class="eyebrow">Your next opportunity</p>
-      <h1>{{ 'Find your next move.' if page == 'Queue' else ('Your profile' if page == 'Profile' else ('Job preferences' if page == 'Filters' else ('Source health' if page == 'Health' else 'Your applications'))) }}</h1>
-      <p class="muted">{% if page == 'Health' %}Latest source outcomes and local import freshness.{% elif page == 'Queue' %}Jobs gathered from across the web, shortlisted for your experience. Review the fit, open the listing, then track your decision.{% elif page == 'Profile' %}Tell us what you bring and where you want to go. Your profile shapes your job matches.{% elif page == 'Applied' %}Keep your applications and notes in one place.{% else %}Fine-tune which opportunities make it into your queue.{% endif %}</p>
+      <div><h1>{{ 'Opportunities' if page == 'Queue' else ('Profile' if page == 'Profile' else ('Preferences' if page == 'Filters' else ('Source health' if page == 'Health' else 'Applied'))) }}</h1>
+      {% if page == 'Profile' %}<p class="muted">Your experience, skills, and goals.</p>{% elif page == 'Filters' %}<p class="muted">Set your search scope. Separate entries with commas.</p>{% endif %}</div>
+      {% if page == 'Queue' %}<a class="heading-link" href="/?saved=1">Saved ↗</a>{% endif %}
     </div>
+    <div id="workspace-feedback" class="feedback" role="status" aria-live="polite"></div>
     {% block content %}{% endblock %}
+
   </main>
 </body>
 </html>

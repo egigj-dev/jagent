@@ -338,3 +338,80 @@ def test_health_page_shows_latest_failed_source(client, dashboard_db, monkeypatc
     assert 'Postings yielded: 0' in response.text
     assert '&lt;unavailable&gt;' in response.text
     assert 'Duapune import' in response.text and 'Missing' in response.text
+
+
+def test_workspace_exposes_stored_evidence_and_preserves_view_controls(client, dashboard_db):
+    from bs4 import BeautifulSoup
+
+    dashboard_db.execute("UPDATE posting_analysis SET evidence=%s WHERE posting_id=1", (
+        Jsonb({'seniority': 'We are looking for a mid-level engineer.'}),
+    ))
+    page = BeautifulSoup(client.get('/?hide_senior=1&hide_contract=1').text, 'html.parser')
+    assert len(page.select('.index-row')) == len(page.select('.opportunity-detail')) == 2
+    panel = page.select_one('#posting-1')
+    assert panel.select_one('.evidence-body blockquote').text == 'Python'
+    assert 'We are looking for a mid-level engineer.' in panel.text
+    assert 'not proof that you lack the skill' in panel.text
+    assert 'not a hiring probability' in panel.text
+    for name in ('hide_senior', 'hide_contract'):
+        assert page.select_one(f'#view-controls input[name="{name}"]').has_attr('checked')
+        assert panel.select_one(f'input[name="{name}"]').get('value') == '1'
+    assert not page.select('script[src^="http"]')
+
+
+def test_workspace_browser(client, dashboard_db, monkeypatch):
+    # Optional browser executable uses an existing Playwright environment, never adds a project dependency.
+    import socket
+    import subprocess
+    import threading
+    import time
+    import uvicorn
+
+    browser_python = os.environ.get('JAGENT_BROWSER_PYTHON')
+    if not browser_python:
+        pytest.skip('Set JAGENT_BROWSER_PYTHON to a Python with Playwright and Chromium installed')
+    # Exercise wrapping with realistic headings; writes remain confined to this test's temporary tables.
+    dashboard_db.execute("""
+        UPDATE postings SET
+          title = CASE id
+            WHEN 1 THEN 'Machine Learning Engineer — Retrieval & Evaluation'
+            WHEN 2 THEN 'Backend Engineer, Developer Experience & Cloud Platforms'
+            ELSE 'Python Software Engineer — Data Integrations' END,
+          company = CASE id WHEN 2 THEN 'European Research & Engineering Collective' ELSE 'Acme Engineering' END;
+    """)
+    monkeypatch.setattr(dashboard, 'latest_source_runs', lambda: [])
+    monkeypatch.setattr(dashboard, 'duapune_freshness', lambda: 'Missing (test fixture)')
+    with socket.socket() as listener:
+        listener.bind(('127.0.0.1', 0))
+        listener.listen(32)
+        port = listener.getsockname()[1]
+        server = uvicorn.Server(uvicorn.Config(dashboard.app, log_level='error'))
+        thread = threading.Thread(target=server.run, kwargs={'sockets': [listener]}, daemon=True)
+        thread.start()
+        try:
+            for _ in range(100):
+                if server.started:
+                    break
+                time.sleep(.05)
+            assert server.started
+            result = subprocess.run([
+                browser_python, str(Path(__file__).with_name('workspace_browser.py')),
+                f'http://127.0.0.1:{port}',
+            ], capture_output=True, text=True, timeout=100)
+            print(result.stdout)
+            assert result.returncode == 0, result.stdout + result.stderr
+        finally:
+            server.should_exit = True
+            thread.join(timeout=10)
+
+
+def test_browser_profile_line_endings_keep_cached_matches(client, dashboard_db):
+    filters = dict.fromkeys(dashboard.FILTER_KEYS, []) | {'countries': ['albania']}
+    dashboard_db.execute('UPDATE profile SET filters=%s WHERE id=1', (Jsonb(filters),))
+    text, = dashboard_db.execute('SELECT text FROM profile WHERE id=1').fetchone()
+    response = client.post('/profile', data={
+        'profile_text': text.replace('\n', '\r\n'), 'countries': 'albania',
+    })
+    assert response.status_code == 200
+    assert dashboard_db.execute('SELECT count(*) FROM profile').fetchone() == (1,)
+    assert dashboard_db.execute('SELECT count(*) FROM matches WHERE profile_id=1').fetchone() == (3,)

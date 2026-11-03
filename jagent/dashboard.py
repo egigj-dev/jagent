@@ -62,7 +62,10 @@ def postings_for_page(connection, applied=False, sort="default"):
         return cursor.execute("""
             SELECT p.id,p.title,p.company,p.source,p.locations,p.remote,p.posted_at,p.expires_at,p.first_seen,p.url,p.other_urls,
                    m.similarity,m.percentile,m.matched_section,m.explanation,a.posting_id AS analyzed,
-                   a.seniority,a.required_languages,a.employment_types,a.salary,
+                   a.seniority,a.required_languages,a.employment_types,a.salary,a.evidence,
+                   (SELECT string_agg(ps.text, E'\n\n' ORDER BY ps.id)
+                    FROM profile_sections ps WHERE ps.profile_id=m.profile_id
+                    AND ps.name=m.matched_section) AS profile_evidence,
                    r.action,r.reason,r.note,r.decided_at
             FROM postings p
             LEFT JOIN matches m ON m.posting_id=p.id AND m.profile_id=(SELECT max(id) FROM profile)
@@ -250,7 +253,8 @@ def profile_page(request: Request):
 @app.post("/profile")
 async def profile_save(request: Request):
     values = await form_values(request)
-    text = values.get("profile_text", "").strip()
+    # Browser forms submit CRLF; keep line endings stable so unchanged profiles retain cached matches.
+    text = values.get("profile_text", "").replace("\r\n", "\n").replace("\r", "\n").strip()
     filters = {key: [term.strip() for term in values.get(key, "").split(",") if term.strip()] for key in FILTER_KEYS}
     if not text or len(text) > 50000:
         error = "Enter your profile (up to 50,000 characters)."
@@ -270,7 +274,7 @@ async def profile_save(request: Request):
     # Changed profile text gets fresh matches in the next daily run, avoiding stale fit explanations.
     with connect() as connection:
         previous = active_profile(connection)
-        if previous and previous[1] == text:
+        if previous and previous[1].replace("\r\n", "\n").replace("\r", "\n") == text:
             if previous[2] != filters:
                 save_filters(connection, filters)
         else:

@@ -1,24 +1,25 @@
-{# Filter editor; filters supplies current terms and filter_keys defines editable comma-separated lists. #}
+{# Preferences editor; filters retains the existing lists, groups explain how each list affects discovery. #}
 {% extends "base.html" %}
 {% block content %}
+<div class="preferences-layout">
 <form class="card filter-form" method="post" action="/filters">
-  <h2>Make room for the right roles</h2>
-  <p class="muted">Separate terms with commas. Save your preferences to refresh your queue.</p>
-  {% set field_help = {
-    'countries': ('Countries', 'Locations where you would like to work.'),
-    'remote_regions': ('Remote regions', 'Regions to include for remote roles, such as Europe or worldwide.'),
-    'remote_excluded': ('Excluded location terms', 'Terms in a title or location that rule a role out.'),
-    'exclude_title_keywords': ('Excluded title keywords', 'Job title terms you would like to leave out.'),
-    'local_locations': ('Local locations', 'Eligible roles in these locations can join your queue by job title.'),
-    'local_title_keywords': ('Local title keywords', 'Job title terms to queue locally regardless of match score. Excluded title keywords still apply.')
-  } %}
-  {% for key in filter_keys %}
-  <div class="filter-field">
-    <label for="{{ key }}">{{ field_help[key][0] }}</label>
-    <p class="field-hint" id="{{ key }}-help">{{ field_help[key][1] }}</p>
-    <textarea id="{{ key }}" name="{{ key }}" rows="3" aria-describedby="{{ key }}-help">{{ filters[key]|join(', ') }}</textarea>
-  </div>
-  {% endfor %}
-  <div class="form-footer"><p class="muted">Your profile text stays the same.</p><button type="submit">Save filters and update queue</button></div>
+  {% set groups = [
+    ('Locations & remote', [
+      ('countries', 'Countries', ''),
+      ('remote_regions', 'Remote regions', 'e.g. Europe, worldwide')]),
+    ('Roles & exclusions', [
+      ('remote_excluded', 'Excluded location terms', 'Exclude matching title or location terms, e.g. US only.'),
+      ('exclude_title_keywords', 'Excluded title keywords', 'e.g. sales, director')]),
+    ('Local discovery', [
+      ('local_locations', 'Local locations', 'Use title keywords to find eligible roles in these locations.'),
+      ('local_title_keywords', 'Local title keywords', 'Included locally regardless of similarity. Exclusions still apply.')])
+  ] %}
+  {% for heading, fields in groups %}<fieldset><legend>{{ heading }}</legend>
+    {% for key, label, hint in fields %}<div class="filter-field"><label for="{{ key }}">{{ label }}</label>{% if hint %}<p class="field-hint" id="{{ key }}-help">{{ hint }}</p>{% endif %}{% if key == 'local_title_keywords' %}<textarea id="{{ key }}" name="{{ key }}" rows="2" {% if hint %}aria-describedby="{{ key }}-help"{% endif %}>{{ filters[key]|join(', ') }}</textarea>{% else %}<input type="text" id="{{ key }}" name="{{ key }}" value="{{ filters[key]|join(', ') }}" {% if hint %}aria-describedby="{{ key }}-help"{% endif %}>{% endif %}</div>{% endfor %}
+  </fieldset>{% endfor %}
+  <details class="form-help"><summary>How preferences affect matches</summary><div><p>Location and exclusion preferences determine eligibility. Eligible roles are ranked against your profile; local title rules can include roles below the usual similarity threshold. A similarity score does not predict a hiring outcome.</p><p>Search and filters on Opportunities only narrow the current view.</p></div></details>
+  <div class="form-footer"><button type="submit">Save preferences and update queue</button></div>
 </form>
+
+</div>
 {% endblock %}

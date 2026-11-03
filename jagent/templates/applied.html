@@ -1,12 +1,13 @@
-{# Applied page; postings contains reviewed applications in newest decision order. #}
+{# Decision log; postings is the stored application history, details reveal each original brief and note. #}
 {% extends "base.html" %}
 {% block content %}
 <p class="queue-summary">{{ postings|length }} application{{ '' if postings|length == 1 else 's' }} recorded</p>
 {% for p in postings %}
-<article class="card">
-  {% include "posting.html" %}
+<details class="application-item">
+  <summary><span><span class="muted">{{ p.company or 'Company not stated' }}</span><span class="application-title" role="heading" aria-level="2">{{ p.title or 'Untitled posting' }}</span><span class="muted">{{ (p.locations or [])|join(' · ') or 'Location not stated' }} · Details ↓</span>{% if p.note %}<span class="application-note-preview">{{ p.note }}</span>{% endif %}</span><span class="applied-date">Applied<br>{{ p.decided_at.strftime('%d %b %Y') }}</span></summary>
+  <div class="application-body">{% include "posting.html" %}
   <div class="application-record"><p class="applied-date">Applied {{ p.decided_at.strftime('%Y-%m-%d %H:%M UTC') }}</p>
-  {% if p.note %}<p class="application-note">{{ p.note }}</p>{% endif %}</div>
-</article>
-{% else %}<div class="empty-state"><span class="empty-symbol" aria-hidden="true">↗</span><h2>Your next chapter starts here</h2><p class="muted">No applications yet. When you mark a role as applied, it will appear here with your notes.</p><a href="/">Explore your queue →</a></div>{% endfor %}
+  {% if p.note %}<h3>Your notes</h3><p class="application-note">{{ p.note }}</p>{% else %}<p class="muted">No notes recorded.</p>{% endif %}</div></div>
+</details>
+{% else %}<div class="empty-state"><span class="empty-symbol" aria-hidden="true">↗</span><h2>No applications recorded yet.</h2><p class="muted">When you mark a role as applied, it will appear here with your notes.</p><a href="/">Explore opportunities →</a></div>{% endfor %}
 {% endblock %}
