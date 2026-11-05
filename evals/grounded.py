@@ -30,8 +30,10 @@ def evaluate(root=ROOT):
         supported = [claim for claim in briefing.claims if claim.verdict == 'supported']
         counts['adapted_claims'] += len(supported)
         counts['adapted_with_citations'] += sum(claim.job_span is not None and
-            (claim.profile_span is not None or claim.kind == 'not_demonstrated') for claim in supported)
+            (claim.profile_span is not None or claim.kind in ('not_demonstrated', 'uncertain_requirement')) for claim in supported)
         counts['adapted_gap_claims'] += sum(claim.kind == 'not_demonstrated' for claim in supported)
+        counts['adapted_limitation_claims'] += sum(claim.kind == 'explicit_limitation' for claim in supported)
+        counts['adapted_uncertain_claims'] += sum(claim.kind == 'uncertain_requirement' for claim in supported)
         counts['adapted_flagged'] += sum(claim.verdict != 'supported' for claim in briefing.claims)
         counts['adapted_abstentions'] += result.explanation == FALLBACK
         counts['cases'] += 1

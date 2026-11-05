@@ -14,7 +14,7 @@ class InputPacket(BaseModel):
 
 class ClaimDraft(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    kind: Literal["strength", "not_demonstrated", "shared_mention"]
+    kind: Literal["strength", "not_demonstrated", "shared_mention", "explicit_limitation", "uncertain_requirement"]
     skill: str
     job_excerpt_id: str
     profile_excerpt_id: str | None
@@ -39,9 +39,13 @@ class Claim(ClaimDraft):
     reason: str | None = None
     job_span: SourceSpan | None = None
     profile_span: SourceSpan | None = None
+    requirement: Literal["required", "preferred", "example", "title", "not_required", "unclear"] | None = None
+    support: Literal["demonstrated", "partially_demonstrated", "not_demonstrated_in_profile",
+                     "explicit_limitation", "uncertain"] | None = None
 
 
 class Briefing(BaseModel):
     model_config = ConfigDict(extra="forbid")
     packet: InputPacket
+    engine_version: str | None = None
     claims: list[Claim]

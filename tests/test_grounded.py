@@ -91,7 +91,10 @@ def test_gap_requires_requirement_and_whole_profile_absence():
 
 @pytest.mark.parametrize('profile', ['No Python experience.', 'Learning Python.', 'Python not used.'])
 def test_negated_or_qualified_mentions_never_become_strengths(profile):
-    assert render(build(1, 'Python required.', profile), 'Python required.', profile) == FALLBACK
+    briefing = build(1, 'Python required.', profile)
+    assert [(claim.kind, claim.verdict) for claim in briefing.claims] == [('explicit_limitation', 'supported')]
+    assert render(briefing, 'Python required.', profile) == (
+        'Profile states a limitation or qualification for requested skills: Python.')
 
 
 def test_shared_mentions_are_qualified_and_years_never_inferred():
