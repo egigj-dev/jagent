@@ -47,7 +47,7 @@ recording time, input hashes, token usage, estimated cost, and latency.
 `labels/` uses zero-based converted claim indices with `supported` or
 `unsupported` values. Empty `claims` and null `missed_requirements` mean
 unlabeled; an empty missed-requirements list means a human reviewed the case
-and found none. No human labels have been supplied.
+and found none. Nine stored human claim labels exist on case 1357 (all supported); the remaining 118 converted claims are pending. No missed-requirement lists are reviewed. Reviewer identity is not recorded.
 
 The synthetic profile preserves six section headings, with entirely invented
 body text. The scheduling sentence is a synthetic disclosure canary.
@@ -138,3 +138,18 @@ matching literals are sanitized. Original assertions and posting deduplication
 equivalence are preserved. When employer redaction changes a frozen input hash,
 the recording keeps its original hash as `recorded_job_snapshot_id` and updates
 `job_snapshot_id` to identify the sanitized public view. No model is called.
+
+
+## Experimental grounded fit replay
+
+Run `.venv/bin/python -m evals.grounded` offline for paired historical output
+checks, synthetic fault removal, and per-case annotation progress. This never
+records fresh model responses or accesses a database. Existing recordings and
+labels are preserved; labels on legacy claim indices do not transfer to the new
+adapter's claims. See [evaluation limits and annotation instructions](../docs/overnight-B1-D/B1_EVALUATION.md).
+
+The fit adapter is off by default. `JAGENT_GROUNDED_EXPLANATIONS=1` enables it
+for newly analyzed jobs; `analyze(..., grounded=True)` permits explicit offline
+stub tests. Do not enable it in production on the strength of fixture results:
+cached explanations are not refreshed, durable claim provenance is not yet stored,
+and fact fields retain their existing weaker validation.

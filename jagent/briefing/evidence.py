@@ -101,13 +101,13 @@ def failed_rules(draft: ClaimDraft, jobs: dict[str, str], profiles: dict[str, st
     profile = profiles.get(draft.profile_excerpt_id)
     if job is None:
         failures.append(1)
-    if ((draft.kind == "strength" and profile is None)
+    if ((draft.kind in ("strength", "shared_mention") and profile is None)
             or (draft.kind == "not_demonstrated" and draft.profile_excerpt_id is not None)):
         failures.append(2)
     # Missing citations fail their existence rule, rather than double-counting mention rules.
     if job is not None and not mentions(job, draft.skill):
         failures.append(3)
-    if draft.kind == "strength" and profile is not None and not mentions(profile, draft.skill):
+    if draft.kind in ("strength", "shared_mention") and profile is not None and not mentions(profile, draft.skill):
         failures.append(4)
     if draft.kind == "not_demonstrated" and mentions(full_profile_text, draft.skill):
         failures.append(5)
