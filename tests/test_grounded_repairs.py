@@ -193,3 +193,37 @@ def test_cue_far_from_the_skill_does_not_count():
 def test_first_line_is_only_a_title_when_a_description_follows():
     assert kinds('Terraform Engineer\nWe build things.', PROFILE) == {'Terraform': ('not_demonstrated', 'title')}
     assert kinds('Terraform Engineer', PROFILE) == {}
+
+
+@pytest.mark.parametrize('job, profile, kind, requirement, wording', [
+    ('Python Engineer\nWe build things.', 'Curious about Python.',
+     'shared_mention', 'title', 'The role title names skills the profile mentions: Python'),
+    ('We build pipelines.\nRequired: experience with tools such as Python or SQL.', 'Curious about Python and SQL.',
+     'shared_mention', 'example', 'gives these as examples of what it asks for, and the profile mentions them: Python, SQL'),
+    ('Python Engineer\nWe build things.', 'Skills: Python\nI have never used Python in production.',
+     'explicit_limitation', 'title', 'qualification for skills the role title names: Python'),
+    ('We build pipelines.\nRequired: experience with tools such as Python or SQL.',
+     'Skills: Python, SQL\nI have never used Python or SQL in production.',
+     'explicit_limitation', 'example', 'qualification for skills the posting gives as examples: Python, SQL'),
+])
+def test_supported_title_and_example_claims_are_rendered(job, profile, kind, requirement, wording):
+    # These claims passed every check but had no sentence, so they vanished or became the fallback.
+    assert kinds(job, profile)['Python'] == (kind, requirement)
+    assert wording in text(job, profile)
+    assert FALLBACK not in text(job, profile)
+
+
+def test_every_possible_template_key_has_a_sentence():
+    from typing import get_args
+    from types import SimpleNamespace
+    from jagent.briefing.contract import Claim
+    from jagent.briefing.grounded import TEMPLATES, template_key
+    requirements = [value for value in get_args(Claim.model_fields['requirement'].annotation)[0].__args__]
+    claims = [SimpleNamespace(kind=kind, requirement=requirement, support=support)
+              for kind in ('shared_mention', 'not_demonstrated', 'explicit_limitation')
+              for requirement in requirements for support in (None,)]
+    claims += [SimpleNamespace(kind='strength', requirement=requirement, support=support)
+               for requirement in requirements for support in ('demonstrated', 'partially_demonstrated')]
+    # build() only makes an uncertain requirement from a required span.
+    claims.append(SimpleNamespace(kind='uncertain_requirement', requirement='required', support=None))
+    assert {template_key(claim) for claim in claims} - TEMPLATES.keys() == set()

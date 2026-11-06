@@ -7,7 +7,7 @@ import re
 from jagent.briefing.contract import Briefing, Claim, ClaimDraft, InputPacket, SourceSpan
 from jagent.briefing.evidence import SYNONYMS, mentions, normalize
 
-ENGINE_VERSION = 'deterministic-fit-v4'
+ENGINE_VERSION = 'deterministic-fit-v5'
 FALLBACK = "Fit could not be established from verified evidence; review the posting and profile."
 # "learning" marks an aspiration ("learning Kubernetes"), but not when it names a field such as
 # Machine Learning, which appears in most AI postings and would otherwise suppress requirements.
@@ -340,6 +340,35 @@ def build(posting_id: int, job: str, profile: str, model: str = ENGINE_VERSION) 
                     engine_version=ENGINE_VERSION, claims=claims)
 
 
+# Every key template_key can produce needs a sentence here; a supported claim without one would vanish.
+TEMPLATES = {
+    ('strength', None, 'demonstrated'): 'Profile describes work with skills requested by the posting: {}.',
+    ('strength', None, 'partially_demonstrated'): 'Profile lists skills requested by the posting: {}.',
+    ('strength', 'preferred', 'demonstrated'): 'Profile describes work with skills the posting prefers: {}.',
+    ('strength', 'preferred', 'partially_demonstrated'): 'Profile lists skills the posting prefers: {}.',
+    ('shared_mention', None, None): 'Posting and profile both mention {}; proficiency and requirement coverage are unverified.',
+    ('shared_mention', 'preferred', None): 'Posting prefers and profile mentions {}; proficiency is unverified.',
+    ('shared_mention', 'title', None): 'The role title names skills the profile mentions: {}; proficiency is unverified.',
+    ('shared_mention', 'example', None): 'The posting gives these as examples of what it asks for, and the profile mentions them: {}; proficiency is unverified.',
+    ('explicit_limitation', None, None): 'Profile states a limitation or qualification for requested skills: {}.',
+    ('explicit_limitation', 'preferred', None): 'Profile states a limitation or qualification for preferred skills: {}.',
+    ('explicit_limitation', 'title', None): 'Profile states a limitation or qualification for skills the role title names: {}.',
+    ('explicit_limitation', 'example', None): 'Profile states a limitation or qualification for skills the posting gives as examples: {}.',
+    ('not_demonstrated', None, None): 'Advertised requirements not demonstrated in the supplied profile: {}; this does not establish inability.',
+    ('not_demonstrated', 'preferred', None): 'Preferred skills not demonstrated in the supplied profile: {}; this does not establish inability.',
+    ('not_demonstrated', 'title', None): 'The role title names skills not demonstrated in the supplied profile: {}; this does not establish inability.',
+    ('not_demonstrated', 'example', None): 'The posting gives these as examples of what it asks for, and the supplied profile does not mention them: {}; other tools may satisfy this.',
+    ('uncertain_requirement', None, None): 'The posting is inconsistent about whether it requires: {}.',
+}
+
+
+def template_key(claim) -> tuple:
+    # A strength's wording only separates preferred; other kinds also separate weaker asks.
+    separate = ('preferred',) if claim.kind == 'strength' else ('preferred', 'example', 'title')
+    return (claim.kind, claim.requirement if claim.requirement in separate else None,
+            claim.support if claim.kind == 'strength' else None)
+
+
 def render(briefing: Briefing, job: str, profile: str) -> str:
     # Revalidate at the presentation boundary: neither status nor model-supplied labels are proof.
     if (briefing.packet.job_snapshot_id != version(job)
@@ -353,26 +382,8 @@ def render(briefing: Briefing, job: str, profile: str) -> str:
                            job, profile, claim.job_span, claim.profile_span)
         if checked.verdict != 'supported':
             continue
-        # A strength's wording only separates preferred; a gap's wording also separates weaker asks.
-        separate = ('preferred',) if checked.kind == 'strength' else ('preferred', 'example', 'title')
-        key = (checked.kind, checked.requirement if checked.requirement in separate else None,
-               checked.support if checked.kind == 'strength' else None)
+        key = template_key(checked)
         if checked.skill not in groups.setdefault(key, []):
             groups[key].append(checked.skill)
-    templates = (
-        (('strength', None, 'demonstrated'), 'Profile describes work with skills requested by the posting: {}.'),
-        (('strength', None, 'partially_demonstrated'), 'Profile lists skills requested by the posting: {}.'),
-        (('strength', 'preferred', 'demonstrated'), 'Profile describes work with skills the posting prefers: {}.'),
-        (('strength', 'preferred', 'partially_demonstrated'), 'Profile lists skills the posting prefers: {}.'),
-        (('shared_mention', None, None), 'Posting and profile both mention {}; proficiency and requirement coverage are unverified.'),
-        (('shared_mention', 'preferred', None), 'Posting prefers and profile mentions {}; proficiency is unverified.'),
-        (('explicit_limitation', None, None), 'Profile states a limitation or qualification for requested skills: {}.'),
-        (('explicit_limitation', 'preferred', None), 'Profile states a limitation or qualification for preferred skills: {}.'),
-        (('not_demonstrated', None, None), 'Advertised requirements not demonstrated in the supplied profile: {}; this does not establish inability.'),
-        (('not_demonstrated', 'preferred', None), 'Preferred skills not demonstrated in the supplied profile: {}; this does not establish inability.'),
-        (('not_demonstrated', 'title', None), 'The role title names skills not demonstrated in the supplied profile: {}; this does not establish inability.'),
-        (('not_demonstrated', 'example', None), 'The posting gives these as examples of what it asks for, and the supplied profile does not mention them: {}; other tools may satisfy this.'),
-        (('uncertain_requirement', None, None), 'The posting is inconsistent about whether it requires: {}.'),
-    )
-    sentences = [template.format(', '.join(groups[key])) for key, template in templates if key in groups]
+    sentences = [template.format(', '.join(groups[key])) for key, template in TEMPLATES.items() if key in groups]
     return ' '.join(sentences) or FALLBACK

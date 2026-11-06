@@ -52,6 +52,13 @@ production inspection occurred. Frozen recordings and original labels are unchan
   wording such as "skills you'll likely have" or "strong experience with" is still
   not read as required (posting 10343), and requirement headings only apply nearby.
 
+- Engine is now `deterministic-fit-v5` (2026-11-06): shared mentions and stated
+  limitations for skills the posting gives as examples or names in the role title
+  had no sentence template, so supported claims were silently dropped (24 claims in
+  16 of 148 live queued postings; 66285 fell back entirely). Templates now live in
+  `TEMPLATES`, and a test fails if any key `template_key` can produce lacks one.
+  The remaining fallbacks are postings that name none of the 22 known skills.
+
 - Source resolution and deterministic revalidation do not prove semantic truth.
   Long sentences with negation conservatively abstain. Only a bounded English
   vocabulary and a few explicit constraint forms are recognized. Unknown skills,
