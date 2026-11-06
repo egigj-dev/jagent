@@ -273,3 +273,25 @@ def test_pause_between_postings(analysis_db):
     fake = Mock(return_value=(json.dumps(unstated), 7))
     assert analysis.analyze(fake, {"LLM_MODEL": "fake"})["analyzed"] == 2
     analysis.time.sleep.assert_called_once_with(1.5)
+
+
+def test_grounded_mode_requests_facts_once_then_refreshes_offline(analysis_db, capsys):
+    # Real SQL: the second grounded run must reuse stored facts and make no model call.
+    fake = Mock(return_value=(json.dumps(facts()), 42))
+    settings = {"LLM_MODEL": "fake"}
+    assert analysis.analyze(fake, settings, grounded=True)["analyzed"] == 1
+    assert fake.call_count == 1
+    explanation = analysis_db.execute("SELECT explanation FROM matches WHERE posting_id=1").fetchone()[0]
+    assert explanation and explanation != facts()["explanation"]
+
+    # Legacy prose left by an earlier ungrounded run is replaced without asking the model again.
+    analysis_db.execute("UPDATE matches SET explanation='legacy prose' WHERE posting_id=1")
+    capsys.readouterr()
+    assert analysis.analyze(fake, settings, grounded=True)["analyzed"] == 0
+    assert fake.call_count == 1
+    assert analysis_db.execute("SELECT explanation FROM matches WHERE posting_id=1").fetchone()[0] == explanation
+    assert "refreshed without model calls: 1" in capsys.readouterr().out
+
+    # Facts from a different model are stale and are requested again.
+    assert analysis.analyze(fake, {"LLM_MODEL": "new-model"}, grounded=True)["analyzed"] == 1
+    assert fake.call_count == 2
