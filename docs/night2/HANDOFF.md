@@ -57,8 +57,8 @@ production inspection occurred. Frozen recordings and original labels are unchan
 - Same company/title/location can hide distinct requisitions; exact location/title
   safeguards also miss some real duplicates. No destructive merge is performed.
 - Saved items remain eligible but preview does not reproduce saved-last UI ordering.
-- Grounded online mode refreshes all queued analyses and may repeat upstream fact
-  calls. In-memory storage is optional and not transactional with DB writes; durable
+- Grounded online mode refreshes explanations for all queued postings, but only
+  requests facts that are missing or from another model (fixed 2026-11-06). In-memory storage is optional and not transactional with DB writes; durable
   provenance and atomicity need implementation before a production rollout.
 - Non-fit facts retain legacy schema/verbatim checks; their semantic correctness is
   not certified. No optional dashboard integration was added.

@@ -5,6 +5,7 @@ import json
 from unittest.mock import Mock
 
 import pytest
+from pydantic import ValidationError
 
 from evals.data import ROOT, load
 from evals.intelligence_demo import FILTERS, NOW, demo, snapshot
@@ -228,7 +229,7 @@ def test_analysis_cache_selection_and_fact_model_identity(monkeypatch, enabled):
     analysis.analyze(settings={'LLM_MODEL': 'fake-fact-model'}, grounded=enabled)
     copies = [call for call in connection.execute.call_args_list if 'UPDATE matches current' in call.args[0]]
     assert bool(copies) is not enabled
-    assert cursor.execute.call_args.args[1] == (1, enabled, 'fake-fact-model')
+    assert cursor.execute.call_args.args[1] == ('fake-fact-model', 1, enabled, 'fake-fact-model')
     candidate_value = analysis.Analysis(seniority='unknown', required_languages=None, employment_types=None,
                                         salary=None, evidence={}, explanation='old prose')
     result = analysis.ground_analysis(candidate_value, {'description': JOB}, PROFILE, 1, 'fake-fact-model')
@@ -325,3 +326,66 @@ def test_mentor_does_not_count_contradictory_requirements_as_confirmed_requests(
     mentor = summarize(ranked(candidate(1, job)), PROFILE)
     assert mentor['requested'] == [] and mentor['priorities'] == []
     assert mentor['postings_without_classified_requirements'] == 1
+
+
+def grounded_connection(monkeypatch, rows):
+    connection = Mock()
+    connection.execute.return_value.fetchone.return_value = (1, PROFILE, {})
+    connection.execute.return_value.fetchall.return_value = []
+    cursor = Mock()
+    connection.cursor.return_value = nullcontext(cursor)
+    cursor.execute.return_value.fetchall.return_value = rows
+    monkeypatch.setattr(analysis, 'connect', lambda: nullcontext(connection))
+    monkeypatch.setattr(analysis.time, 'sleep', lambda _: None)
+    return connection
+
+
+def explanation_writes(connection):
+    return [call.args[1] for call in connection.execute.call_args_list
+            if call.args[0].startswith('UPDATE matches SET explanation=')]
+
+
+def test_grounded_mode_refreshes_current_facts_without_model_calls(monkeypatch):
+    expected = explanation(assess(1, 'Engineer\n' + JOB, PROFILE, 'fake-model'), 'Engineer\n' + JOB, PROFILE)
+    rows = [dict(id=1, title='Engineer', company=None, locations=[], description=JOB,
+                 explanation='legacy prose', facts_current=True),
+            dict(id=2, title='Engineer', company=None, locations=[], description=JOB,
+                 explanation=expected, facts_current=True)]
+    connection = grounded_connection(monkeypatch, rows)
+    llm = Mock(side_effect=AssertionError('Current facts must not be re-requested'))
+    store = {}
+    result = analysis.analyze(llm_fn=llm, settings={'LLM_MODEL': 'fake-model'}, grounded=True,
+                              assessment_store=store)
+    assert llm.call_count == 0
+    assert result == {'analyzed': 0, 'failures': 0, 'tokens': 0}
+    # Only the stale explanation is rewritten; the already-current one is left alone.
+    assert explanation_writes(connection) == [(expected, 1, 1)]
+    assert restore(store, 1, 'Engineer\n' + JOB, PROFILE) is not None
+
+
+def test_grounded_mode_still_requests_facts_that_are_missing_or_stale(monkeypatch):
+    rows = [dict(id=1, title='Engineer', company=None, locations=[], description=JOB,
+                 explanation=None, facts_current=False)]
+    connection = grounded_connection(monkeypatch, rows)
+    candidate_value = analysis.Analysis(seniority='unknown', required_languages=None, employment_types=None,
+                                        salary=None, evidence={}, explanation='model prose')
+    llm = Mock(return_value=(candidate_value.model_dump_json(), 5))
+    result = analysis.analyze(llm_fn=llm, settings={'LLM_MODEL': 'fake-model'}, grounded=True)
+    assert llm.call_count == 1 and result == {'analyzed': 1, 'failures': 0, 'tokens': 5}
+    assert 'model prose' not in explanation_writes(connection)[0][0]
+
+
+def test_grounding_bug_propagates_instead_of_hiding_behind_fallback(monkeypatch):
+    rows = [dict(id=1, title='Engineer', company=None, locations=[], description=JOB,
+                 explanation=None, facts_current=False)]
+    connection = grounded_connection(monkeypatch, rows)
+    candidate_value = analysis.Analysis(seniority='unknown', required_languages=None, employment_types=None,
+                                        salary=None, evidence={}, explanation='model prose')
+    llm = Mock(return_value=(candidate_value.model_dump_json(), 5))
+    error = ValidationError.from_exception_data('Assessment', [])
+    monkeypatch.setattr(analysis, 'assess', Mock(side_effect=error))
+    with pytest.raises(ValidationError):
+        analysis.analyze(llm_fn=llm, settings={'LLM_MODEL': 'fake-model'}, grounded=True)
+    # A grounding bug is not a bad model response: no retry, and no fallback written over it.
+    assert llm.call_count == 1
+    assert explanation_writes(connection) == []

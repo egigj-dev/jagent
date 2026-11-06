@@ -20,6 +20,10 @@ CONSTRAINT_PATTERNS = {
 }
 
 
+class SourceTooLarge(ValueError):
+    pass
+
+
 class Constraint(BaseModel):
     model_config = ConfigDict(extra='forbid')
     kind: Literal['years', 'screening', 'work_authorization', 'location', 'language']
@@ -53,7 +57,7 @@ class Assessment(BaseModel):
 
 def assess(posting_id: int, job: str, profile: str, fact_model: str | None = None) -> Assessment:
     if len(job) > MAX_SOURCE or len(profile) > MAX_SOURCE:
-        raise ValueError('Preview sources exceed the 32000 character bound; supply an explicit bounded snapshot.')
+        raise SourceTooLarge('Preview sources exceed the 32000 character bound; supply an explicit bounded snapshot.')
     constraints = []
     for span in spans(job, 'job'):
         for kind, pattern in CONSTRAINT_PATTERNS.items():
@@ -86,7 +90,8 @@ def current(value: Assessment, posting_id: int, job: str, profile: str) -> bool:
     try:
         expected = assess(posting_id, job, profile, value.fact_model)
         return value == expected
-    except (ValueError, TypeError):
+    except SourceTooLarge:
+        # Only the documented size bound means "not current"; other errors are bugs and propagate.
         return False
 
 

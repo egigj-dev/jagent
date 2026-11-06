@@ -14,7 +14,7 @@ from psycopg.types.json import Jsonb
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, ValidationError, model_validator
 
 from jagent.briefing.contract import Briefing
-from jagent.briefing.assessment import Assessment, assess, explanation, put
+from jagent.briefing.assessment import Assessment, SourceTooLarge, assess, explanation, put
 from jagent.briefing.grounded import FALLBACK
 from jagent.db import connect
 from jagent.profile import active_profile
@@ -132,18 +132,26 @@ def error_type(error):
     return type(error).__name__
 
 
-def ground_analysis(candidate, job, profile, posting_id, model):
-    # Provenance remains on the in-memory result; the existing JSON/database shape is unchanged.
-    text = "\n".join([job.get("title") or "", job.get("description") or ""])
+def grounded_text(job):
+    return "\n".join([job.get("title") or "", job.get("description") or ""])
+
+
+def grounded_explanation(job, profile, posting_id, model):
+    # Deterministic and offline. Only the documented size bound falls back; any other error is a
+    # bug and propagates, so it cannot hide behind the safe fallback text.
+    text = grounded_text(job)
     try:
         assessment = assess(posting_id, text, profile, model)
-    except ValueError:
-        result = candidate.model_copy(update={"explanation": FALLBACK})
-        result._briefing = None
-        result._assessment = None
-        return result
-    result = candidate.model_copy(update={"explanation": explanation(assessment, text, profile)})
-    result._briefing = assessment.briefing
+    except SourceTooLarge:
+        return FALLBACK, None
+    return explanation(assessment, text, profile), assessment
+
+
+def ground_analysis(candidate, job, profile, posting_id, model):
+    # Provenance remains on the in-memory result; the existing JSON/database shape is unchanged.
+    text, assessment = grounded_explanation(job, profile, posting_id, model)
+    result = candidate.model_copy(update={"explanation": text})
+    result._briefing = assessment.briefing if assessment else None
     result._assessment = assessment
     return result
 
@@ -153,7 +161,7 @@ def analyze(llm_fn=None, settings=None, *, grounded=None, assessment_store=None)
         grounded = os.environ.get("JAGENT_GROUNDED_EXPLANATIONS") == "1"
     settings = settings or llm_settings()
     model = settings["LLM_MODEL"]
-    analyzed = failures = tokens = 0
+    analyzed = failures = tokens = refreshed = 0
     failure_types = Counter()
     requested = False
     with connect() as connection:
@@ -173,15 +181,30 @@ def analyze(llm_fn=None, settings=None, *, grounded=None, assessment_store=None)
             """, (profile_id, profile_id, profile_text))
         with connection.cursor(row_factory=dict_row) as cursor:
             postings = cursor.execute("""
-                SELECT p.id, p.title, p.company, p.locations, p.description
+                SELECT p.id, p.title, p.company, p.locations, p.description,
+                       m.explanation, a.model IS NOT DISTINCT FROM %s AS facts_current
                 FROM matches m JOIN postings p ON p.id=m.posting_id
                 LEFT JOIN posting_analysis a ON a.posting_id=p.id
                 WHERE m.profile_id=%s AND m.queued
                   AND (%s OR a.model IS DISTINCT FROM %s OR m.explanation IS NULL)
                 ORDER BY m.similarity DESC, p.id
-            """, (profile_id, bool(grounded), model)).fetchall()
+            """, (model, profile_id, bool(grounded), model)).fetchall()
         for posting in postings:
             job = job_input(posting)
+            if grounded and posting.get("facts_current"):
+                # Facts from this model are stored; only the deterministic explanation can be stale.
+                # Refreshing it needs no model call, so grounded mode does not repeat paid requests.
+                text, assessment = grounded_explanation(job, profile_text, posting["id"], model)
+                if text != posting.get("explanation"):
+                    connection.execute(
+                        "UPDATE matches SET explanation=%s WHERE posting_id=%s AND profile_id=%s",
+                        (text, posting["id"], profile_id),
+                    )
+                    connection.commit()
+                    refreshed += 1
+                if assessment_store is not None and assessment is not None:
+                    put(assessment_store, assessment, grounded_text(job), profile_text)
+                continue
             result = None
             feedback = None
             for attempt in range(2):
@@ -198,8 +221,7 @@ def analyze(llm_fn=None, settings=None, *, grounded=None, assessment_store=None)
                     if any(quote and " ".join(quote.split()) not in " ".join(posting_text.split())
                            for quote in candidate.evidence.values()):
                         raise EvidenceError("Evidence is not a verbatim posting quote")
-                    result = (ground_analysis(candidate, job, profile_text, posting["id"], model)
-                              if grounded else candidate)
+                    result = candidate
                     break
                 except (httpx.HTTPError, ValidationError, json.JSONDecodeError, EvidenceError) as error:
                     # Provider errors can contain credentials; never print their content.
@@ -219,6 +241,10 @@ def analyze(llm_fn=None, settings=None, *, grounded=None, assessment_store=None)
                         failures += 1
                         failure_types[kind] += 1
                         print(f"Skipped posting {posting['id']} after two failed attempts ({kind}).", flush=True)
+            if result is not None and grounded:
+                # Outside the retry loop: a grounding problem must not cost a second model call
+                # or be counted as an invalid model response.
+                result = ground_analysis(result, job, profile_text, posting["id"], model)
             if result is None:
                 if grounded:
                     # A failed opt-in refresh must not leave legacy prose looking current.
@@ -245,8 +271,7 @@ def analyze(llm_fn=None, settings=None, *, grounded=None, assessment_store=None)
             )
             connection.commit()
             if assessment_store is not None and result._assessment is not None:
-                text = "\n".join([job.get("title") or "", job.get("description") or ""])
-                put(assessment_store, result._assessment, text, profile_text)
+                put(assessment_store, result._assessment, grounded_text(job), profile_text)
             analyzed += 1
         samples = connection.execute("""
             SELECT p.title,a.seniority,a.required_languages,a.employment_types,a.salary,m.explanation
@@ -256,6 +281,8 @@ def analyze(llm_fn=None, settings=None, *, grounded=None, assessment_store=None)
             ORDER BY m.similarity DESC,p.id LIMIT 5
         """, (profile_id, model)).fetchall()
     print(f"Analysed={analyzed} failures={failures} tokens={tokens}")
+    if grounded:
+        print(f"Grounded explanations refreshed without model calls: {refreshed}")
     print(f"Failure rate: {100 * failures / max(1, analyzed + failures):.1f}%; "
           f"remaining errors by type: {json.dumps(dict(failure_types), sort_keys=True)}")
     for title, seniority, languages, types, salary, explanation in samples:

@@ -17,7 +17,7 @@
    outside grounded fit validation.
 6. Review private assessment retention, exact source snapshot storage and SQL proposal
    in B1_IMPLEMENTATION before writing a durable adapter. Grounded online mode
-   refreshes all queued analyses and can repeat fact calls. No schema is auto-applied.
+   refreshes explanations offline and only requests missing or stale facts. No schema is auto-applied.
 7. Use HUMAN_REVIEW.md as a separate versioned review sheet; obtain independent
    reviewers where possible. Do not transfer historical labels to new claims or
    relabel marker failures automatically.
