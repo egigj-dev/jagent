@@ -82,6 +82,7 @@ def evaluate(root=ROOT):
     evaluated_counts = Counter()
     latencies, costs = [], []
     adversarial = []
+    marker_presence = {}
     details = []
     missing_outputs = 0
     failed_outputs = 0
@@ -123,6 +124,8 @@ def evaluate(root=ROOT):
             missed += len(labels["missed_requirements"])
         if posting.get("adversarial"):
             adversarial.append((path.stem, adversarial_pass(posting, output, drafts, jobs, profiles, profile)))
+            marker_presence[path.stem] = any(term.casefold() in output['content'].casefold()
+                                             for term in posting['adversarial']['forbidden_terms'])
         latencies.append(output["latency_seconds"])
         if output.get("cost_usd") is not None:
             costs.append(output["cost_usd"])
@@ -140,8 +143,11 @@ def evaluate(root=ROOT):
     print(f"Unsupported rate | {unsupported}/{labeled}" if labeled else "Unsupported rate | N/A (0 labeled claims)")
     labeled_cases = sum(load(path)["missed_requirements"] is not None for path in (root / "labels").glob("*.fixture"))
     print(f"Missed requirements | {missed} ({labeled_cases} labeled cases)" if labeled_cases else "Missed requirements | N/A (0 labeled cases)")
+    print("Adversarial checks below are lexical marker/privacy checks, not instruction-compliance judgments.")
+    print("A marker in a refusal can fail this check; historical 900002 requires semantic review.")
     for name, passed in adversarial:
         print(f"Adversarial {name} | {'PASS' if passed else 'FAIL'}")
+        print(f"Adversarial {name} marker appearance | {marker_presence[name]}; instruction compliance | unreviewed")
     print(f"Mean cost USD (estimated) | {sum(costs) / len(costs):.8f} ({len(costs)} priced recordings)" if costs else "Mean cost USD | N/A (provider returned no cost)")
     print(f"Mean latency seconds | {sum(latencies) / len(latencies):.3f}" if latencies else "Mean latency seconds | N/A")
     print("\nSeeded checks | Flagged / total")

@@ -48,6 +48,7 @@ def evaluate(root=ROOT):
             counts['adversarial_cases'] += 1
         rows.append((path.stem, len(drafts), len(supported), len(labels['claims']), before, after))
     print('Offline historical replay; no model calls; evidence coverage is not human correctness.')
+    print('Attack PASS/FAIL denotes lexical marker/privacy checks; compliance remains separately unreviewed.')
     print('Metric | Value')
     for name, value in sorted(counts.items()):
         print(f'{name} | {value}')

@@ -7,7 +7,7 @@ import re
 from jagent.briefing.contract import Briefing, Claim, ClaimDraft, InputPacket, SourceSpan
 from jagent.briefing.evidence import SYNONYMS, mentions, normalize
 
-ENGINE_VERSION = 'deterministic-fit-v2'
+ENGINE_VERSION = 'deterministic-fit-v3'
 FALLBACK = "Fit could not be established from verified evidence; review the posting and profile."
 NEGATION = re.compile(r"\b(?:no|not|never|without|lack\w*|missing|limited|learning|beginner|wish|want|aspir\w*)\b", re.I)
 # Added here, not in SYNONYMS, so that the frozen lexical evaluator keeps its historical counts.
@@ -48,9 +48,17 @@ def spans(text: str, source: str) -> list[SourceSpan]:
             start = match.start() + sentence.start()
             end = match.start() + sentence.end()
             quote = text[start:end]
-            if 0 < len(quote) <= 600:
+            # Long single-line sentences are retained as overlapping bounded windows.
+            # Interpretation below abstains when a long sentence contains negation, since a
+            # window alone cannot establish its scope. Offsets still bind exact text.
+            offset = start
+            while offset < end:
+                stop = min(offset + 600, end)
                 result.append(SourceSpan(source=source, version=version(text),
-                                         start=start, end=end, quote=quote))
+                                         start=offset, end=stop, quote=text[offset:stop]))
+                if stop == end:
+                    break
+                offset = stop - 120
     return result
 
 
@@ -131,7 +139,20 @@ def is_title(job: str, span: SourceSpan) -> bool:
     return bool(separator) and span.start == 0 and span.end == len(first) and len(first) <= 80 and first[-1] not in '.!?:'
 
 
+def long_qualified_sentence(text: str, span: SourceSpan) -> bool:
+    # Look outside a window only within its original sentence, not the whole posting.
+    line_start = text.rfind('\n', 0, span.start) + 1
+    line_end = text.find('\n', span.end)
+    line = text[line_start:line_end if line_end >= 0 else len(text)]
+    for match in re.finditer(r"\S.*?(?:[.!?](?=\s|$)|$)", line):
+        if line_start + match.start() <= span.start and span.end <= line_start + match.end():
+            return len(match[0]) > 600 and bool(NEGATION.search(match[0]))
+    return False
+
+
 def requirement_level(job: str, span: SourceSpan, skill: str) -> str:
+    if long_qualified_sentence(job, span):
+        return 'unclear'
     quote = normalize(span.quote)
     clause = next((part for part in re.split(r";|\b(?:but|while|though|although)\b", quote, flags=re.I)
                    if fit_mentions(part, skill)), quote)
@@ -254,7 +275,7 @@ def validate(draft: ClaimDraft, job: str, profile: str,
                 verdict, reason = 'supported', 'Profile text qualifies or limits this advertised skill.'
         elif profile_ok and fit_mentions(profile_span.quote, draft.skill):
             if (limited(with_wrapped_line(profile, profile_span), draft.skill) or NEGATION.search(job_span.quote)
-                    or limitations(profile, draft.skill)):
+                    or limitations(profile, draft.skill) or long_qualified_sentence(profile, profile_span)):
                 reason = 'Negation or qualification requires manual review.'
             elif draft.kind == 'shared_mention':
                 verdict, reason = 'supported', 'Only shared textual mentions are established; no proficiency claim.'
@@ -270,7 +291,7 @@ def validate(draft: ClaimDraft, job: str, profile: str,
                  requirement=level, support=support_level(draft.kind, quote, draft.skill))
 
 
-def build(posting_id: int, job: str, profile: str, model: str = 'deterministic-fit-v1') -> Briefing:
+def build(posting_id: int, job: str, profile: str, model: str = ENGINE_VERSION) -> Briefing:
     jobs, profiles = spans(job, 'job'), spans(profile, 'profile')
     claims = []
     for skill in FIT_SKILLS:
@@ -281,7 +302,8 @@ def build(posting_id: int, job: str, profile: str, model: str = 'deterministic-f
         by_level = lambda wanted: next((span for span in job_candidates if levels[id(span)] == wanted), None)
         strong = by_level('required') or by_level('title') or by_level('preferred') or by_level('example')
         profile_candidates = [span for span in profiles if fit_mentions(span.quote, skill)
-                              and not limited(with_wrapped_line(profile, span), skill)]
+                              and not limited(with_wrapped_line(profile, span), skill)
+                              and not long_qualified_sentence(profile, span)]
         supporting = next((span for span in profile_candidates if supports_skill(span.quote, skill)), None)
         limits = limitations(profile, skill)
         if by_level('required') and by_level('not_required'):
@@ -305,7 +327,7 @@ def build(posting_id: int, job: str, profile: str, model: str = 'deterministic-f
                            profile_excerpt_id=profile_span.excerpt_id if profile_span else None)
         claims.append(validate(draft, job, profile, job_span, profile_span))
     return Briefing(packet=InputPacket(posting_id=posting_id, job_snapshot_id=version(job),
-                                      profile_version=version(profile), model=model),
+                                      profile_version=version(profile), model=ENGINE_VERSION),
                     engine_version=ENGINE_VERSION, claims=claims)
 
 
@@ -313,7 +335,8 @@ def render(briefing: Briefing, job: str, profile: str) -> str:
     # Revalidate at the presentation boundary: neither status nor model-supplied labels are proof.
     if (briefing.packet.job_snapshot_id != version(job)
             or briefing.packet.profile_version != version(profile)
-            or briefing.engine_version != ENGINE_VERSION):
+            or briefing.engine_version != ENGINE_VERSION
+            or briefing.packet.model != ENGINE_VERSION):
         return FALLBACK
     groups = {}
     for claim in briefing.claims:

@@ -14,7 +14,8 @@ from psycopg.types.json import Jsonb
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, ValidationError, model_validator
 
 from jagent.briefing.contract import Briefing
-from jagent.briefing.grounded import build, render
+from jagent.briefing.assessment import Assessment, assess, explanation, put
+from jagent.briefing.grounded import FALLBACK
 from jagent.db import connect
 from jagent.profile import active_profile
 
@@ -44,6 +45,7 @@ class Analysis(BaseModel):
     evidence: dict[str, str | None]
     explanation: str = Field(min_length=1)
     _briefing: Briefing | None = PrivateAttr(default=None)
+    _assessment: Assessment | None = PrivateAttr(default=None)
 
     @model_validator(mode="after")
     def require_evidence(self):
@@ -133,13 +135,20 @@ def error_type(error):
 def ground_analysis(candidate, job, profile, posting_id, model):
     # Provenance remains on the in-memory result; the existing JSON/database shape is unchanged.
     text = "\n".join([job.get("title") or "", job.get("description") or ""])
-    briefing = build(posting_id, text, profile, model)
-    result = candidate.model_copy(update={"explanation": render(briefing, text, profile)})
-    result._briefing = briefing
+    try:
+        assessment = assess(posting_id, text, profile, model)
+    except ValueError:
+        result = candidate.model_copy(update={"explanation": FALLBACK})
+        result._briefing = None
+        result._assessment = None
+        return result
+    result = candidate.model_copy(update={"explanation": explanation(assessment, text, profile)})
+    result._briefing = assessment.briefing
+    result._assessment = assessment
     return result
 
 
-def analyze(llm_fn=None, settings=None, *, grounded=None):
+def analyze(llm_fn=None, settings=None, *, grounded=None, assessment_store=None):
     if grounded is None:
         grounded = os.environ.get("JAGENT_GROUNDED_EXPLANATIONS") == "1"
     settings = settings or llm_settings()
@@ -152,24 +161,25 @@ def analyze(llm_fn=None, settings=None, *, grounded=None):
         if profile is None:
             raise ValueError("Set a profile with jagent profile set first")
         profile_id, profile_text, _ = profile
-        connection.execute("""
-            UPDATE matches current SET explanation=previous.explanation
+        if not grounded:
+            connection.execute("""
+                UPDATE matches current SET explanation=previous.explanation
             FROM matches previous
             JOIN profile old ON old.id=previous.profile_id
             WHERE current.profile_id=%s AND current.explanation IS NULL
               AND previous.posting_id=current.posting_id
               AND old.id=(SELECT max(id) FROM profile WHERE id < %s)
               AND old.text=%s AND previous.explanation IS NOT NULL
-        """, (profile_id, profile_id, profile_text))
+            """, (profile_id, profile_id, profile_text))
         with connection.cursor(row_factory=dict_row) as cursor:
             postings = cursor.execute("""
                 SELECT p.id, p.title, p.company, p.locations, p.description
                 FROM matches m JOIN postings p ON p.id=m.posting_id
                 LEFT JOIN posting_analysis a ON a.posting_id=p.id
                 WHERE m.profile_id=%s AND m.queued
-                  AND (a.model IS DISTINCT FROM %s OR m.explanation IS NULL)
+                  AND (%s OR a.model IS DISTINCT FROM %s OR m.explanation IS NULL)
                 ORDER BY m.similarity DESC, p.id
-            """, (profile_id, model)).fetchall()
+            """, (profile_id, bool(grounded), model)).fetchall()
         for posting in postings:
             job = job_input(posting)
             result = None
@@ -210,6 +220,13 @@ def analyze(llm_fn=None, settings=None, *, grounded=None):
                         failure_types[kind] += 1
                         print(f"Skipped posting {posting['id']} after two failed attempts ({kind}).", flush=True)
             if result is None:
+                if grounded:
+                    # A failed opt-in refresh must not leave legacy prose looking current.
+                    connection.execute(
+                        "UPDATE matches SET explanation=%s WHERE posting_id=%s AND profile_id=%s",
+                        (FALLBACK, posting["id"], profile_id),
+                    )
+                    connection.commit()
                 continue
             connection.execute("""
                 INSERT INTO posting_analysis
@@ -227,6 +244,9 @@ def analyze(llm_fn=None, settings=None, *, grounded=None):
                 (result.explanation, posting["id"], profile_id),
             )
             connection.commit()
+            if assessment_store is not None and result._assessment is not None:
+                text = "\n".join([job.get("title") or "", job.get("description") or ""])
+                put(assessment_store, result._assessment, text, profile_text)
             analyzed += 1
         samples = connection.execute("""
             SELECT p.title,a.seniority,a.required_languages,a.employment_types,a.salary,m.explanation
