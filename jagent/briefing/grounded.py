@@ -7,9 +7,13 @@ import re
 from jagent.briefing.contract import Briefing, Claim, ClaimDraft, InputPacket, SourceSpan
 from jagent.briefing.evidence import SYNONYMS, mentions, normalize
 
-ENGINE_VERSION = 'deterministic-fit-v3'
+ENGINE_VERSION = 'deterministic-fit-v4'
 FALLBACK = "Fit could not be established from verified evidence; review the posting and profile."
-NEGATION = re.compile(r"\b(?:no|not|never|without|lack\w*|missing|limited|learning|beginner|wish|want|aspir\w*)\b", re.I)
+# "learning" marks an aspiration ("learning Kubernetes"), but not when it names a field such as
+# Machine Learning, which appears in most AI postings and would otherwise suppress requirements.
+NEGATION = re.compile(r"\b(?:no|not|never|without|lack\w*|missing|limited"
+                      r"|(?<!machine )(?<!deep )(?<!reinforcement )(?<!statistical )learning"
+                      r"|beginner|wish|want|aspir\w*)\b", re.I)
 # Added here, not in SYNONYMS, so that the frozen lexical evaluator keeps its historical counts.
 FIT_SKILLS = {**SYNONYMS, '.NET': ('.net',)}
 REACT_CONTEXT = re.compile(r"(?:skills?|stack|using|with|in|and|experience)\s*:?\s*$"
@@ -161,9 +165,14 @@ def requirement_level(job: str, span: SourceSpan, skill: str) -> str:
     nearby = skill_window(clause, skill)
     if quote.endswith('?'):
         return 'unclear'
-    if NOT_REQUIRED.search(segment):
+    # "Python (optional Java or Scala)": a parenthetical about other skills does not qualify this one.
+    def about_others(group):
+        return (not fit_mentions(group, skill)
+                and any(fit_mentions(group, other) for other in FIT_SKILLS if other != skill))
+    own = re.sub(r"\(([^)]*)\)", lambda group: ' ' if about_others(group[1]) else group[0], segment)
+    if NOT_REQUIRED.search(own):
         return 'not_required'
-    if PREFERRED.search(segment):
+    if PREFERRED.search(own):
         return 'preferred'
     context = section_level(job, span)
     listed = any(fit_mentions(group, skill) and re.search(r"[,/]", group)

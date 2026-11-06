@@ -46,6 +46,12 @@ production inspection occurred. Frozen recordings and original labels are unchan
 
 ## Tradeoffs and known limits
 
+- Engine is now `deterministic-fit-v4` (2026-11-06): "Machine/deep/reinforcement/
+  statistical learning" no longer counts as negation, and a parenthetical about other
+  skills ("Python (Java a plus)") no longer qualifies the skill before it. Requirement
+  wording such as "skills you'll likely have" or "strong experience with" is still
+  not read as required (posting 10343), and requirement headings only apply nearby.
+
 - Source resolution and deterministic revalidation do not prove semantic truth.
   Long sentences with negation conservatively abstain. Only a bounded English
   vocabulary and a few explicit constraint forms are recognized. Unknown skills,

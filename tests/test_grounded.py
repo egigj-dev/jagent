@@ -213,3 +213,30 @@ def test_offline_comparison_and_pending_inventory(monkeypatch, capsys):
     assert counts['adapted_claims'] == counts['adapted_with_citations'] > 0
     assert removed == 8
     assert 'not measured' in capsys.readouterr().out
+
+
+@pytest.mark.parametrize('job', [
+    'Required: Python, built for Machine Learning teams.',
+    'Required: Python for deep learning and reinforcement learning work.',
+    # One run-on line over 600 characters, as in real postings scraped without punctuation.
+    'Required skills: Python ' + 'and Machine Learning platforms for clients across Europe ' * 12,
+])
+def test_machine_learning_is_a_field_not_a_negation(job):
+    claims = {claim.skill: claim for claim in build(1, job, 'Built a Python service.').claims}
+    assert claims['Python'].requirement == 'required'
+
+
+def test_learning_a_skill_still_reads_as_aspiration():
+    claims = {claim.skill: claim for claim in build(1, 'Required: Kubernetes.', 'Learning Kubernetes.').claims}
+    assert claims['Kubernetes'].kind != 'strength'
+
+
+@pytest.mark.parametrize('job,expected', [
+    ('Required: Python (Java a plus).', {'Python': 'required', 'Java': 'preferred'}),
+    ('Java (Python is a plus).', {'Python': 'preferred'}),
+    ('Python (optional).', {'Python': 'not_required'}),
+    ('Required: Python. Optional: Java.', {'Python': 'required', 'Java': 'not_required'}),
+])
+def test_parenthetical_qualifies_only_the_skills_it_names(job, expected):
+    levels = {claim.skill: claim.requirement for claim in build(1, job, 'Built Python and Java services.').claims}
+    assert {skill: levels[skill] for skill in expected} == expected
